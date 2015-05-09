@@ -1,0 +1,15 @@
+{
+  "name": "device-protocol",
+  "version": "0.1.0",
+  "description": "The proto buffer files from the KeepKey device, packed for consumption by the client.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.keepkey.com:client-software/device-protocol.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
