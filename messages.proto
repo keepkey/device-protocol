@@ -387,7 +387,7 @@ message WordAck {
  */
 message CharacterRequest {
 	required uint32 word_pos = 1;					// word position in BIP-39 mnemonic
-	required uint32 character_pos = 1;		// character position
+	required uint32 character_pos = 2;		// character position
 }
 
 /**
