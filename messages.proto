@@ -627,7 +627,8 @@ message FirmwareErase {
  * @next Failure
  */
 message FirmwareUpload {
-	required bytes payload = 1;			// firmware to be loaded into device
+	required uint32 payload_crc = 1;	// crc of firmware payload
+	required bytes payload = 2;				// firmware to be loaded into device
 }
 
 /////////////////////////////////////////////////////////////
