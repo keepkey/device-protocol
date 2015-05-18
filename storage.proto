@@ -3,13 +3,13 @@
  *
  * @trezor_author	Marek Palatinus <slush@satoshilabs.com>
  * @trezor_version	1.0
- * @keepkey_author 	Darin Stanchfield
+ * @keepkey_author 	Darin Stanchfield <darin@keepkey.com>
  * @keepkey_version	1.0
  */
 
 // Sugar for easier handling in Java
-option java_package = "com.satoshilabs.trezor.protobuf";
-option java_outer_classname = "TrezorStorage";
+option java_package = "com.keepkey.device-protocol";
+option java_outer_classname = "KeepKeyStorage";
 
 import "types.proto";
 
