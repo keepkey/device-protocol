@@ -627,7 +627,7 @@ message FirmwareErase {
  * @next Failure
  */
 message FirmwareUpload {
-	required bytes payload_crc = 1;		// crc of firmware payload
+	required bytes payload_hash = 1;	// sha256 hash of payload (meta + firmware)
 	required bytes payload = 2;				// firmware to be loaded into device
 }
 
