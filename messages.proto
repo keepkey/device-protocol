@@ -668,8 +668,8 @@ message DebugLinkState {
 	optional uint32 recovery_word_pos = 10;			// index of mnemonic word the device is expecting during RecoveryDevice workflow
 	optional string recovery_cipher = 11;				// current recovery cipher
 	optional string recovery_auto_completed_word = 12;	// last auto completed recovery word
-	optional bytes firmware_hash = 13;						// fingerprint of the application and meta header
-	optional bytes storage_hash = 14;							// fingerprint of storage
+	optional bytes firmware_hash = 13;						// hash of the application and meta header
+	optional bytes storage_hash = 14;							// hash of storage
 }
 
 /**
