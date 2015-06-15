@@ -357,7 +357,7 @@ message RecoveryDevice {
 	optional string language = 4 [default='english'];	// device language
 	optional string label = 5;				// device label
 	optional bool enforce_wordlist = 6;			// enforce BIP-39 wordlist during the process
-	optional bool use_character_cipher = 7;	// an optional way to input recovery sentence by character using a cipher
+	optional bool use_character_cipher = 7;			// an optional way to input recovery sentence by character using a cipher
 }
 
 /**
@@ -387,7 +387,7 @@ message WordAck {
  * @prev CharacterAck
  */
 message CharacterRequest {
-	required uint32 word_pos = 1;					// word position in BIP-39 mnemonic
+	required uint32 word_pos = 1;			// word position in BIP-39 mnemonic
 	required uint32 character_pos = 2;		// character position
 }
 
@@ -399,8 +399,8 @@ message CharacterRequest {
  */
 message CharacterAck {
 	optional string character = 1;				// one character of mnemonic using cipher
-	optional bool delete = 2;							// request to delete previous character from ciphered mnemonic
-	optional bool done = 3;								// marks there are no more characters left for ciphered mnemonic
+	optional bool delete = 2;				// request to delete previous character from ciphered mnemonic
+	optional bool done = 3;					// marks there are no more characters left for ciphered mnemonic
 }
 
 //////////////////////////////
@@ -629,7 +629,7 @@ message FirmwareErase {
  */
 message FirmwareUpload {
 	required bytes payload_hash = 1;	// sha256 hash of payload (meta + firmware)
-	required bytes payload = 2;				// firmware to be loaded into device
+	required bytes payload = 2;		// firmware to be loaded into device
 }
 
 /////////////////////////////////////////////////////////////
@@ -656,20 +656,20 @@ message DebugLinkGetState {
  * @prev DebugLinkGetState
  */
 message DebugLinkState {
-	optional bytes layout = 1;			// raw buffer of display
-	optional string pin = 2;			// current PIN, blank if PIN is not set/enabled
-	optional string matrix = 3;			// current PIN matrix
-	optional string mnemonic = 4;			// current BIP-39 mnemonic
-	optional HDNodeType node = 5;			// current BIP-32 node
-	optional bool passphrase_protection = 6;	// is node/mnemonic encrypted using passphrase?
-	optional string reset_word = 7;			// word on device display during ResetDevice workflow
-	optional bytes reset_entropy = 8;		// current entropy during ResetDevice workflow
-	optional string recovery_fake_word = 9;		// (fake) word on display during RecoveryDevice workflow
+	optional bytes layout = 1;				// raw buffer of display
+	optional string pin = 2;				// current PIN, blank if PIN is not set/enabled
+	optional string matrix = 3;				// current PIN matrix
+	optional string mnemonic = 4;				// current BIP-39 mnemonic
+	optional HDNodeType node = 5;				// current BIP-32 node
+	optional bool passphrase_protection = 6;		// is node/mnemonic encrypted using passphrase?
+	optional string reset_word = 7;				// word on device display during ResetDevice workflow
+	optional bytes reset_entropy = 8;			// current entropy during ResetDevice workflow
+	optional string recovery_fake_word = 9;			// (fake) word on display during RecoveryDevice workflow
 	optional uint32 recovery_word_pos = 10;			// index of mnemonic word the device is expecting during RecoveryDevice workflow
-	optional string recovery_cipher = 11;				// current recovery cipher
+	optional string recovery_cipher = 11;			// current recovery cipher
 	optional string recovery_auto_completed_word = 12;	// last auto completed recovery word
-	optional bytes firmware_hash = 13;						// hash of the application and meta header
-	optional bytes storage_hash = 14;							// hash of storage
+	optional bytes firmware_hash = 13;			// hash of the application and meta header
+	optional bytes storage_hash = 14;			// hash of storage
 }
 
 /**
