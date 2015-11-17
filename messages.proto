@@ -7,10 +7,6 @@
  * @keepkey_version	1.0
  */
 
-//NOTE
-// The tags in the Javadoc-like comments are used by the ui. They are code. Changing them wrongly will break the
-// UI build. See https://github.com/keepkey/device-protocol-state-dsl for details.
-
 // Sugar for easier handling in Java
 option java_package = "com.keepkey.device-protocol";
 option java_outer_classname = "KeepKeyMessage";
