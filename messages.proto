@@ -156,7 +156,6 @@ message ClearSession {
  * @reject Failure
  * @next ButtonRequest
  * @next PinMatrixRequest
- * @userInteractionRequired
  */
 message ApplySettings {
 	optional string language = 1;
@@ -174,7 +173,6 @@ message ApplySettings {
  * @reject Failure
  * @next ButtonRequest
  * @next PinMatrixRequest
- * @userInteractionRequired
  */
 message ChangePin {
 	optional bool remove = 1;	// is PIN removal requested?
@@ -343,7 +341,6 @@ message Entropy {
  * @next PinMatrixRequest
  * @resolve PublicKey
  * @reject Failure
- * @userInteractionRequired
  */
 message GetPublicKey {
 	repeated uint32 address_n = 1;		// BIP-32 path to derive the key from master node
@@ -373,7 +370,6 @@ message PublicKey {
  * @next PassphraseRequest
  * @resolve Address
  * @reject Failure
- * @userInteractionRequired
  */
 message GetAddress {
 	repeated uint32 address_n = 1;			// BIP-32 path to derive the key from master node
@@ -416,7 +412,6 @@ message WipeDevice {
  * @next PassphraseRequest
  * @resolve Success
  * @reject Failure
- * @userInteractionRequired
  */
 message LoadDevice {
 	optional string mnemonic = 1;				// seed encoded as BIP-39 mnemonic (12, 18 or 24 words)
@@ -517,7 +512,6 @@ message WordRequest {
  * @messageType response
  * @prev WordRequest
  * @next WordRequest
- * @userInteractionRequired
  */
 message WordAck {
 	required string word = 1;				// one word of mnemonic on asked position
@@ -546,7 +540,6 @@ message CharacterRequest {
  * @messageType response
  * @prev CharacterRequest
  * @next CharacterRequest
- * @userInteractionRequired
  */
 message CharacterAck {
 	optional string character = 1;				// one character of mnemonic using cipher
@@ -739,7 +732,6 @@ message TxSize {
  * @next PinMatrixRequest
  * @resolve TxRequest
  * @reject Failure
- * @userInteractionRequired
  */
 message SignTx {
 	required uint32 outputs_count = 1;			// number of transaction outputs
@@ -760,7 +752,6 @@ message SignTx {
  * @next PinMatrixRequest
  * @resolve TxRequest
  * @reject Failure
- * @userInteractionRequired
  */
 message SimpleSignTx {
 	repeated TxInputType inputs = 1;			// transaction inputs
