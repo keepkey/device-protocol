@@ -259,8 +259,8 @@ message Entropy {
  */
 message GetPublicKey {
 	repeated uint32 address_n = 1;		    // BIP-32 path to derive the key from master node
-	optional bool show_display = 2;         // display xpub key on device
-	optional string ecdsa_curve_name = 3;	// ECDSA curve name to use
+	optional string ecdsa_curve_name = 2;	// ECDSA curve name to use
+	optional bool show_display = 3;         // display xpub key on device
 }
 
 /**
