@@ -74,6 +74,16 @@ enum RequestType {
 }
 
 /**
+ * Type of ouput address specify in transaction
+ * @used_in TxOutputType 
+ */
+enum OutputAddressType {
+  SPEND = 0;
+	TRANSFER = 1;
+	CHANGE = 2;
+}
+
+/**
  * Type of button request
  * @used_in ButtonRequest
  */
@@ -89,8 +99,8 @@ enum ButtonRequestType {
 	ButtonRequest_FirmwareCheck = 9;
 	ButtonRequest_Address = 10;
 	ButtonRequest_FirmwareErase = 11;
-	ButtonRequest_ConfirmTransferToAccount=12;
-    ButtonRequest_ConfirmTransferToNodePath=13;
+	ButtonRequest_ConfirmTransferToAccount = 12;
+  ButtonRequest_ConfirmTransferToNodePath = 13;
 }
 
 /**
@@ -101,16 +111,6 @@ enum PinMatrixRequestType {
 	PinMatrixRequestType_Current = 1;
 	PinMatrixRequestType_NewFirst = 2;
 	PinMatrixRequestType_NewSecond = 3;
-}
-
-/**
- * Type of ouput address specify in transaction
- * @used_in TxOutputType 
- */
-enum OutputAddressType {
-    OutputAddressType_spend = 1;
-    OutputAddressType_transfer = 2;
-    OutputAddressType_change = 3;
 }
 
 /**
