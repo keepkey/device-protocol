@@ -290,7 +290,7 @@ message GetAddress {
  * @prev GetAddress
  */
 message Address {
-	required string address = 1;		// Coin address in Base58 encoding
+	required string address = 1;		// Coin address in compact human-readable form
 }
 
 /**

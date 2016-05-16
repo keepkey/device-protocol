@@ -135,6 +135,11 @@ message HDNodePathType {
 	repeated uint32 address_n = 2;						// BIP-32 path to derive the key from node
 }
 
+enum NetworkType {
+	BITCOIN = 0;  // Bitcoin and derivatives
+	ETHEREUM = 1; // Ethereum and derivatives
+}
+
 /**
  * Structure representing Coin
  * @used_in Features
@@ -145,6 +150,7 @@ message CoinType {
 	optional uint32 address_type = 3 [default=0];
 	optional uint64 maxfee_kb = 4;
 	optional uint32 address_type_p2sh = 5 [default=5];
+	optional NetworkType network_type = 6 [default=BITCOIN];
 }
 
 /**
