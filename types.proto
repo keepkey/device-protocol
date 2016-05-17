@@ -208,6 +208,7 @@ message TransactionType {
 	optional uint32 lock_time = 4;
 	optional uint32 inputs_cnt = 6;
 	optional uint32 outputs_cnt = 7;
+	optional TxBookmark bookmark = 8;
 }
 
 /**
@@ -240,4 +241,13 @@ message IdentityType {
 	optional string port = 4;			// port part of URI
 	optional string path = 5;			// path part of URI
 	optional uint32 index = 6 [default=0];		// identity index
+}
+
+/**
+ * Structure representing transaction bookmarking
+ * @used_in TransactionType
+ */
+message TxBookmark {
+	optional bytes sha256_ctx = 1;
+	optional uint32 remaining_output_cnt = 2;
 }
