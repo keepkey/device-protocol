@@ -249,5 +249,4 @@ message IdentityType {
  */
 message TxBookmark {
 	optional bytes sha256_ctx = 1;
-	optional uint32 remaining_output_cnt = 2;
 }
