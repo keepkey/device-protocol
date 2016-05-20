@@ -94,27 +94,17 @@ enum ButtonRequestType {
 	ButtonRequest_ResetDevice = 4;
 	ButtonRequest_ConfirmWord = 5;
 	ButtonRequest_WipeDevice = 6;
-	ButtonRequest_SignTx = 7;
-	ButtonRequest_FirmwareCheck = 8;
-	ButtonRequest_Address = 9;
-	ButtonRequest_FirmwareErase = 10;
-	ButtonRequest_ConfirmTransferToAccount = 11;
-	ButtonRequest_ConfirmTransferToNodePath = 12;
-	ButtonRequest_ChangeLabel = 13;
-	ButtonRequest_ChangeLanguage = 14;
-	ButtonRequest_EnablePassphrase = 15;
-	ButtonRequest_DisablePassphrase = 16;
-	ButtonRequest_EncryptAndSignMessage = 17;
-	ButtonRequest_EncryptMessage = 18;
-	ButtonRequest_ImportPrivateKey = 19;
-	ButtonRequest_ImportRecoverySentence = 20;
-	ButtonRequest_signIdentity = 21;
-	ButtonRequest_Ping = 22;
-	ButtonRequest_RemovePIN = 23;
-	ButtonRequest_ChangePIN = 24;
-	ButtonRequest_CreatePIN = 25;
-	ButtonRequest_GenerateEntropy = 26;
-	ButtonRequest_SignMessage = 27;
+	ButtonRequest_ProtectCall = 7;
+	ButtonRequest_SignTx = 8;
+	ButtonRequest_FirmwareCheck = 9;
+	ButtonRequest_Address = 10;
+	ButtonRequest_FirmwareErase = 11;
+	ButtonRequest_ConfirmTransferToAccount = 12;
+	ButtonRequest_ConfirmTransferToNodePath = 13;
+	ButtonRequest_ChangeLabel = 14;
+	ButtonRequest_ChangeLanguage = 15;
+	ButtonRequest_EnablePassphrase = 16;
+	ButtonRequest_DisablePassphrase= 17;
 }
 
 /**
