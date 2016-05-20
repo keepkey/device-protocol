@@ -104,7 +104,18 @@ enum ButtonRequestType {
 	ButtonRequest_ChangeLabel = 14;
 	ButtonRequest_ChangeLanguage = 15;
 	ButtonRequest_EnablePassphrase = 16;
-	ButtonRequest_DisablePassphrase= 17;
+	ButtonRequest_DisablePassphrase = 17;
+	ButtonRequest_EncryptAndSignMessage = 18;
+	ButtonRequest_EncryptMessage = 19;
+	ButtonRequest_ImportPrivateKey = 20;
+	ButtonRequest_ImportRecoverySentence = 21;
+	ButtonRequest_signIdentity = 22;
+	ButtonRequest_Ping = 23;
+	ButtonRequest_RemovePIN = 24;
+	ButtonRequest_ChangePIN = 25;
+	ButtonRequest_CreatePIN = 26;
+	ButtonRequest_GenerateEntropy = 27;
+	ButtonRequest_SignMessage = 28;
 }
 
 /**
