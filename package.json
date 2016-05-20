@@ -1,6 +1,6 @@
 {
   "name": "device-protocol",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "The proto buffer files from the KeepKey device, packed for consumption by the client.",
   "main": "index.js",
   "scripts": {
