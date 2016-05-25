@@ -286,6 +286,14 @@ message GetAddress {
 }
 
 /**
+ * Response: Contains address derived from device private seed
+ * @prev GetAddress
+ */
+message Address {
+	required string address = 1;		// Coin address in Base58 encoding
+}
+
+/**
  * Request: Request device to wipe all sensitive data and settings
  * @next ButtonRequest
  */
