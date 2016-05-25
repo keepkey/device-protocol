@@ -1,0 +1,24 @@
+message Address {
+    optional string address = 1;    // address for resulting coin to be sent to
+    optional string dest_tag = 2;   // (Optional) Destination tag that you want appended to a Ripple payment to you
+    optional string rs_address = 3; // (Optional) For new NXT accounts to be funded, you supply this on NXT payment to you
+}
+
+message SendAmountRequest {
+    optional uint64 withdraw_amount = 1;   // amount being withdrawn from exchange
+    optional Address withdraw_address = 2; // address to exchanged fund is being sent to
+    optional string withdraw_coin_type = 3;// fund type being withdrawn from exchange
+    optional string deposit_coin_type = 4;   // fund type being deposit to exchange
+    optional Address return_address = 5;     // address to return deposit to if anything goes wrong with exchange
+    optional bytes api_key = 6;              // (Optional) Your affiliate PUBLIC KEY, for volume tracking, 
+                                             //        affiliate payments, split-shifts, etc...
+}
+
+message SendAmountResponse {
+    optional bytes signature = 1;           // Do we need a nonce?
+    optional SendAmountRequest request = 2; // response from exchange with payment info
+    optional Address deposit_address = 3;   // address to exchange
+    optional uint64 deposit_amount = 4;     // amount being paid to exchange
+    optional uint32 expiration = 5;         // timestamp when this will expire
+    optional uint32 quoted_rate = 6;         // the exchange rate to be honored (% * 10)
+}
