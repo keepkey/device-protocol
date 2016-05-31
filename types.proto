@@ -160,6 +160,7 @@ message CoinType {
 	optional uint32 address_type = 3 [default=0];
 	optional uint64 maxfee_kb = 4;
 	optional uint32 address_type_p2sh = 5 [default=5];
+	optional string signed_message_header = 8;
 }
 
 /**
