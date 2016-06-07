@@ -109,7 +109,7 @@ enum ButtonRequestType {
 	ButtonRequest_EncryptMessage = 19;
 	ButtonRequest_ImportPrivateKey = 20;
 	ButtonRequest_ImportRecoverySentence = 21;
-	ButtonRequest_signIdentity = 22;
+	ButtonRequest_SignIdentity = 22;
 	ButtonRequest_Ping = 23;
 	ButtonRequest_RemovePIN = 24;
 	ButtonRequest_ChangePIN = 25;
