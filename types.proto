@@ -111,10 +111,10 @@ enum ButtonRequestType {
 	ButtonRequest_ImportRecoverySentence = 21;
 	ButtonRequest_SignIdentity = 22;
 	ButtonRequest_Ping = 23;
-	ButtonRequest_RemovePIN = 24;
-	ButtonRequest_ChangePIN = 25;
-	ButtonRequest_CreatePIN = 26;
-	ButtonRequest_GenerateEntropy = 27;
+	ButtonRequest_RemovePin = 24;
+	ButtonRequest_ChangePin = 25;
+	ButtonRequest_CreatePin = 26;
+	ButtonRequest_GetEntropy = 27;
 	ButtonRequest_SignMessage = 28;
 }
 
