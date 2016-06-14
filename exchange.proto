@@ -39,11 +39,11 @@ message SendAmountRequest {
  * @used in TxOutputType 
  */
 message SendAmountResponse {
-    optional bytes signature_external = 1;           // Do we need a nonce?
-    optional bytes signature_keepkey = 2;           // Do we need a nonce?
-    optional SendAmountRequest request = 3; // response from exchange with payment info
-    optional Exchange_Address deposit_address = 4;   // address to exchange
-    optional uint64 deposit_amount = 5;     // amount being paid to exchange
-    optional uint32 expiration = 6;         // timestamp when this will expire
-    optional uint32 quoted_rate = 7;        // the exchange rate to be honored (% * 10)
+    optional SendAmountRequest request = 1 ; // response from exchange with payment info
+    optional Exchange_Address deposit_address = 2;   // address to exchange
+    optional uint64 deposit_amount = 3;     // amount being paid to exchange
+    optional uint32 expiration = 4;         // timestamp when this will expire
+    optional uint32 quoted_rate = 5;        // the exchange rate to be honored (% * 10)
+    optional bytes signature = 6;           // signature from originator 
+    optional bytes approval = 7;            // signature from approver
 }
