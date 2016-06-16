@@ -26,10 +26,10 @@ message ExchangeAddress {
  */
 message SendAmountRequest {
     optional uint64 withdrawal_amount = 1;      // amount being withdrawn from exchange
-    optional Exchange_Address withdrawal_address = 2; // address to exchanged fund is being sent to
+    optional ExchangeAddress withdrawal_address = 2; // address to exchanged fund is being sent to
     optional string withdrawal_coin_type = 3;   // fund type being withdrawn from exchange
     optional string deposit_coin_type = 4;      // fund type being deposit to exchange
-    optional Exchange_Address return_address = 5; // address to return deposit to if anything goes wrong with exchange
+    optional ExchangeAddress return_address = 5; // address to return deposit to if anything goes wrong with exchange
     optional bytes api_key = 6;                 // (Optional) Your affiliate PUBLIC KEY, for volume tracking, 
                                                 // affiliate payments, split-shifts, etc...
 }
@@ -40,7 +40,7 @@ message SendAmountRequest {
  */
 message SendAmountResponse {
     optional SendAmountRequest request = 1 ;    // response from exchange with payment info
-    optional Exchange_Address deposit_address = 2;   // address to exchange
+    optional ExchangeAddress deposit_address = 2;   // address to exchange
     optional uint64 deposit_amount = 3;         // amount being paid to exchange
     optional uint32 expiration = 4;             // timestamp when this will expire
     optional uint32 quoted_rate = 5;            // the exchange rate to be honored 
