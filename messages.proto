@@ -68,6 +68,7 @@ enum MessageType {
 	MessageType_GetFeatures = 55 [(wire_in) = true];
  	MessageType_CharacterRequest = 80 [(wire_out) = true];
  	MessageType_CharacterAck = 81 [(wire_in) = true];
+ 	MessageType_RawTxAck = 82 [(wire_in) = true];
 	MessageType_DebugLinkDecision = 100 [(wire_debug_in) = true];
 	MessageType_DebugLinkGetState = 101 [(wire_debug_in) = true];
 	MessageType_DebugLinkState = 102 [(wire_debug_out) = true];
@@ -587,6 +588,15 @@ message TxRequest {
  */
 message TxAck {
 	optional TransactionType tx = 1;
+}
+
+/**
+ * Request: Reported raw transaction data
+ * @prev TxRequest
+ * @next TxRequest
+ */
+message RawTxAck {
+	optional RawTransactionType tx = 1;
 }
 
 ///////////////////////

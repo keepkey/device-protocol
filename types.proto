@@ -216,7 +216,7 @@ message TxOutputBinType {
 
 /**
  * Structure representing transaction
- * @used_in SimpleSignTx
+ * @used_in SimpleSignTx, 
  */
 message TransactionType {
 	optional uint32 version = 1;
@@ -226,6 +226,14 @@ message TransactionType {
 	optional uint32 lock_time = 4;
 	optional uint32 inputs_cnt = 6;
 	optional uint32 outputs_cnt = 7;
+}
+
+/**
+ * Structure representing raw transaction
+ * @used_in RawTxAck
+ */
+message RawTransactionType {
+	required bytes payload = 1;
 }
 
 /**
