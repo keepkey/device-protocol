@@ -8,7 +8,7 @@
  */
 
 // Sugar for easier handling in Java
-option java_package = "com.keepkey.deviceProtocol";
+option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyType";
 
 import "google/protobuf/descriptor.proto";
