@@ -8,7 +8,7 @@
  */
 
 // Sugar for easier handling in Java
-option java_package = "com.keepkey.device-protocol";
+option java_package = "com.keepkey.deviceProtocol";
 option java_outer_classname = "KeepKeyMessage";
 
 import "types.proto";
