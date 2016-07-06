@@ -120,6 +120,7 @@ enum ButtonRequestType {
 	ButtonRequest_CreatePIN = 26;
 	ButtonRequest_GenerateEntropy = 27;
 	ButtonRequest_SignMessage = 28;
+	ButtonRequest_SignExchange = 29;
 }
 
 /**
@@ -267,9 +268,9 @@ message IdentityType {
  * @used_in TxOutputType
  */
 message ExchangeType {
-	optional ExchangeResponse response = 1;						// exchange response
+	optional ExchangeResponse response = 1;				// exchange response
 	optional string deposit_coin_name = 2 [default='Bitcoin'];	// coin to use for deposit
-	optional uint32 deposit_address_n = 3;			    		// BIP-32 path for deposit address
+	repeated uint32 deposit_address_n = 3;			    	// BIP-32 path for deposit address
 	optional string return_coin_name = 4 [default='Bitcoin'];	// coin to use for return
-	optional uint32 return_address_n = 5;			    		// BIP-32 path for return address
+	repeated uint32 return_address_n = 5;			    	// BIP-32 path for return address
 }

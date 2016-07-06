@@ -45,5 +45,4 @@ message ExchangeResponse {
     optional uint32 expiration = 4;                 // timestamp when this will expire
     optional uint32 quoted_rate = 5;                // the exchange rate to be honored 
     optional bytes signature = 6;                   // signature from originator 
-    optional bytes approval = 7;                    // signature from approver
 }
