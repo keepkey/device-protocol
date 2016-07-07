@@ -116,6 +116,7 @@ enum ButtonRequestType {
 	ButtonRequest_CreatePin = 26;
 	ButtonRequest_GetEntropy = 27;
 	ButtonRequest_SignMessage = 28;
+	ButtonRequest_ApplyPolicies = 29;
 }
 
 /**
@@ -266,4 +267,14 @@ message IdentityType {
 	optional string port = 4;			// port part of URI
 	optional string path = 5;			// path part of URI
 	optional uint32 index = 6 [default=0];		// identity index
+}
+
+/**
+ * Structure representing policy data
+ * @used_in EnablePolicy
+ * @used_in DisablePolicy
+ */
+message PolicyType {
+	optional string policy_name = 1;	// name of policy
+	optional bool enabled = 2;				// status of policy
 }
