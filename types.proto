@@ -120,11 +120,8 @@ enum ButtonRequestType {
 	ButtonRequest_CreatePin = 26;
 	ButtonRequest_GetEntropy = 27;
 	ButtonRequest_SignMessage = 28;
-<<<<<<< HEAD
 	ButtonRequest_ApplyPolicies = 29;
-=======
-	ButtonRequest_SignExchange = 29;
->>>>>>> 6ae3af54b5542857935ac00f9bec5bd651973614
+	ButtonRequest_SignExchange = 30;
 }
 
 /**
@@ -279,7 +276,6 @@ message IdentityType {
 }
 
 /**
-<<<<<<< HEAD
  * Structure representing policy data
  * @used_in EnablePolicy
  * @used_in DisablePolicy
@@ -288,7 +284,8 @@ message PolicyType {
 	optional string policy_name = 1;	// name of policy
 	optional bool enabled = 2;				// status of policy
 }
-=======
+
+/**
  * Structure representing exchange data
  * @used_in TxOutputType
  */
@@ -299,4 +296,3 @@ message ExchangeType {
 	optional string return_coin_name = 4 [default='Bitcoin'];	// coin to use for return
 	repeated uint32 return_address_n = 5;			    	// BIP-32 path for return address
 }
->>>>>>> 6ae3af54b5542857935ac00f9bec5bd651973614
