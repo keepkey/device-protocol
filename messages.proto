@@ -1,10 +1,7 @@
 /*
  * Messages for KeepKey Communication
  *
- * @trezor_author	Marek Palatinus <slush@satoshilabs.com>
- * @trezor_version	1.2
- * @keepkey_author 	Darin Stanchfield <darin@keepkey.com>
- * @keepkey_version	1.0
+ * @keepkey_version	2.0.0
  */
 
 // Sugar for easier handling in Java

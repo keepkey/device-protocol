@@ -1,8 +1,7 @@
 /*
  * Exchange transaction type for KeepKey Communication
  *
- * @keepkey_author 	Philip Khoo<philip@keepkey.com>
- * @keepkey_version	1.0
+ * @keepkey_version 2.0.0
  */
 
 // Sugar for easier handling in Java
