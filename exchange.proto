@@ -1,0 +1,48 @@
+/*
+ * Exchange transaction type for KeepKey Communication
+ *
+ * @keepkey_author 	Philip Khoo<philip@keepkey.com>
+ * @keepkey_version	1.0
+ */
+
+// Sugar for easier handling in Java
+option java_package = "com.keepkey.device-protocol";
+option java_outer_classname = "KeepKeyExchange";
+
+/**
+ * Structure representing address for various coin types (BTC, LTC, and etc).
+ * @used in ExchangeRequest
+ * @used in ExchangeResponse
+ */
+message ExchangeAddress {
+    optional string address = 1;                // address for resulting coin to be sent to
+    optional string dest_tag = 2;               // (Optional) Destination tag that you want appended to a Ripple payment to you
+    optional string rs_address = 3;             // (Optional) For new NXT accounts to be funded, you supply this on NXT payment to you
+}
+
+/**
+ * Structure representing exchange request
+ * @used in ExchangeResponse
+ */
+message ExchangeRequest {
+    optional uint64 withdrawal_amount = 1;              // amount being withdrawn from exchange
+    optional ExchangeAddress withdrawal_address = 2;    // address to exchanged fund is being sent to
+    optional string withdrawal_coin_type = 3;           // fund type being withdrawn from exchange
+    optional string deposit_coin_type = 4;              // fund type being deposit to exchange
+    optional ExchangeAddress return_address = 5;        // address to return deposit to if anything goes wrong with exchange
+    optional bytes api_key = 6;                         // (Optional) Your affiliate PUBLIC KEY, for volume tracking, 
+                                                        //      affiliate payments, split-shifts, etc...
+}
+
+/**
+ * Structure representing exchange response
+ * @used in ExchangeType
+ */
+message ExchangeResponse {
+    optional ExchangeRequest request = 1 ;          // response from exchange with payment info
+    optional ExchangeAddress deposit_address = 2;   // address to exchange
+    optional uint64 deposit_amount = 3;             // amount being paid to exchange
+    optional uint32 expiration = 4;                 // timestamp when this will expire
+    optional uint32 quoted_rate = 5;                // the exchange rate to be honored 
+    optional bytes signature = 6;                   // signature from originator 
+}
