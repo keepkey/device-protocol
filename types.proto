@@ -272,8 +272,7 @@ message IdentityType {
 
 /**
  * Structure representing policy data
- * @used_in EnablePolicy
- * @used_in DisablePolicy
+ * @used_in ApplyPolicy
  */
 message PolicyType {
 	optional string policy_name = 1;	// name of policy
