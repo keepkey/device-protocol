@@ -31,5 +31,9 @@ message ExchangeResponse {
     optional uint64 withdrawal_amount = 6;
     optional ExchangeAddress return_address = 7;
     optional bytes api_key = 8;
-    optional string signature = 9;
+}
+
+message SignedExchangeResponse {
+    optional ExchangeResponse response = 1;
+    optional string signature = 2;
 }
