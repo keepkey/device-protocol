@@ -31,6 +31,8 @@ message ExchangeResponse {
     optional uint64 withdrawal_amount = 6;
     optional ExchangeAddress return_address = 7;
     optional bytes api_key = 8;
+    optional uint64 miner_fee = 9;
+    optional string order_id = 10;
 }
 
 message SignedExchangeResponse {
