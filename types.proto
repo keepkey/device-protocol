@@ -284,7 +284,7 @@ message PolicyType {
  * @used_in TxOutputType
  */
 message ExchangeType {
-	optional ExchangeResponse response = 1;							// exchange response
+	optional SignedExchangeResponse signed_exchange_response = 1;		        // exchange response
 	optional string deposit_coin_name = 2 [default='Bitcoin'];	// coin to use for deposit
 	optional string deposit_address = 3;			    	// target coin address in Base58 encoding
 	repeated uint32 deposit_address_n = 4;			    	// BIP-32 path for deposit address
