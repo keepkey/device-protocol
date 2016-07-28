@@ -284,7 +284,7 @@ message PolicyType {
  * @used_in TxOutputType
  */
 message ExchangeType {
-	optional ExchangeResponse response = 1;							// exchange response
+	optional SignedExchangeResponse signed_exchange_response = 1;   // exchange response
 	optional string withdrawal_coin_name = 2 [default='Bitcoin'];	// coin type of the received funds
 	repeated uint32 withdrawal_address_n = 3;			    	    // BIP-32 path for received funds
 	repeated uint32 return_address_n = 4;			    	        // BIP-32 path for return address, assumed to be the
