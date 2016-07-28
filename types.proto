@@ -285,9 +285,8 @@ message PolicyType {
  */
 message ExchangeType {
 	optional ExchangeResponse response = 1;							// exchange response
-	optional string deposit_coin_name = 2 [default='Bitcoin'];	// coin to use for deposit
-	optional string deposit_address = 3;			    	// target coin address in Base58 encoding
-	repeated uint32 deposit_address_n = 4;			    	// BIP-32 path for deposit address
-	optional string return_coin_name = 5 [default='Bitcoin'];	// coin to use for return
-	repeated uint32 return_address_n = 6;			    	// BIP-32 path for return address
+	optional string withdrawal_coin_name = 2 [default='Bitcoin'];	// coin type of the received funds
+	repeated uint32 withdrawal_address_n = 3;			    	    // BIP-32 path for received funds
+	repeated uint32 return_address_n = 4;			    	        // BIP-32 path for return address, assumed to be the
+	                                                                // same as the coin_name of the transaction
 }
