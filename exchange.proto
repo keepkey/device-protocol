@@ -25,7 +25,7 @@ message ExchangeAddress {
 message ExchangeResponse {
     optional ExchangeAddress deposit_address = 1;
     optional uint64 deposit_amount = 2;
-    optional uint32 expiration = 3;
+    optional int64  expiration = 3;
     optional uint64 quoted_rate = 4;
     optional ExchangeAddress withdrawal_address = 5;
     optional uint64 withdrawal_amount = 6;
