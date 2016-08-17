@@ -99,7 +99,7 @@ enum ButtonRequestType {
 	ButtonRequest_Address = 10;
 	ButtonRequest_FirmwareErase = 11;
 	ButtonRequest_ConfirmTransferToAccount = 12;
-	ButtonRequest_ConfirmTransferToNodePath = 13;
+	ButtonRequest_ConfirmTransferToNodePath = 13;  /* Deprecated!*/
 	ButtonRequest_ChangeLabel = 14;
 	ButtonRequest_ChangeLanguage = 15;
 	ButtonRequest_EnablePassphrase = 16;
