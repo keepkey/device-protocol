@@ -1,10 +1,7 @@
 /*
  * Storage area of KeepKey
  *
- * @trezor_author	Marek Palatinus <slush@satoshilabs.com>
- * @trezor_version	1.0
- * @keepkey_author 	Darin Stanchfield <darin@keepkey.com>
- * @keepkey_version	1.0
+ * @keepkey_version	2.0.0
  */
 
 // Sugar for easier handling in Java
@@ -26,4 +23,5 @@ message Storage {
 	optional string language = 7;			// current language
 	optional string label = 8;			// device label
 	optional bool imported = 9;			// was storage imported from an external source?
+	repeated PolicyType policies = 10;  		// policies
 }

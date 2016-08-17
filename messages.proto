@@ -1,10 +1,7 @@
 /*
  * Messages for KeepKey Communication
  *
- * @trezor_author	Marek Palatinus <slush@satoshilabs.com>
- * @trezor_version	1.2
- * @keepkey_author 	Darin Stanchfield <darin@keepkey.com>
- * @keepkey_version	1.0
+ * @keepkey_version	2.0.0
  */
 
 // Sugar for easier handling in Java
@@ -69,6 +66,7 @@ enum MessageType {
  	MessageType_CharacterRequest = 80 [(wire_out) = true];
  	MessageType_CharacterAck = 81 [(wire_in) = true];
  	MessageType_RawTxAck = 82 [(wire_in) = true];
+ 	MessageType_ApplyPolicies = 83 [(wire_in) = true];
 	MessageType_DebugLinkDecision = 100 [(wire_debug_in) = true];
 	MessageType_DebugLinkGetState = 101 [(wire_debug_in) = true];
 	MessageType_DebugLinkState = 102 [(wire_debug_out) = true];
@@ -118,6 +116,7 @@ message Features {
 	optional bool imported = 15;			// was storage imported from an external source?
 	optional bool pin_cached = 16;			// is PIN already cached in session?
 	optional bool passphrase_cached = 17;		// is passphrase already cached in session?
+	repeated PolicyType policies = 18;			// policies
 }
 
 /**
@@ -623,6 +622,21 @@ message SignedIdentity {
 	optional string address = 1;			// identity address
 	optional bytes public_key = 2;			// identity public key
 	optional bytes signature = 3;			// signature of the identity data
+}
+
+/////////////////////
+// Policy messages //
+/////////////////////
+
+/**
+ * Request: Ask device to apply policy
+ * @next Success
+ * @next Failure
+ * @next ButtonRequest
+ * @next PinMatrixRequest
+ */
+message ApplyPolicies {
+	repeated PolicyType policy = 1;		// policy
 }
 
 /////////////////////////

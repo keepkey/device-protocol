@@ -1,10 +1,7 @@
 /*
  * Types for KeepKey Communication
  *
- * @trezor_author	Marek Palatinus <slush@satoshilabs.com>
- * @trezor_version	1.2
- * @keepkey_author 	Darin Stanchfield <darin@keepkey.com>
- * @keepkey_version	1.0
+ * @keepkey_version	2.0.0
  */
 
 // Sugar for easier handling in Java
@@ -12,6 +9,7 @@ option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyType";
 
 import "google/protobuf/descriptor.proto";
+import "exchange.proto";
 
 /**
  * Options for specifying message direction and type of wire (normal/debug)
@@ -79,8 +77,9 @@ enum RequestType {
  */
 enum OutputAddressType {
   SPEND = 0;
-	TRANSFER = 1;
-	CHANGE = 2;
+  TRANSFER = 1;
+  CHANGE = 2;
+  EXCHANGE = 3;
 }
 
 /**
@@ -116,6 +115,8 @@ enum ButtonRequestType {
 	ButtonRequest_CreatePin = 26;
 	ButtonRequest_GetEntropy = 27;
 	ButtonRequest_SignMessage = 28;
+	ButtonRequest_ApplyPolicies = 29;
+	ButtonRequest_SignExchange = 30;
 }
 
 /**
@@ -163,6 +164,7 @@ message CoinType {
 	optional uint32 address_type_p2wpkh = 6 [default=6];
 	optional uint32 address_type_p2wsh = 7 [default=10];
 	optional string signed_message_header = 8;
+	optional uint32 bip44_account_path = 9;
 }
 
 /**
@@ -196,13 +198,14 @@ message TxInputType {
  * @used_in TransactionType
  */
 message TxOutputType {
-	optional string address = 1;			// target coin address in Base58 encoding
-	repeated uint32 address_n = 2;			// BIP-32 path to derive the key from master node; has higher priority than "address"
-	required uint64 amount = 3;			// amount to spend in satoshis
-	required OutputScriptType script_type = 4;	// output script type
+	optional string address = 1;			    	// target coin address in Base58 encoding
+	repeated uint32 address_n = 2;			    	// BIP-32 path to derive the key from master node; has higher priority than "address"
+	required uint64 amount = 3;			        	// amount to spend in satoshis
+	required OutputScriptType script_type = 4;		// output script type
 	optional MultisigRedeemScriptType multisig = 5; // defines multisig address; script_type must be PAYTOMULTISIG
-	optional bytes op_return_data = 6;		// defines op_return data; script_type must be PAYTOOPRETURN, amount must be 0
-	optional OutputAddressType address_type = 7;       // output address type specify in the output
+	optional bytes op_return_data = 6;		    	// defines op_return data; script_type must be PAYTOOPRETURN, amount must be 0
+	optional OutputAddressType address_type = 7;	// output address type specify in the output
+	optional ExchangeType exchange_type = 8;		// exchange type data        
 }
 
 /**
@@ -266,4 +269,25 @@ message IdentityType {
 	optional string port = 4;			// port part of URI
 	optional string path = 5;			// path part of URI
 	optional uint32 index = 6 [default=0];		// identity index
+}
+
+/**
+ * Structure representing policy data
+ * @used_in ApplyPolicy
+ */
+message PolicyType {
+	optional string policy_name = 1;	// name of policy
+	optional bool enabled = 2;				// status of policy
+}
+
+/**
+ * Structure representing exchange data
+ * @used_in TxOutputType
+ */
+message ExchangeType {
+	optional SignedExchangeResponse signed_exchange_response = 1;   // exchange response
+	optional string withdrawal_coin_name = 2 [default='Bitcoin'];	// coin type of the received funds
+	repeated uint32 withdrawal_address_n = 3;			    	    // BIP-32 path for received funds
+	repeated uint32 return_address_n = 4;			    	        // BIP-32 path for return address, assumed to be the
+	                                                                // same as the coin_name of the transaction
 }
