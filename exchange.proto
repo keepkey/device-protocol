@@ -20,7 +20,29 @@ message ExchangeAddress {
 }
 
 /**
- * Structure representing exchange response
+ * Structure representing exchange response version 2
+ */
+message ExchangeResponseV2 {
+    optional ExchangeAddress deposit_address = 1;
+    optional bytes deposit_amount = 2;
+    optional int64  expiration = 3;
+    optional bytes quoted_rate = 4;
+    optional ExchangeAddress withdrawal_address = 5;
+    optional bytes withdrawal_amount = 6;
+    optional ExchangeAddress return_address = 7;
+    optional bytes api_key = 8;
+    optional bytes miner_fee = 9;
+    optional bytes order_id = 10;
+}
+
+message SignedExchangeResponse {
+    optional ExchangeResponse response = 1; /* deprecated - latest firmware version throws error if this field is used */
+    optional bytes signature = 2;
+    optional ExchangeResponseV2 responseV2 = 3;
+}
+
+/**
+ * Structure representing exchange response version 1 (deprecated)
  */
 message ExchangeResponse {
     optional ExchangeAddress deposit_address = 1;
@@ -33,9 +55,4 @@ message ExchangeResponse {
     optional bytes api_key = 8;
     optional uint64 miner_fee = 9;
     optional bytes order_id = 10;
-}
-
-message SignedExchangeResponse {
-    optional ExchangeResponse response = 1;
-    optional bytes signature = 2;
 }
