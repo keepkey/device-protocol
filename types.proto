@@ -204,7 +204,7 @@ message TxOutputType {
 	required OutputScriptType script_type = 4;		// output script type
 	optional MultisigRedeemScriptType multisig = 5; // defines multisig address; script_type must be PAYTOMULTISIG
 	optional bytes op_return_data = 6;		    	// defines op_return data; script_type must be PAYTOOPRETURN, amount must be 0
-	optional OutputAddressType address_type = 7;	// output address type specify in the output
+	optional OutputAddressType address_type = 7;	// output address type 
 	optional ExchangeType exchange_type = 8;		// exchange type data        
 }
 
