@@ -644,8 +644,9 @@ message EthereumSignTx {
 	optional bytes value = 6;			// <=256 bit unsigned big endian (in wei)
 	optional bytes data_initial_chunk = 7;		// The initial data chunk (<= 1024 bytes)
 	optional uint32 data_length = 8;		// Length of transaction payload
-	optional OutputAddressType address_type = 9;	// output address type 
-	optional ExchangeType exchange_type = 10;	// exchange type data        
+	repeated uint32 to_address_n = 9;               // BIP-32 path to derive key for fund transfer
+	optional OutputAddressType address_type = 10;	// output address type 
+	optional ExchangeType exchange_type = 11;	// exchange type data        
 }
 
 /**
