@@ -22,7 +22,7 @@ message ExchangeAddress {
 /**
  * Structure representing exchange response version 2
  */
-message ExchangeResponse {
+message ExchangeResponseV2 {
     optional ExchangeAddress deposit_address = 1;
     optional bytes deposit_amount = 2;
     optional int64  expiration = 3;
@@ -36,15 +36,15 @@ message ExchangeResponse {
 }
 
 message SignedExchangeResponse {
-    optional ExchangeResponseV1 responseV1 = 1; /* deprecated - latest firmware version throws error if this field is used */
+    optional ExchangeResponse response = 1; /* deprecated - latest firmware version throws error if this field is used */
     optional bytes signature = 2;
-    optional ExchangeResponse response = 3;
+    optional ExchangeResponseV2 responseV2 = 3;
 }
 
 /**
  * Structure representing exchange response version 1 (deprecated)
  */
-message ExchangeResponseV1 {
+message ExchangeResponse {
     optional ExchangeAddress deposit_address = 1;
     optional uint64 deposit_amount = 2;
     optional int64  expiration = 3;
