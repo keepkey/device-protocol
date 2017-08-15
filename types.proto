@@ -4,6 +4,7 @@
  * @keepkey_version	2.0.0
  */
 
+syntax = "proto2";
 // Sugar for easier handling in Java
 option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyType";
@@ -171,6 +172,8 @@ message CoinType {
 	optional uint32 address_type_p2wsh = 7 [default=10];
 	optional string signed_message_header = 8;
 	optional uint32 bip44_account_path = 9;
+	optional bool segwit = 10;
+	optional uint32 forkid = 11;
 }
 
 /**
