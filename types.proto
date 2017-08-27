@@ -171,6 +171,7 @@ message CoinType {
 	optional uint32 address_type_p2wsh = 7 [default=10];
 	optional string signed_message_header = 8;
 	optional uint32 bip44_account_path = 9;
+	optional uint32 forkid = 12;
 }
 
 /**
