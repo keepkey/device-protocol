@@ -650,9 +650,9 @@ message EthereumSignTx {
 	optional OutputAddressType address_type = 10;	// output address type 
 	optional ExchangeType exchange_type = 11;	// exchange type data        
 	optional uint32 chain_id = 12;			// Chain Id for EIP 155
-	optional uint32 token_value = 13;		// How many tokens to send
-	optional bytes  token_to = 14;			// 160 bit address hash to send tokens to
-	optional string token_shortcut = 15; 		// 3 or 4 character token identifier
+	optional bytes token_value = 100;		// How many tokens to send
+	optional bytes  token_to = 101;			// 160 bit address hash to send tokens to
+	optional string token_shortcut = 102; 		// 3 or 4 character token identifier
 }
 
 /**
