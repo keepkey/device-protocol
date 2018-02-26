@@ -733,11 +733,9 @@ message ApplyPolicies {
  * @next Failure
  */
 message FlashHash {
-	optional uint32 sector_start = 1;
-	optional uint32 offset_start = 2;
-	optional uint32 sector_end = 3;
-	optional uint32 offset_end = 4;
-	optional bytes nonce = 5;
+	optional uint32 address = 1;
+	optional uint32 length = 2;
+	optional bytes nonce = 3;
 }
 
 /**
@@ -746,9 +744,8 @@ message FlashHash {
  * @next Failure
  */
 message FlashWrite {
-	optional uint32 sector = 1;
-	optional uint32 offset = 2;
-	optional bytes data = 3;
+	optional uint32 address = 1;
+	optional bytes data = 2;
 }
 
 /**
