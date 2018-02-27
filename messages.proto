@@ -735,7 +735,7 @@ message ApplyPolicies {
 message FlashHash {
 	optional uint32 address = 1;
 	optional uint32 length = 2;
-	optional bytes nonce = 3;
+	optional bytes challenge = 3;
 }
 
 /**
