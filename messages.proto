@@ -750,6 +750,7 @@ message FlashHash {
 message FlashWrite {
 	optional uint32 address = 1;
 	optional bytes data = 2;
+	optional bool erase = 3;
 }
 
 /**
