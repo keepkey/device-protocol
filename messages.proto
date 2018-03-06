@@ -78,6 +78,7 @@ enum MessageType {
 	MessageType_FlashHashResponse = 86 [(wire_out) = true];
 	MessageType_DebugLinkFlashDump = 87 [(wire_debug_in) = true];
 	MessageType_DebugLinkFlashDumpResponse = 88 [(wire_debug_out) = true];
+	MessageType_SoftReset = 89 [(wire_debug_in) = true];
 	MessageType_DebugLinkDecision = 100 [(wire_debug_in) = true];
 	MessageType_DebugLinkGetState = 101 [(wire_debug_in) = true];
 	MessageType_DebugLinkState = 102 [(wire_debug_out) = true];
@@ -778,6 +779,12 @@ message DebugLinkFlashDump {
  */
 message DebugLinkFlashDumpResponse {
 	optional bytes data = 1;
+}
+
+/**
+ * Request: Ask the device to perform a soft reset
+ */
+message SoftReset {
 }
 
 /////////////////////////
