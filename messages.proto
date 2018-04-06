@@ -122,6 +122,7 @@ message Features {
 	optional bool passphrase_cached = 17;		// is passphrase already cached in session?
 	repeated PolicyType policies = 18;			// policies
 	optional string model = 21;			// device hardware model
+	optional string firmware_variant = 22; // Firmware variant
 }
 
 /**
