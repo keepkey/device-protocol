@@ -85,6 +85,7 @@ enum MessageType {
 	MessageType_DebugLinkStop = 103 [(wire_debug_in) = true];
 	MessageType_DebugLinkLog = 104 [(wire_debug_out) = true];
 	MessageType_DebugLinkFillConfig = 105 [(wire_debug_out) = true];
+	MessageType_DebugLinkScreenDump = 106 [(wire_debug_out) = true];
 }
 
 ////////////////////
@@ -870,3 +871,13 @@ message DebugLinkLog {
  */
 message DebugLinkFillConfig {
 }
+
+/**
+ * Response: Device sending screen state
+ */
+message DebugLinkScreenDump {
+	optional bytes screen = 1;
+}
+
+
+
