@@ -179,13 +179,6 @@ message CoinType {
 }
 
 /**
- * Message representing all the coins/tokens supported by the device
- */
-message CoinTable {
-	repeated CoinType table = 1;
-}
-
-/**
  * Type of redeem script used in input
  * @used_in TxInputType
  */

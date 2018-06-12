@@ -85,6 +85,8 @@ enum MessageType {
 	MessageType_DebugLinkStop = 103 [(wire_debug_in) = true];
 	MessageType_DebugLinkLog = 104 [(wire_debug_out) = true];
 	MessageType_DebugLinkFillConfig = 105 [(wire_debug_out) = true];
+	MessageType_GetCoinTable = 106 [(wire_in) = true];
+	MessageType_CoinTable = 107 [(wire_out) = true];
 }
 
 ////////////////////
@@ -121,7 +123,7 @@ message Features {
 	optional bool passphrase_protection = 8;	// is node/mnemonic encrypted using passphrase?
 	optional string language = 9;			// device language
 	optional string label = 10;			// device description label
-	repeated CoinType coins = 11;			// supported coins
+	// repeated CoinType coins = 11;			// REMOVED
 	optional bool initialized = 12;			// does device contain seed?
 	optional bytes revision = 13;			// SCM revision of firmware
 	optional bytes bootloader_hash = 14;		// double sha256 hash of the bootloader
@@ -132,6 +134,25 @@ message Features {
 	optional string model = 21;			// device hardware model
 	optional string firmware_variant = 22; // Firmware variant
 	optional bytes firmware_hash = 23;		// double sha256 hash of the firmware
+}
+
+/**
+ * Request: Ask the device for its list of supported coins
+ * @next CoinTable
+ */
+message GetCoinTable {
+	optional uint32 start = 1;
+	optional uint32 end = 2;
+}
+
+/**
+ * Response: A subset of the supported coins
+ * @prev GetCoinTable
+ */
+message CoinTable {
+	repeated CoinType table = 1;
+	optional uint32 num_coins = 2;
+	optional uint32 chunk_size = 3;
 }
 
 /**
