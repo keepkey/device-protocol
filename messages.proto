@@ -116,13 +116,14 @@ message Features {
 	repeated CoinType coins = 11;			// supported coins
 	optional bool initialized = 12;			// does device contain seed?
 	optional bytes revision = 13;			// SCM revision of firmware
-	optional bytes bootloader_hash = 14;		// hash of the bootloader
+	optional bytes bootloader_hash = 14;		// double sha256 hash of the bootloader
 	optional bool imported = 15;			// was storage imported from an external source?
 	optional bool pin_cached = 16;			// is PIN already cached in session?
 	optional bool passphrase_cached = 17;		// is passphrase already cached in session?
 	repeated PolicyType policies = 18;			// policies
 	optional string model = 21;			// device hardware model
 	optional string firmware_variant = 22; // Firmware variant
+	optional bytes firmware_hash = 23;		// double sha256 hash of the firmware
 }
 
 /**
