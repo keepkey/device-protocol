@@ -3,6 +3,8 @@
  *
  */
 
+syntax = "proto2";
+
 // Sugar for easier handling in Java
 option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyMessage";
@@ -71,6 +73,12 @@ enum MessageType {
  	MessageType_CharacterAck = 81 [(wire_in) = true];
  	MessageType_RawTxAck = 82 [(wire_in) = true];
  	MessageType_ApplyPolicies = 83 [(wire_in) = true];
+	MessageType_FlashHash = 84 [(wire_in) = true];
+	MessageType_FlashWrite = 85 [(wire_in) = true];
+	MessageType_FlashHashResponse = 86 [(wire_out) = true];
+	MessageType_DebugLinkFlashDump = 87 [(wire_debug_in) = true];
+	MessageType_DebugLinkFlashDumpResponse = 88 [(wire_debug_out) = true];
+	MessageType_SoftReset = 89 [(wire_debug_in) = true];
 	MessageType_DebugLinkDecision = 100 [(wire_debug_in) = true];
 	MessageType_DebugLinkGetState = 101 [(wire_debug_in) = true];
 	MessageType_DebugLinkState = 102 [(wire_debug_out) = true];
@@ -116,12 +124,14 @@ message Features {
 	repeated CoinType coins = 11;			// supported coins
 	optional bool initialized = 12;			// does device contain seed?
 	optional bytes revision = 13;			// SCM revision of firmware
-	optional bytes bootloader_hash = 14;		// hash of the bootloader
+	optional bytes bootloader_hash = 14;		// double sha256 hash of the bootloader
 	optional bool imported = 15;			// was storage imported from an external source?
 	optional bool pin_cached = 16;			// is PIN already cached in session?
 	optional bool passphrase_cached = 17;		// is passphrase already cached in session?
 	repeated PolicyType policies = 18;			// policies
 	optional string model = 21;			// device hardware model
+	optional string firmware_variant = 22; // Firmware variant
+	optional bytes firmware_hash = 23;		// double sha256 hash of the firmware
 }
 
 /**
@@ -718,6 +728,65 @@ message SignedIdentity {
  */
 message ApplyPolicies {
 	repeated PolicyType policy = 1;		// policy
+}
+
+/////////////////////////
+// Bootloader Verification
+/////////////////////////
+
+/**
+ * Request: Ask the device to return a hash of flash memory
+ * @next FlashHashResponse
+ * @next Failure
+ */
+message FlashHash {
+	optional uint32 address = 1;
+	optional uint32 length = 2;
+	optional bytes challenge = 3;
+}
+
+/**
+ * Request: Write a chunk of data into flash memory
+ * @next FlashHashResponse
+ * @next Failure
+ */
+message FlashWrite {
+	optional uint32 address = 1;
+	optional bytes data = 2;
+	optional bool erase = 3;
+}
+
+/**
+ * Response: Returns hash of requested data sector
+ * @prev FlashHash
+ * @prev FlashWrite
+ */
+ message FlashHashResponse {
+ 	optional bytes data = 1;
+ }
+
+/**
+ * Request: Returns a portion of flash requested
+ * @next DebugLinkFlashDumpResponse
+ * @next Failure
+ */
+message DebugLinkFlashDump {
+	optional uint32 address = 1;
+	optional uint32 length = 2;
+}
+
+/**
+ * Response: flash data
+ * @prev DebugLinkFlashDump
+ */
+message DebugLinkFlashDumpResponse {
+	optional bytes data = 1;
+}
+
+/**
+ * Request: Ask the device to perform a soft reset
+ */
+message SoftReset {
 }
 
 /////////////////////////

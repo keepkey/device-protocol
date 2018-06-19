@@ -3,6 +3,8 @@
  *
  */
 
+syntax = "proto2";
+
 // Sugar for easier handling in Java
 option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyType";
@@ -174,6 +176,13 @@ message CoinType {
 	optional uint32 decimals = 13;
 	optional bytes contract_address = 14;
 	optional bytes gas_limit = 15;
+}
+
+/**
+ * Message representing all the coins/tokens supported by the device
+ */
+message CoinTable {
+	repeated CoinType table = 1;
 }
 
 /**
