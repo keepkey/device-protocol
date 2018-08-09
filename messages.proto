@@ -79,6 +79,7 @@ enum MessageType {
 	MessageType_DebugLinkFlashDump = 87 [(wire_debug_in) = true];
 	MessageType_DebugLinkFlashDumpResponse = 88 [(wire_debug_out) = true];
 	MessageType_SoftReset = 89 [(wire_debug_in) = true];
+	MessageType_DebugLinkInfo = 90 [(wire_debug_out) = true];
 	MessageType_DebugLinkDecision = 100 [(wire_debug_in) = true];
 	MessageType_DebugLinkGetState = 101 [(wire_debug_in) = true];
 	MessageType_DebugLinkState = 102 [(wire_debug_out) = true];
@@ -891,4 +892,11 @@ message DebugLinkLog {
  * Request: Ask device to fill config area with sample data (used for testing firmware upload)
  */
 message DebugLinkFillConfig {
+}
+
+/**
+* Response: Device sending Info logging that should be consumed passively
+*/
+message DebugLinkInfo {
+	optional string msg = 1;
 }
