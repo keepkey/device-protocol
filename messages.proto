@@ -692,6 +692,7 @@ message EthereumSignTx {
 	optional bytes token_value = 100;		// How many tokens to send
 	optional bytes  token_to = 101;			// 160 bit address hash to send tokens to
 	optional string token_shortcut = 102; 		// 3 or 4 character token identifier
+	optional uint32 tx_type = 103;		// (only for Wanchain)
 }
 
 /**
