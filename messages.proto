@@ -87,6 +87,9 @@ enum MessageType {
 	MessageType_DebugLinkFillConfig = 105 [(wire_debug_out) = true];
 	MessageType_GetCoinTable = 106 [(wire_in) = true];
 	MessageType_CoinTable = 107 [(wire_out) = true];
+	MessageType_EthereumSignMessage = 108 [(wire_in) = true];
+	MessageType_EthereumVerifyMessage = 109 [(wire_in) = true];
+	MessageType_EthereumMessageSignature = 110 [(wire_out) = true];
 }
 
 ////////////////////
@@ -714,6 +717,40 @@ message EthereumTxRequest {
  */
 message EthereumTxAck {
 	optional bytes data_chunk = 1;			// Bytes from transaction payload (<= 1024 bytes)
+}
+
+////////////////////////////////////////
+// Ethereum: Message signing messages //
+////////////////////////////////////////
+
+/**
+ * Request: Ask device to sign message
+ * @next EthereumMessageSignature
+ * @next Failure
+ */
+message EthereumSignMessage {
+	repeated uint32 address_n = 1;				// BIP-32 path to derive the key from master node
+	required bytes message = 2;				// message to be signed
+}
+
+/**
+ * Request: Ask device to verify message
+ * @next Success
+ * @next Failure
+ */
+message EthereumVerifyMessage {
+	optional bytes address = 1;				// address to verify
+	optional bytes signature = 2;				// signature to verify
+	optional bytes message = 3;				// message to verify
+}
+
+/**
+ * Response: Signed message
+ * @prev EthereumSignMessage
+ */
+message EthereumMessageSignature {
+	optional bytes address = 1;				// address used to sign the message
+	optional bytes signature = 2;				// signature of the message
 }
 
 ///////////////////////
