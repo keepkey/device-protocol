@@ -297,6 +297,7 @@ message GetPublicKey {
 	repeated uint32 address_n = 1;		// BIP-32 path to derive the key from master node
 	optional string ecdsa_curve_name = 2;	// ECDSA curve name to use
 	optional bool show_display = 3;		// optionally show on display before sending the result
+	optional string coin_name = 4 [default='Bitcoin'];
 }
 
 /**
@@ -315,11 +316,11 @@ message PublicKey {
  * @next Failure
  */
 message GetAddress {
-	repeated uint32 address_n = 1;			// BIP-32 path to derive the key from master node
+	repeated uint32 address_n = 1;						// BIP-32 path to derive the key from master node
 	optional string coin_name = 2 [default='Bitcoin'];
-	optional bool show_display = 3;			// optionally show on display before sending the result
-	optional MultisigRedeemScriptType multisig = 4;	// Filled if we are showing a multisig address
-	optional InputScriptType script_type = 5 [default=SPENDADDRESS];	// Used to distinguish segwit addresses
+	optional bool show_display = 3			;			// optionally show on display before sending the result
+	optional MultisigRedeemScriptType multisig = 4;				// filled if we are showing a multisig address
+	optional InputScriptType script_type = 5 [default=SPENDADDRESS];	// used to distinguish between various address formats (non-segwit, segwit, etc.)
 }
 
 /**
@@ -471,9 +472,10 @@ message CharacterAck {
  * @next Failure
  */
 message SignMessage {
-	repeated uint32 address_n = 1;				// BIP-32 path to derive the key from master node
-	required bytes message = 2;				// message to be signed
-	optional string coin_name = 3 [default='Bitcoin'];	// coin to use for signing
+	repeated uint32 address_n = 1;						// BIP-32 path to derive the key from master node
+	required bytes message = 2;						// message to be signed
+	optional string coin_name = 3 [default='Bitcoin'];			// coin to use for signing
+	optional InputScriptType script_type = 4 [default=SPENDADDRESS];	// used to distinguish between various address formats (non-segwit, segwit, etc.)
 }
 
 /**
@@ -573,7 +575,7 @@ message CipheredKeyValue {
 //////////////////////////////////
 
 /**
- * Request:  Estimated size of the transaction
+ * Request: Estimated size of the transaction
  * This behaves exactly like SignTx, which means that it can ask using TxRequest
  * This call is non-blocking (except possible PassphraseRequest to unlock the seed)
  * @next TxSize
