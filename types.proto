@@ -184,6 +184,8 @@ message CoinType {
 	optional string curve_name = 20;
 	optional string cashaddr_prefix = 21;
 	optional string bech32_prefix = 22;
+	optional bool decred = 23;
+	optional uint32 version_group_id = 24;
 }
 
 /**
@@ -255,7 +257,8 @@ message TransactionType {
 	optional uint32 outputs_cnt = 7;
 	optional bytes extra_data = 8;
 	optional uint32 extra_data_len = 9;
-	optional uint32 decred_expiry = 10;
+	optional uint32 expiry = 10;
+	optional bool overwintered = 11;
 }
 
 /**
