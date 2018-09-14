@@ -186,6 +186,8 @@ message CoinType {
 	optional string bech32_prefix = 22;
 	optional bool decred = 23;
 	optional uint32 version_group_id = 24;
+	optional uint32 xpub_magic_segwit_p2sh = 25;
+	optional uint32 xpub_magic_segwit_native = 26;
 }
 
 /**
