@@ -177,6 +177,7 @@ message ApplySettings {
 	optional string label = 2;
 	optional bool use_passphrase = 3;
 	optional uint32 auto_lock_delay_ms = 4;
+	optional uint32 u2f_counter = 5;
 }
 
 /**
@@ -376,6 +377,7 @@ message LoadDevice {
 	optional string language = 5 [default='english'];	// device language
 	optional string label = 6;				// device label
 	optional bool skip_checksum = 7;			// do not test mnemonic for valid BIP-39 checksum
+	optional uint32 u2f_counter = 8;			// U2F Counter
 }
 
 /**
