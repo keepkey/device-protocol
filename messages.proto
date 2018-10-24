@@ -621,15 +621,9 @@ message SignTx {
 	optional bool overwintered = 7;					// only for Zcash
 }
 
-/**
- * Request: Simplified transaction signing
- * This method doesn't support streaming, so there are hardware limits in number of inputs and outputs.
- * In case of success, the result is returned using TxRequest message.
- * @next PassphraseRequest
- * @next PinMatrixRequest
- * @next TxRequest
- * @next Failure
- */
+/*
+DEPRECATED. Removed from firmware.
+*/
 message SimpleSignTx {
 	repeated TxInputType inputs = 1;			// transaction inputs
 	repeated TxOutputType outputs = 2;			// transaction outputs
