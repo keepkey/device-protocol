@@ -125,6 +125,8 @@ enum ButtonRequestType {
 	ButtonRequest_SignMessage = 28;
 	ButtonRequest_ApplyPolicies = 29;
 	ButtonRequest_SignExchange = 30;
+	ButtonRequest_AutoLockDelayMs = 31;
+	ButtonRequest_U2FCounter = 32;
 }
 
 /**
