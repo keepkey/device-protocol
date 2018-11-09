@@ -108,8 +108,8 @@ message EosActionCommon {
 * Structure representing transfer data structure
 */
 message EosActionTransfer {
-    optional uint64 from = 1;             // Asset sender
-    optional uint64 to = 2;
+    optional uint64 payer = 1;             // Asset sender
+    optional uint64 receiver = 2;
     optional EosAsset quantity = 3;
     optional string memo = 4;
 }
@@ -118,7 +118,7 @@ message EosActionTransfer {
 * Structure representing delegation data structure
 */
 message EosActionDelegate {
-    optional uint64 from = 1;
+    optional uint64 payer = 1;
     optional uint64 receiver = 2;
     optional EosAsset net_quantity = 3;    // Asset format '1.0000 EOS'
     optional EosAsset cpu_quantity = 4;    // Asset format '1.0000 EOS'
@@ -126,10 +126,10 @@ message EosActionDelegate {
 }
 
 /**
-* Structure representing the removal of delegated resources from `from`
+* Structure representing the removal of delegated resources from `payer`
 */
 message EosActionUndelegate {
-    optional uint64 from = 1;
+    optional uint64 payer = 1;
     optional uint64 receiver = 2;
     optional EosAsset net_quantity = 3;   // Asset format '1.0000 EOS'
     optional EosAsset cpu_quantity = 4;   // Asset format '1.0000 EOS'
