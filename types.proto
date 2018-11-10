@@ -128,7 +128,7 @@ enum ButtonRequestType {
 	ButtonRequest_AutoLockDelayMs = 31;
 	ButtonRequest_U2FCounter = 32;
 	ButtonRequest_ConfirmEosAction = 33;
-	ButtonRequest_ConfirmEosUsage = 34;
+	ButtonRequest_ConfirmEosBudget = 34;
 }
 
 /**
