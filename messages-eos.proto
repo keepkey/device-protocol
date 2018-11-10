@@ -2,7 +2,7 @@ syntax = "proto2";
 
 // Sugar for easier handling in Java
 option java_package = "com.shapeshift.keepkey.lib.protobuf";
-option java_outer_classname = "TrezorMessageEos";
+option java_outer_classname = "KeepKeyMessageEos";
 
 enum EosPublicKeyKind {
     EOS = 0;
@@ -28,6 +28,7 @@ message EosGetPublicKey {
  */
 message EosPublicKey {
     optional string public_key = 1;     // EOS pub key in Base58 encoding
+    optional bytes raw_public_key = 2;      // Raw public key
 }
 
 /**
@@ -40,7 +41,7 @@ message EosPublicKey {
     repeated uint32 address_n = 1;                // BIP-32 path to derive the key from master node 44'/194'/0'
     optional bytes chain_id = 2;                  // 256-bit long chain id
     optional EosTxHeader header = 3;              // EOS transaction header
-    optional uint32 num_actions = 4;              // number of actions 
+    optional uint32 num_actions = 4;              // number of actions
 }
 
 /**
@@ -73,10 +74,18 @@ message EosTxActionAck {
     optional EosActionTransfer transfer = 2;
     optional EosActionDelegate delegate = 3;
     optional EosActionUndelegate undelegate = 4;
-    optional EosActionBuyRam buy_ram = 5;
-    optional EosActionBuyRamBytes buy_ram_bytes = 6;
-    optional EosActionSellRam sell_ram = 7;
-    optional EosActionVoteProducer vote_producer = 8;
+    optional EosActionRefund refund = 5;
+    optional EosActionBuyRam buy_ram = 6;
+    optional EosActionBuyRamBytes buy_ram_bytes = 7;
+    optional EosActionSellRam sell_ram = 8;
+    optional EosActionVoteProducer vote_producer = 9;
+    optional EosActionUpdateAuth update_auth = 10;
+    optional EosActionDeleteAuth delete_auth = 11;
+    optional EosActionLinkAuth link_auth = 12;
+    optional EosActionUnlinkAuth unlink_auth = 13;
+    optional EosActionNewAccount new_account = 14;
+    optional EosActionUnknown unknown = 15;
+
 }
 
 /**
@@ -84,7 +93,7 @@ message EosTxActionAck {
 */
 message EosAsset {
     optional sint64 amount = 1;
-    optional uint64 symbol = 2;           // First 8-bits used for precission.    
+    optional uint64 symbol = 2;           // First 8-bits used for precission.
 }
 
 /**
@@ -93,6 +102,41 @@ message EosAsset {
 message EosPermissionLevel {
     optional uint64 actor = 1;
     optional uint64 permission = 2;
+}
+
+/**
+* Structure representing auth key
+*/
+message EosAuthorizationKey {
+    optional uint32 type  = 1;
+    optional bytes key = 2;
+    optional uint32 weight = 3;
+}
+
+/**
+* Structure representing auth account
+*/
+message EosAuthorizationAccount {
+    optional EosPermissionLevel account = 1;
+    optional uint32 weight = 2;
+}
+
+/**
+* Structure representing auth delays
+*/
+message EosAuthorizationWait {
+    optional uint32 wait_sec = 1;
+    optional uint32 weight = 2;
+}
+
+/**
+* Structure representing authorization settings
+*/
+message EosAuthorization {
+    optional uint32 threshold = 1;
+    repeated EosAuthorizationKey keys = 2;
+    repeated EosAuthorizationAccount accounts = 3;
+    repeated EosAuthorizationWait waits = 4;
 }
 
 /**
@@ -108,7 +152,7 @@ message EosActionCommon {
 * Structure representing transfer data structure
 */
 message EosActionTransfer {
-    optional uint64 payer = 1;             // Asset sender
+    optional uint64 sender = 1;             // Asset sender
     optional uint64 receiver = 2;
     optional EosAsset quantity = 3;
     optional string memo = 4;
@@ -118,7 +162,7 @@ message EosActionTransfer {
 * Structure representing delegation data structure
 */
 message EosActionDelegate {
-    optional uint64 payer = 1;
+    optional uint64 sender = 1;
     optional uint64 receiver = 2;
     optional EosAsset net_quantity = 3;    // Asset format '1.0000 EOS'
     optional EosAsset cpu_quantity = 4;    // Asset format '1.0000 EOS'
@@ -129,22 +173,29 @@ message EosActionDelegate {
 * Structure representing the removal of delegated resources from `payer`
 */
 message EosActionUndelegate {
-    optional uint64 payer = 1;
+    optional uint64 sender = 1;
     optional uint64 receiver = 2;
     optional EosAsset net_quantity = 3;   // Asset format '1.0000 EOS'
     optional EosAsset cpu_quantity = 4;   // Asset format '1.0000 EOS'
 }
 
 /**
+* Structure representing fallbalck if undelegate wasnt executed automaticaly.
+*/
+message EosActionRefund {
+    optional uint64 owner = 1;
+}
+
+/**
 * Structure representing buying RAM operation for EOS tokens
 */
-message EosActionBuyRam {        
+message EosActionBuyRam {
     optional uint64 payer = 1;
     optional uint64 receiver = 2;
     optional EosAsset quantity = 3;   // Asset format '1.0000 EOS'
 }
 
-/** 
+/**
 * Structure representing buying bytes according to RAM market price.
 */
 message EosActionBuyRamBytes {
@@ -153,7 +204,7 @@ message EosActionBuyRamBytes {
     optional uint32 bytes = 3;       // Number of bytes
 }
 
-/** 
+/**
 * Structure representing sell RAM
 */
 message EosActionSellRam {
@@ -161,13 +212,67 @@ message EosActionSellRam {
     optional sint64 bytes = 2;       // Number of bytes
 }
 
-/** 
+/**
 * Structure representing voting. Currently, there could be up to 30 producers.
 */
 message EosActionVoteProducer {
     optional uint64 voter = 1;       // Voter account
     optional uint64 proxy = 2;       // Proxy voter account
     repeated uint64 producers = 3;   // List of producers
+}
+
+/**
+* Structure representing update authorization.
+*/
+message EosActionUpdateAuth {
+    optional uint64 account = 1;
+    optional uint64 permission = 2;
+    optional uint64 parent = 3;
+    optional EosAuthorization auth = 4;
+}
+
+/**
+* Structure representing delete authorization.
+*/
+message EosActionDeleteAuth {
+    optional uint64 account = 1;
+    optional uint64 permission = 2;
+}
+
+/**
+* Structure representing link authorization to action.
+*/
+message EosActionLinkAuth {
+    optional uint64 account = 1;
+    optional uint64 code = 2;
+    optional uint64 type = 3;
+    optional uint64 requirement = 4;
+}
+
+/**
+* Structure representing unlink authorization from action.
+*/
+message EosActionUnlinkAuth {
+    optional uint64 account = 1;
+    optional uint64 code = 2;
+    optional uint64 type = 3;
+}
+
+/**
+* Structure representing creation of a new account.
+*/
+message EosActionNewAccount {
+    optional uint64 creator = 1;
+    optional uint64 name = 2;
+    optional EosAuthorization owner = 3;
+    optional EosAuthorization active = 4;
+}
+
+/**
+* Structure representing actions not implemented above.
+*/
+message EosActionUnknown {
+    optional bytes data = 1;
 }
 
 /**
