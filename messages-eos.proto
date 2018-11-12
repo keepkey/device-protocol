@@ -27,7 +27,7 @@ message EosGetPublicKey {
  * @end
  */
 message EosPublicKey {
-    optional string public_key = 1;     // EOS pub key in Base58 encoding
+    optional string wif_public_key = 1;     // EOS pub key in Base58 encoding
     optional bytes raw_public_key = 2;      // Raw public key
 }
 
