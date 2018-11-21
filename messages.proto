@@ -428,6 +428,8 @@ message RecoveryDevice {
 	optional bool enforce_wordlist = 6;			// enforce BIP-39 wordlist during the process
 	optional bool use_character_cipher = 7;			// an optional way to input recovery sentence by character using a cipher
 	optional uint32 auto_lock_delay_ms = 8;	// Screensaver Timeout
+	optional uint32 u2f_counter = 9; // U2F Counter
+	optional bool dry_run = 10; // perform dry-run recovery workflow (for safe mnemonic validation)
 }
 
 /**
