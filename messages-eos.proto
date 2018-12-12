@@ -272,7 +272,8 @@ message EosActionNewAccount {
 * Structure representing actions not implemented above.
 */
 message EosActionUnknown {
-    optional bytes data = 1;
+    optional uint32 data_size = 1;
+    optional bytes data_chunk = 2;
 }
 
 /**
