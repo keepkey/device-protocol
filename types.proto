@@ -129,6 +129,7 @@ enum ButtonRequestType {
 	ButtonRequest_U2FCounter = 32;
 	ButtonRequest_ConfirmEosAction = 33;
 	ButtonRequest_ConfirmEosBudget = 34;
+	ButtonRequest_ConfirmMemo = 35;
 }
 
 /**
