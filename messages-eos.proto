@@ -111,6 +111,7 @@ message EosAuthorizationKey {
     optional uint32 type  = 1;
     optional bytes key = 2;
     optional uint32 weight = 3;
+    repeated uint32 address_n = 4;
 }
 
 /**
