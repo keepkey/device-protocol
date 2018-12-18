@@ -90,6 +90,14 @@ enum MessageType {
 	MessageType_EthereumSignMessage = 108 [(wire_in) = true];
 	MessageType_EthereumVerifyMessage = 109 [(wire_in) = true];
 	MessageType_EthereumMessageSignature = 110 [(wire_out) = true];
+
+	// EOS
+	MessageType_EosGetPublicKey = 600 [(wire_in) = true];
+	MessageType_EosPublicKey = 601 [(wire_out) = true];
+	MessageType_EosSignTx = 602 [(wire_in) = true];
+	MessageType_EosTxActionRequest = 603 [(wire_out) = true];
+	MessageType_EosTxActionAck = 604 [(wire_in) = true];
+	MessageType_EosSignedTx = 605 [(wire_out) = true];
 }
 
 ////////////////////
