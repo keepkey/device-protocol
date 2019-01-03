@@ -207,7 +207,6 @@ message MultisigRedeemScriptType {
 
 /**
  * Structure representing transaction input
- * @used_in SimpleSignTx
  * @used_in TransactionType
  */
 message TxInputType {
@@ -225,7 +224,6 @@ message TxInputType {
 
 /**
  * Structure representing transaction output
- * @used_in SimpleSignTx
  * @used_in TransactionType
  */
 message TxOutputType {
@@ -252,7 +250,6 @@ message TxOutputBinType {
 
 /**
  * Structure representing transaction
- * @used_in SimpleSignTx, 
  */
 message TransactionType {
 	optional uint32 version = 1;

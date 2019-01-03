@@ -30,7 +30,7 @@ enum MessageType {
 	MessageType_LoadDevice = 13 [(wire_in) = true];
 	MessageType_ResetDevice = 14 [(wire_in) = true];
 	MessageType_SignTx = 15 [(wire_in) = true];
-	MessageType_SimpleSignTx = 16 [(wire_in) = true];
+	// Formerly SimpleSignTx = 16
 	MessageType_Features = 17 [(wire_out) = true];
 	MessageType_PinMatrixRequest = 18 [(wire_out) = true];
 	MessageType_PinMatrixAck = 19 [(wire_in) = true];
@@ -635,26 +635,11 @@ message SignTx {
 	optional uint32 version_group_id = 8;			// only for Zcash, nVersionGroupId when overwintered is set
 }
 
-/*
-DEPRECATED. Removed from firmware.
-*/
-message SimpleSignTx {
-	repeated TxInputType inputs = 1;			// transaction inputs
-	repeated TxOutputType outputs = 2;			// transaction outputs
-	repeated TransactionType transactions = 3;		// transactions whose outputs are used to build current inputs
-	optional string coin_name = 4 [default='Bitcoin'];	// coin to use
-	optional uint32 version = 5 [default=1];		// transaction version
-	optional uint32 lock_time = 6 [default=0];		// transaction lock_time
-	optional uint32 expiry = 7;						// only for Decred and ZCash
-	optional bool overwintered = 8;					// only for Zcash
-}
-
 /**
  * Response: Device asks for information for signing transaction or returns the last result
  * If request_index is set, device awaits TxAck message (with fields filled in according to request_type)
  * If signature_index is set, 'signature' contains signed input of signature_index's input
  * @prev SignTx
- * @prev SimpleSignTx
  * @prev TxAck
  */
 message TxRequest {
