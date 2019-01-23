@@ -404,6 +404,7 @@ message ResetDevice {
 	optional string label = 6;				// device label
 	optional bool no_backup = 7;			// Initialize without ever showing the recovery sentence.
 	optional uint32 auto_lock_delay_ms = 8;	// Screensaver Timeout
+	optional uint32 u2f_counter = 9; // U2F Counter
 }
 
 /**
