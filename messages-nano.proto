@@ -1,0 +1,66 @@
+/*
+ * Messages (Nano specific) for KeepKey Communication
+ *
+ */
+
+syntax = "proto2";
+
+// Sugar for easier handling in Java
+option java_package = "com.keepkey.deviceprotocol";
+option java_outer_classname = "KeepKeyMessageNano";
+
+import "types.proto";
+
+/**
+ * Request: Ask device for Nano address corresponding to address_n path
+ * @next PassphraseRequest
+ * @next NanoAddress
+ * @next Failure
+ */
+message NanoGetAddress {
+    repeated uint32 address_n = 1;          // BIP-32 path to derive the key from master node
+    optional string coin_name = 2 [default='Nano'];
+    optional bool show_display = 3;         // optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains a Nano address derived from device private seed
+ * @prev NanoGetAddress
+ */
+message NanoAddress {
+    required string address = 1;        // Coin address in Base58 encoding
+}
+
+/**
+ * Request: ask device to sign Nano transaction
+ * @start
+ * @next NanoSignedTx
+ */
+message NanoSignTx {
+    repeated uint32 address_n = 1;  // BIP-32 path to derive the key from master node
+    optional string coin_name = 2 [default='Nano'];
+    optional ParentBlock parent_block = 3;
+    optional bytes link_hash = 4;
+    optional string link_recipient = 5;
+    repeated uint32 link_recipient_n = 6;         // BIP-32 path to derive address for recipient
+    optional OutputAddressType address_type = 7;  // output address type
+    optional ExchangeType exchange_type = 8;      // exchange type data
+    required string representative = 9;
+    required bytes balance = 10;  // uint128 (big-endian encoded)
+
+    message ParentBlock {
+        optional bytes parent_hash = 1;
+        optional bytes link = 2;
+        required string representative = 4;
+        required bytes balance = 5; // uint128 (big-endian encoded)
+    }
+}
+
+/**
+ * Response: signature for transaction
+ * @end
+ */
+message NanoSignedTx {
+    required bytes signature = 1;
+    required bytes block_hash = 2;
+}
