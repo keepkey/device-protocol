@@ -1,9 +1,14 @@
 {
-  "name": "device-protocol",
-  "version": "3.0.1",
+  "name": "@keepkey/device-protocol",
+  "version": "6.0.2",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "The proto buffer files from the KeepKey device, packed for consumption by the client.",
-  "main": "index.js",
   "scripts": {
+    "build": "yarn build:js && yarn build:json",
+    "build:js": "protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --js_out=import_style=commonjs,binary:./lib --ts_out=./lib exchange.proto types.proto messages.proto messages-eos.proto",
+    "build:json": "pbjs --keep-case -t json ./types.proto ./messages.proto ./messages-eos.proto ./exchange.proto > ./lib/proto.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -11,5 +16,12 @@
     "url": "git@gitlab.keepkey.com:client-software/device-protocol.git"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "protobufjs": "^6.8.8",
+    "ts-protoc-gen": "^0.9.0"
+  },
+  "dependencies": {
+    "google-protobuf": "^3.7.0-rc.2"
+  }
 }
