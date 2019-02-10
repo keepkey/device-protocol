@@ -43,10 +43,9 @@ message NanoSignTx {
     optional bytes link_hash = 4;
     optional string link_recipient = 5;
     repeated uint32 link_recipient_n = 6;         // BIP-32 path to derive address for recipient
-    optional OutputAddressType address_type = 7;  // output address type
-    optional ExchangeType exchange_type = 8;      // exchange type data
-    optional string representative = 9;
-    optional bytes balance = 10;                  // uint128 (big-endian encoded)
+    optional string representative = 7;
+    optional bytes balance = 8;                   // uint128 (big-endian encoded)
+    optional ExchangeType exchange_type = 9;      // exchange type data
 
     message ParentBlock {
         optional bytes parent_hash = 1;
