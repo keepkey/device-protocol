@@ -91,6 +91,12 @@ enum MessageType {
 	MessageType_EthereumVerifyMessage = 109 [(wire_in) = true];
 	MessageType_EthereumMessageSignature = 110 [(wire_out) = true];
 
+	// Ripple
+	MessageType_RippleGetAddress = 400 [(wire_in) = true];
+	MessageType_RippleAddress = 401 [(wire_out) = true];
+	MessageType_RippleSignTx = 402 [(wire_in) = true];
+	MessageType_RippleSignedTx = 403 [(wire_in) = true];
+
 	// EOS
 	MessageType_EosGetPublicKey = 600 [(wire_in) = true];
 	MessageType_EosPublicKey = 601 [(wire_out) = true];
