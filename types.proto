@@ -193,6 +193,7 @@ message CoinType {
 	// optional uint32 version_group_id = 24; REMOVED
 	optional uint32 xpub_magic_segwit_p2sh = 25;
 	optional uint32 xpub_magic_segwit_native = 26;
+	optional string nanoaddr_prefix = 27;
 }
 
 /**
