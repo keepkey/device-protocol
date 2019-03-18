@@ -260,10 +260,12 @@ message TransactionType {
 	optional uint32 lock_time = 4;
 	optional uint32 inputs_cnt = 6;
 	optional uint32 outputs_cnt = 7;
-	optional bytes extra_data = 8;
-	optional uint32 extra_data_len = 9;
-	optional uint32 expiry = 10;
-	optional bool overwintered = 11;
+	optional bytes extra_data = 8;         // only for Zcash
+	optional uint32 extra_data_len = 9;    // only for Zcash
+	optional uint32 expiry = 10;           // only for Decred, and Zcash
+	optional bool overwintered = 11;       // only for Zcash
+	optional uint32 version_group_id = 12; // only for Zcash, nVersionGroupId when overwintered is set
+	optional uint32 branch_id = 13;        // only for Zcash, BRANCH_ID when overwintered is set
 }
 
 /**
