@@ -69,10 +69,10 @@ enum MessageType {
 	MessageType_EthereumSignTx = 58 [(wire_in) = true];
 	MessageType_EthereumTxRequest = 59 [(wire_out) = true];
 	MessageType_EthereumTxAck = 60 [(wire_in) = true];
- 	MessageType_CharacterRequest = 80 [(wire_out) = true];
- 	MessageType_CharacterAck = 81 [(wire_in) = true];
- 	MessageType_RawTxAck = 82 [(wire_in) = true];
- 	MessageType_ApplyPolicies = 83 [(wire_in) = true];
+	MessageType_CharacterRequest = 80 [(wire_out) = true];
+	MessageType_CharacterAck = 81 [(wire_in) = true];
+	MessageType_RawTxAck = 82 [(wire_in) = true];
+	MessageType_ApplyPolicies = 83 [(wire_in) = true];
 	MessageType_FlashHash = 84 [(wire_in) = true];
 	MessageType_FlashWrite = 85 [(wire_in) = true];
 	MessageType_FlashHashResponse = 86 [(wire_out) = true];
