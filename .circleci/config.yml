@@ -8,25 +8,19 @@ defaults: &defaults
 jobs:
   build:
     <<: *defaults
+    docker:
+      - image: safetyculture/protoc-node
     steps:
       - checkout
-      - run:
-          name: Install protoc
-          environment:
-            PROTOBUF_VERSION: "3.5.1"
-          command: >
-            wget https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/protoc-${PROTOBUF_VERSION}-linux-x86_64.zip && \
-            unzip protoc-${PROTOBUF_VERSION}-linux-x86_64.zip -d /usr/local && \
-            rm protoc-${PROTOBUF_VERSION}-linux-x86_64.zip
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
 
-      - run: yarn install
+      - run: npm install
       - run:
           name: Run build
-          command: yarn build
+          command: npm run build
 
       - save_cache:
           paths:
