@@ -15,7 +15,9 @@ jobs:
           environment:
             PROTOBUF_VERSION: "3.5.1"
           command: >
-            apt-get install -y unzip git wget python3 && \
+            sudo apt-get update && \
+            sudo apt-get install -y unzip git wget python3 && \
+            rm -rf /var/lib/apt/lists/* && \
             wget https://github.com/google/protobuf/releases/download/v${PROTOBUF_VERSION}/protoc-${PROTOBUF_VERSION}-linux-x86_64.zip && \
             unzip protoc-${PROTOBUF_VERSION}-linux-x86_64.zip -d /usr/local && \
             rm protoc-${PROTOBUF_VERSION}-linux-x86_64.zip && \
