@@ -7,19 +7,20 @@ defaults: &defaults
 
 jobs:
   build:
-    <<: *defaults  
+    <<: *defaults
+    docker:
+      - image: safetyculture/protoc-node
     steps:
       - checkout
-
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
 
-      - run: yarn install
+      - run: npm install
       - run:
           name: Run build
-          command: yarn build
+          command: npm run build
 
       - save_cache:
           paths:
@@ -45,10 +46,7 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build:
-          filters:
-            tags:
-              only: /^v.*/
+      - build
       - deploy:
           requires:
             - build
