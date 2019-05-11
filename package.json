@@ -7,8 +7,8 @@
   "description": "The proto buffer files from the KeepKey device, packed for consumption by the client.",
   "scripts": {
     "build": "npm run build:js && npm run build:json",
-    "build:js": "protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --js_out=import_style=commonjs,binary:./lib --ts_out=./lib exchange.proto types.proto messages.proto messages-eos.proto",
-    "build:json": "pbjs --keep-case -t json ./types.proto ./messages.proto ./messages-eos.proto ./exchange.proto > ./lib/proto.json",
+    "build:js": "protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --js_out=import_style=commonjs,binary:./lib --ts_out=./lib exchange.proto types.proto messages.proto messages-eos.proto messages-nano.proto",
+    "build:json": "pbjs --keep-case -t json ./types.proto ./messages.proto ./messages-eos.proto ./messages-nano.proto ./exchange.proto > ./lib/proto.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,6 +22,7 @@
     "ts-protoc-gen": "^0.9.0"
   },
   "dependencies": {
-    "google-protobuf": "^3.7.0-rc.2"
+    "google-protobuf": "^3.7.0-rc.2",
+    "pbjs": "^0.0.5"
   }
 }
