@@ -329,4 +329,6 @@ message ExchangeType {
 	repeated uint32 withdrawal_address_n = 3;			    	    // BIP-32 path for received funds
 	repeated uint32 return_address_n = 4;			    	        // BIP-32 path for return address, assumed to be the
 	                                                                // same as the coin_name of the transaction
+	optional InputScriptType withdrawal_script_type = 5 [default=SPENDADDRESS];
+	optional InputScriptType return_script_type = 6 [default=SPENDADDRESS];
 }
