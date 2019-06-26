@@ -51,8 +51,8 @@ enum MessageType {
 	MessageType_MessageSignature = 40 [(wire_out) = true];
 	MessageType_PassphraseRequest = 41 [(wire_out) = true];
 	MessageType_PassphraseAck = 42 [(wire_in) = true];
-	MessageType_EstimateTxSize = 43 [(wire_in) = true];
-	MessageType_TxSize = 44 [(wire_out) = true];
+	// Formerly EstimateTxSize = 43
+	// Formerly TxSize = 44
 	MessageType_RecoveryDevice = 45 [(wire_in) = true];
 	MessageType_WordRequest = 46 [(wire_out) = true];
 	MessageType_WordAck = 47 [(wire_in) = true];
@@ -602,27 +602,6 @@ message CipheredKeyValue {
 //////////////////////////////////
 // Transaction signing messages //
 //////////////////////////////////
-
-/**
- * Request: Estimated size of the transaction
- * This behaves exactly like SignTx, which means that it can ask using TxRequest
- * This call is non-blocking (except possible PassphraseRequest to unlock the seed)
- * @next TxSize
- * @next Failure
- */
-message EstimateTxSize {
-	required uint32 outputs_count = 1;			// number of transaction outputs
-	required uint32 inputs_count = 2;			// number of transaction inputs
-	optional string coin_name = 3 [default='Bitcoin'];	// coin to use
-}
-
-/**
- * Response: Estimated size of the transaction
- * @prev EstimateTxSize
- */
-message TxSize {
-	optional uint32 tx_size = 1;				// estimated size of transaction in bytes
-}
 
 /**
  * Request: Ask device to sign transaction
