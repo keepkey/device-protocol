@@ -61,6 +61,9 @@ message EosTxHeader {
  * @next EosTxActionAck
  */
 message EosTxActionRequest {
+    optional uint32 action_index = 1;
+    optional uint32 data_offset = 2;
+    optional uint32 data_size = 3;
 }
 
 /**
