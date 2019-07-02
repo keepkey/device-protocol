@@ -1,6 +1,6 @@
 {
   "name": "@keepkey/device-protocol",
-  "version": "6.1.6",
+  "version": "6.2.0",
   "publishConfig": {
     "access": "public"
   },
