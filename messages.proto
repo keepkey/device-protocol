@@ -152,6 +152,7 @@ message Features {
 	optional string firmware_variant = 22; // Firmware variant
 	optional bytes firmware_hash = 23;		// double sha256 hash of the firmware
 	optional bool no_backup = 24;			// Device was initialized without displaying recovery sentence.
+	optional bool webusb_landing_page = 25;		// Landing page when the device is plugged in.
 }
 
 /**
@@ -193,6 +194,7 @@ message ApplySettings {
 	optional bool use_passphrase = 3;
 	optional uint32 auto_lock_delay_ms = 4;
 	optional uint32 u2f_counter = 5;
+	optional bool enable_webusb_landing_page = 6;
 }
 
 /**
@@ -394,6 +396,7 @@ message LoadDevice {
 	optional string label = 6;				// device label
 	optional bool skip_checksum = 7;			// do not test mnemonic for valid BIP-39 checksum
 	optional uint32 u2f_counter = 8;			// U2F Counter
+	optional bool enable_webusb_landing_page = 9;
 }
 
 /**
@@ -411,6 +414,7 @@ message ResetDevice {
 	optional bool no_backup = 7;			// Initialize without ever showing the recovery sentence.
 	optional uint32 auto_lock_delay_ms = 8;	// Screensaver Timeout
 	optional uint32 u2f_counter = 9; // U2F Counter
+	optional bool enable_webusb_landing_page = 10;
 }
 
 /**
@@ -446,6 +450,7 @@ message RecoveryDevice {
 	optional uint32 auto_lock_delay_ms = 8;	// Screensaver Timeout
 	optional uint32 u2f_counter = 9; // U2F Counter
 	optional bool dry_run = 10; // perform dry-run recovery workflow (for safe mnemonic validation)
+	optional bool enable_webusb_landing_page = 11;
 }
 
 /**
