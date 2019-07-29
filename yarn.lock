@@ -65,6 +65,10 @@ commander@2.9.0:
   dependencies:
     graceful-readlink ">= 1.0.0"
 
+google-protobuf@^3.6.1:
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.9.0.tgz#1f33e51e7993ea51e758a82650ad4347273b9bc6"
+
 google-protobuf@^3.7.0-rc.2:
   version "3.7.0-rc.2"
   resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.7.0-rc.2.tgz#a65e9216825065099c4ff243eee9e16e764cc2c9"
@@ -111,6 +115,8 @@ protocol-buffers-schema@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/protocol-buffers-schema/-/protocol-buffers-schema-3.1.0.tgz#d8a819549ead3e6bd189ebe9e50e96636bbc5cc7"
 
-ts-protoc-gen@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/ts-protoc-gen/-/ts-protoc-gen-0.9.0.tgz#3910a67dc4445acf4bc3c6f7f67709619e987a6e"
+ts-protoc-gen@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/ts-protoc-gen/-/ts-protoc-gen-0.10.0.tgz#f708d99be59ad0be6bdce6f4fe893ec41757d2c9"
+  dependencies:
+    google-protobuf "^3.6.1"
