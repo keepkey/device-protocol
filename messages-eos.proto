@@ -92,16 +92,16 @@ message EosTxActionAck {
 * Structure representing asset type
 */
 message EosAsset {
-    optional sint64 amount = 1;
-    optional uint64 symbol = 2;           // First 8-bits used for precission.
+    optional sint64 amount = 1 [jstype = JS_STRING];
+    optional uint64 symbol = 2 [jstype = JS_STRING];           // First 8-bits used for precission.
 }
 
 /**
 * Structure representing action permission level
 */
 message EosPermissionLevel {
-    optional uint64 actor = 1;
-    optional uint64 permission = 2;
+    optional uint64 actor = 1 [jstype = JS_STRING];
+    optional uint64 permission = 2 [jstype = JS_STRING];
 }
 
 /**
@@ -144,8 +144,8 @@ message EosAuthorization {
 * Structure representing the common part of every action
 */
 message EosActionCommon {
-    optional uint64 account = 1;          // Contract name
-    optional uint64 name = 2;             // Action name
+    optional uint64 account = 1 [jstype = JS_STRING];          // Contract name
+    optional uint64 name = 2 [jstype = JS_STRING];             // Action name
     repeated EosPermissionLevel authorization = 3;
 }
 
@@ -153,8 +153,8 @@ message EosActionCommon {
 * Structure representing transfer data structure
 */
 message EosActionTransfer {
-    optional uint64 sender = 1;             // Asset sender
-    optional uint64 receiver = 2;
+    optional uint64 sender = 1 [jstype = JS_STRING];             // Asset sender
+    optional uint64 receiver = 2 [jstype = JS_STRING];
     optional EosAsset quantity = 3;
     optional string memo = 4;
 }
@@ -163,8 +163,8 @@ message EosActionTransfer {
 * Structure representing delegation data structure
 */
 message EosActionDelegate {
-    optional uint64 sender = 1;
-    optional uint64 receiver = 2;
+    optional uint64 sender = 1 [jstype = JS_STRING];
+    optional uint64 receiver = 2 [jstype = JS_STRING];
     optional EosAsset net_quantity = 3;    // Asset format '1.0000 EOS'
     optional EosAsset cpu_quantity = 4;    // Asset format '1.0000 EOS'
     optional bool transfer = 5;            // Transfer delegated tokens or not.
@@ -174,8 +174,8 @@ message EosActionDelegate {
 * Structure representing the removal of delegated resources from `payer`
 */
 message EosActionUndelegate {
-    optional uint64 sender = 1;
-    optional uint64 receiver = 2;
+    optional uint64 sender = 1 [jstype = JS_STRING];
+    optional uint64 receiver = 2 [jstype = JS_STRING];
     optional EosAsset net_quantity = 3;   // Asset format '1.0000 EOS'
     optional EosAsset cpu_quantity = 4;   // Asset format '1.0000 EOS'
 }
@@ -184,15 +184,15 @@ message EosActionUndelegate {
 * Structure representing fallbalck if undelegate wasnt executed automaticaly.
 */
 message EosActionRefund {
-    optional uint64 owner = 1;
+    optional uint64 owner = 1 [jstype = JS_STRING];
 }
 
 /**
 * Structure representing buying RAM operation for EOS tokens
 */
 message EosActionBuyRam {
-    optional uint64 payer = 1;
-    optional uint64 receiver = 2;
+    optional uint64 payer = 1 [jstype = JS_STRING];
+    optional uint64 receiver = 2 [jstype = JS_STRING];
     optional EosAsset quantity = 3;   // Asset format '1.0000 EOS'
 }
 
@@ -200,8 +200,8 @@ message EosActionBuyRam {
 * Structure representing buying bytes according to RAM market price.
 */
 message EosActionBuyRamBytes {
-    optional uint64 payer = 1;
-    optional uint64 receiver = 2;
+    optional uint64 payer = 1 [jstype = JS_STRING];
+    optional uint64 receiver = 2 [jstype = JS_STRING];
     optional uint32 bytes = 3;       // Number of bytes
 }
 
@@ -209,26 +209,26 @@ message EosActionBuyRamBytes {
 * Structure representing sell RAM
 */
 message EosActionSellRam {
-    optional uint64 account = 1;
-    optional sint64 bytes = 2;       // Number of bytes
+    optional uint64 account = 1 [jstype = JS_STRING];
+    optional sint64 bytes = 2 [jstype = JS_STRING];       // Number of bytes
 }
 
 /**
 * Structure representing voting. Currently, there could be up to 30 producers.
 */
 message EosActionVoteProducer {
-    optional uint64 voter = 1;       // Voter account
-    optional uint64 proxy = 2;       // Proxy voter account
-    repeated uint64 producers = 3;   // List of producers
+    optional uint64 voter = 1 [jstype = JS_STRING];       // Voter account
+    optional uint64 proxy = 2 [jstype = JS_STRING];       // Proxy voter account
+    repeated uint64 producers = 3 [jstype = JS_STRING];   // List of producers
 }
 
 /**
 * Structure representing update authorization.
 */
 message EosActionUpdateAuth {
-    optional uint64 account = 1;
-    optional uint64 permission = 2;
-    optional uint64 parent = 3;
+    optional uint64 account = 1 [jstype = JS_STRING];
+    optional uint64 permission = 2 [jstype = JS_STRING];
+    optional uint64 parent = 3 [jstype = JS_STRING];
     optional EosAuthorization auth = 4;
 }
 
@@ -236,35 +236,35 @@ message EosActionUpdateAuth {
 * Structure representing delete authorization.
 */
 message EosActionDeleteAuth {
-    optional uint64 account = 1;
-    optional uint64 permission = 2;
+    optional uint64 account = 1 [jstype = JS_STRING];
+    optional uint64 permission = 2 [jstype = JS_STRING];
 }
 
 /**
 * Structure representing link authorization to action.
 */
 message EosActionLinkAuth {
-    optional uint64 account = 1;
-    optional uint64 code = 2;
-    optional uint64 type = 3;
-    optional uint64 requirement = 4;
+    optional uint64 account = 1 [jstype = JS_STRING];
+    optional uint64 code = 2 [jstype = JS_STRING];
+    optional uint64 type = 3 [jstype = JS_STRING];
+    optional uint64 requirement = 4 [jstype = JS_STRING];
 }
 
 /**
 * Structure representing unlink authorization from action.
 */
 message EosActionUnlinkAuth {
-    optional uint64 account = 1;
-    optional uint64 code = 2;
-    optional uint64 type = 3;
+    optional uint64 account = 1 [jstype = JS_STRING];
+    optional uint64 code = 2 [jstype = JS_STRING];
+    optional uint64 type = 3 [jstype = JS_STRING];
 }
 
 /**
 * Structure representing creation of a new account.
 */
 message EosActionNewAccount {
-    optional uint64 creator = 1;
-    optional uint64 name = 2;
+    optional uint64 creator = 1 [jstype = JS_STRING];
+    optional uint64 name = 2 [jstype = JS_STRING];
     optional EosAuthorization owner = 3;
     optional EosAuthorization active = 4;
 }
