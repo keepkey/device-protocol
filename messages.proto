@@ -105,6 +105,26 @@ enum MessageType {
 	MessageType_NanoSignTx = 702 [(wire_in) = true];
 	MessageType_NanoSignedTx = 703 [(wire_out) = true];
 
+	// Stellar
+	MessageType_StellarGetAddress = 800 [(wire_in) = true];
+	MessageType_StellarAddress = 801 [(wire_out) = true];
+	MessageType_StellarSignTx = 802 [(wire_in) = true];
+	MessageType_StellarTxOpRequest = 803 [(wire_out) = true];
+	MessageType_StellarCreateAccountOp = 810 [(wire_in) = true];
+	MessageType_StellarPaymentOp = 811 [(wire_in) = true];
+	MessageType_StellarPathPaymentOp = 812 [(wire_in) = true];
+	MessageType_StellarManageOfferOp = 813 [(wire_in) = true];
+	MessageType_StellarCreatePassiveOfferOp = 814 [(wire_in) = true];
+	MessageType_StellarSetOptionsOp = 815 [(wire_in) = true];
+	MessageType_StellarChangeTrustOp = 816 [(wire_in) = true];
+	MessageType_StellarAllowTrustOp = 817 [(wire_in) = true];
+	MessageType_StellarAccountMergeOp = 818 [(wire_in) = true];
+	// omitted: StellarInflationOp is not a supported operation, would be 219
+	MessageType_StellarManageDataOp = 820 [(wire_in) = true];
+	MessageType_StellarBumpSequenceOp = 821 [(wire_in) = true];
+	MessageType_StellarSignedTx = 830 [(wire_out) = true];
+
+	// Cosmos
 	MessageType_CosmosGetAddress = 900 [(wire_in) = true];
 	MessageType_CosmosAddress = 901 [(wire_out) = true];
 	MessageType_CosmosSignTx = 902 [(wire_in) = true];
