@@ -104,6 +104,9 @@ enum MessageType {
 	MessageType_NanoAddress = 701 [(wire_out) = true];
 	MessageType_NanoSignTx = 702 [(wire_in) = true];
 	MessageType_NanoSignedTx = 703 [(wire_out) = true];
+
+	MessageType_StellarGetAddress = 800 [(wire_in) = true];
+	MessageType_StellarAddress = 801 [(wire_out) = true];
 }
 
 ////////////////////
