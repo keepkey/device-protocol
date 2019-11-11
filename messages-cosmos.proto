@@ -33,21 +33,13 @@ message CosmosSignTx {
     repeated uint32 address_n = 1;          // BIP-32 path. For compatibility with other wallets, must be m/44'/118'/index'
     required uint64 account_number = 2;
     required string chain_id = 3;
-    required CosmosFee fee = 4;
-    required CosmosMsgSend msg = 5;
-    required string memo = 6;
-    required uint64 sequence = 7;
-}
-
-message CosmosMsgSend {
-    required string from_address = 1;
-    required string to_address = 2;
-    required uint64 amount = 3;
-}
-
-message CosmosFee {
-    required uint32 amount = 1;
-    required uint32 gas = 2;
+    required uint32 fee_amount = 4;
+    required uint32 gas = 5;
+    required string from_address = 6;
+    required string to_address = 7;
+    required uint64 amount = 8;
+    required string memo = 9;
+    required uint64 sequence = 10;
 }
 
 /**
