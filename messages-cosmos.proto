@@ -21,7 +21,7 @@ message CosmosGetAddress {
  * @end
  */
 message CosmosAddress {
-    optional string address = 1;    // Address in Stellar format (base32 of a pubkey with checksum)
+    optional string address = 1;    // Address Bech32 encoded with 'cosmos' prefix
 }
 
 /**
@@ -48,5 +48,5 @@ message CosmosSignTx {
  */
 message CosmosSignedTx {
     optional bytes public_key = 1;  // public key for the private key used to sign data
-    optional bytes signature = 2;   // signature suitable for sending to the Stellar network
+    optional bytes signature = 2;   // signature suitable for sending to the Cosmos network
 }
