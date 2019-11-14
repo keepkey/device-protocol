@@ -108,7 +108,9 @@ enum MessageType {
 	MessageType_CosmosGetAddress = 900 [(wire_in) = true];
 	MessageType_CosmosAddress = 901 [(wire_out) = true];
 	MessageType_CosmosSignTx = 902 [(wire_in) = true];
-	MessageType_CosmosSignedTx = 903 [(wire_out) = true];
+	MessageType_CosmosMsgRequest = 903 [(wire_out) = true];
+	MessageType_CosmosMsgAck = 904 [(wire_in) = true];
+	MessageType_CosmosSignedTx = 905 [(wire_out) = true];
 }
 
 ////////////////////

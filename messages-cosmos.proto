@@ -30,7 +30,7 @@ message CosmosAddress {
  * @next CosmosSignedTx
  */
 message CosmosSignTx {
-    optional uint32 address_n = 1;          // BIP-32 path. For compatibility with other wallets, must be m/44'/118'/index'
+    repeated uint32 address_n = 1;          // BIP-32 path. For compatibility with other wallets, must be m/44'/118'/index'
     optional uint64 account_number = 2;
     optional string chain_id = 3;
     optional uint32 fee_amount = 4;
