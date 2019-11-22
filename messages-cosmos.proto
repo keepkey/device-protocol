@@ -36,7 +36,7 @@ message CosmosSignTx {
     optional uint32 fee_amount = 4;
     optional uint32 gas = 5;
     optional string memo = 6;
-    optional uint64 sequence = 7;
+    optional uint64 sequence = 7 [jstype = JS_STRING];
     optional uint32 msg_count = 8;
 }
 
