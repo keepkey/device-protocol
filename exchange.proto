@@ -17,7 +17,7 @@ message ExchangeAddress {
     optional string coin_type = 1;
     optional string address = 2;
     optional string dest_tag = 3;
-    optional string rs_address = 4;
+    // formerly rs_address = 4;
 }
 
 enum OrderType {
