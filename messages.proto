@@ -105,6 +105,19 @@ enum MessageType {
 	MessageType_NanoSignTx = 702 [(wire_in) = true];
 	MessageType_NanoSignedTx = 703 [(wire_out) = true];
 
+	// Binance
+	MessageType_BinanceGetAddress = 800 [(wire_in) = true];
+	MessageType_BinanceAddress = 801 [(wire_out) = true];
+	MessageType_BinanceGetPublicKey = 802 [(wire_in) = true];
+	MessageType_BinancePublicKey = 803 [(wire_out) = true];
+	MessageType_BinanceSignTx = 804 [(wire_in) = true];
+	MessageType_BinanceTxRequest = 805 [(wire_out) = true];
+	MessageType_BinanceTransferMsg = 806 [(wire_in) = true];
+	MessageType_BinanceOrderMsg = 807 [(wire_in) = true];
+	MessageType_BinanceCancelMsg = 808 [(wire_in) = true];
+	MessageType_BinanceSignedTx = 809 [(wire_out) = true];
+
+	// Cosmos
 	MessageType_CosmosGetAddress = 900 [(wire_in) = true];
 	MessageType_CosmosAddress = 901 [(wire_out) = true];
 	MessageType_CosmosSignTx = 902 [(wire_in) = true];
