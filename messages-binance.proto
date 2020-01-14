@@ -4,6 +4,8 @@ syntax = "proto2";
 option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyMessageBinance";
 
+import "types.proto";
+
 /**
  * Request: Ask the device for a Binance address.
  * @start
@@ -80,6 +82,8 @@ message BinanceTransferMsg {
     message BinanceInputOutput {
         optional string address = 1;
         repeated BinanceCoin coins = 2;
+        optional OutputAddressType address_type = 3;
+        optional ExchangeType exchange_type = 4;
     }
 
     message BinanceCoin {
