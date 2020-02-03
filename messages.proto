@@ -91,6 +91,12 @@ enum MessageType {
 	MessageType_EthereumVerifyMessage = 109 [(wire_in) = true];
 	MessageType_EthereumMessageSignature = 110 [(wire_out) = true];
 
+	// Ripple
+	MessageType_RippleGetAddress = 400 [(wire_in) = true];
+	MessageType_RippleAddress = 401 [(wire_out) = true];
+	MessageType_RippleSignTx = 402 [(wire_in) = true];
+	MessageType_RippleSignedTx = 403 [(wire_in) = true];
+
 	// EOS
 	MessageType_EosGetPublicKey = 600 [(wire_in) = true];
 	MessageType_EosPublicKey = 601 [(wire_out) = true];
@@ -105,24 +111,17 @@ enum MessageType {
 	MessageType_NanoSignTx = 702 [(wire_in) = true];
 	MessageType_NanoSignedTx = 703 [(wire_out) = true];
 
-	// Stellar
-	MessageType_StellarGetAddress = 800 [(wire_in) = true];
-	MessageType_StellarAddress = 801 [(wire_out) = true];
-	MessageType_StellarSignTx = 802 [(wire_in) = true];
-	MessageType_StellarTxOpRequest = 803 [(wire_out) = true];
-	MessageType_StellarCreateAccountOp = 810 [(wire_in) = true];
-	MessageType_StellarPaymentOp = 811 [(wire_in) = true];
-	MessageType_StellarPathPaymentOp = 812 [(wire_in) = true];
-	MessageType_StellarManageOfferOp = 813 [(wire_in) = true];
-	MessageType_StellarCreatePassiveOfferOp = 814 [(wire_in) = true];
-	MessageType_StellarSetOptionsOp = 815 [(wire_in) = true];
-	MessageType_StellarChangeTrustOp = 816 [(wire_in) = true];
-	MessageType_StellarAllowTrustOp = 817 [(wire_in) = true];
-	MessageType_StellarAccountMergeOp = 818 [(wire_in) = true];
-	// omitted: StellarInflationOp is not a supported operation, would be 219
-	MessageType_StellarManageDataOp = 820 [(wire_in) = true];
-	MessageType_StellarBumpSequenceOp = 821 [(wire_in) = true];
-	MessageType_StellarSignedTx = 830 [(wire_out) = true];
+	// Binance
+	MessageType_BinanceGetAddress = 800 [(wire_in) = true];
+	MessageType_BinanceAddress = 801 [(wire_out) = true];
+	MessageType_BinanceGetPublicKey = 802 [(wire_in) = true];
+	MessageType_BinancePublicKey = 803 [(wire_out) = true];
+	MessageType_BinanceSignTx = 804 [(wire_in) = true];
+	MessageType_BinanceTxRequest = 805 [(wire_out) = true];
+	MessageType_BinanceTransferMsg = 806 [(wire_in) = true];
+	MessageType_BinanceOrderMsg = 807 [(wire_in) = true];
+	MessageType_BinanceCancelMsg = 808 [(wire_in) = true];
+	MessageType_BinanceSignedTx = 809 [(wire_out) = true];
 
 	// Cosmos
 	MessageType_CosmosGetAddress = 900 [(wire_in) = true];
@@ -131,6 +130,25 @@ enum MessageType {
 	MessageType_CosmosMsgRequest = 903 [(wire_out) = true];
 	MessageType_CosmosMsgAck = 904 [(wire_in) = true];
 	MessageType_CosmosSignedTx = 905 [(wire_out) = true];
+
+	// Stellar
+	MessageType_StellarGetAddress = 1000 [(wire_in) = true];
+	MessageType_StellarAddress = 1001 [(wire_out) = true];
+	MessageType_StellarSignTx = 1002 [(wire_in) = true];
+	MessageType_StellarTxOpRequest = 1003 [(wire_out) = true];
+	MessageType_StellarCreateAccountOp = 1010 [(wire_in) = true];
+	MessageType_StellarPaymentOp = 1011 [(wire_in) = true];
+	MessageType_StellarPathPaymentOp = 1012 [(wire_in) = true];
+	MessageType_StellarManageOfferOp = 1013 [(wire_in) = true];
+	MessageType_StellarCreatePassiveOfferOp = 1014 [(wire_in) = true];
+	MessageType_StellarSetOptionsOp = 1015 [(wire_in) = true];
+	MessageType_StellarChangeTrustOp = 1016 [(wire_in) = true];
+	MessageType_StellarAllowTrustOp = 1017 [(wire_in) = true];
+	MessageType_StellarAccountMergeOp = 1018 [(wire_in) = true];
+	// omitted: StellarInflationOp is not a supported operation, would be 1019
+	MessageType_StellarManageDataOp = 1020 [(wire_in) = true];
+	MessageType_StellarBumpSequenceOp = 1021 [(wire_in) = true];
+	MessageType_StellarSignedTx = 1030 [(wire_out) = true];
 }
 
 ////////////////////
