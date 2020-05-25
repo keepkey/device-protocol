@@ -87,20 +87,16 @@ enum MessageType {
 	MessageType_DebugLinkFillConfig = 105 [(wire_debug_out) = true];
 	MessageType_GetCoinTable = 106 [(wire_in) = true];
 	MessageType_CoinTable = 107 [(wire_out) = true];
-	MessageType_ChangeWipeCode = 108 [(wire_in) = true];
-
-
-
+	MessageType_EthereumSignMessage = 108 [(wire_in) = true];
+	MessageType_EthereumVerifyMessage = 109 [(wire_in) = true];
+	MessageType_EthereumMessageSignature = 110 [(wire_out) = true];
+	MessageType_ChangeWipeCode = 111 [(wire_in) = true];
+	
 	// Ripple
 	MessageType_RippleGetAddress = 400 [(wire_in) = true];
 	MessageType_RippleAddress = 401 [(wire_out) = true];
 	MessageType_RippleSignTx = 402 [(wire_in) = true];
 	MessageType_RippleSignedTx = 403 [(wire_in) = true];
-
-	// Ethereum
-	MessageType_EthereumSignMessage = 500 [(wire_in) = true];
-	MessageType_EthereumVerifyMessage = 501 [(wire_in) = true];
-	MessageType_EthereumMessageSignature = 502 [(wire_out) = true];
 
 	// EOS
 	MessageType_EosGetPublicKey = 600 [(wire_in) = true];
