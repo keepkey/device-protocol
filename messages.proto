@@ -90,6 +90,7 @@ enum MessageType {
 	MessageType_EthereumSignMessage = 108 [(wire_in) = true];
 	MessageType_EthereumVerifyMessage = 109 [(wire_in) = true];
 	MessageType_EthereumMessageSignature = 110 [(wire_out) = true];
+	MessageType_ChangeWipeCode = 111 [(wire_in) = true];
 
 	// Ripple
 	MessageType_RippleGetAddress = 400 [(wire_in) = true];
@@ -178,6 +179,7 @@ message Features {
 	optional string firmware_variant = 22; // Firmware variant
 	optional bytes firmware_hash = 23;		// double sha256 hash of the firmware
 	optional bool no_backup = 24;			// Device was initialized without displaying recovery sentence.
+	optional bool wipe_code_protection = 25;
 }
 
 /**
@@ -947,4 +949,14 @@ message DebugLinkLog {
  * Request: Ask device to fill config area with sample data (used for testing firmware upload)
  */
 message DebugLinkFillConfig {
+}
+
+/**
+ * Request: Starts workflow for setting/removing the wipe code
+ * @start
+ * @next Success
+ * @next Failure
+ */
+ message ChangeWipeCode {
+    optional bool remove = 1;   // is wipe code removal requested?
 }

@@ -130,6 +130,9 @@ enum ButtonRequestType {
 	ButtonRequest_ConfirmEosAction = 33;
 	ButtonRequest_ConfirmEosBudget = 34;
 	ButtonRequest_ConfirmMemo = 35;
+	ButtonRequest_RemoveWipeCode = 36;
+	ButtonRequest_ChangeWipeCode = 37;
+	ButtonRequest_CreateWipeCode = 38;
 }
 
 /**
