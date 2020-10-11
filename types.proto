@@ -134,6 +134,7 @@ enum ButtonRequestType {
 	ButtonRequest_ChangeWipeCode = 37;
 	ButtonRequest_CreateWipeCode = 38;
 	ButtonRequest_AuthSeed = 39;
+	ButtonRequest_AuthOTP = 40;
 }
 
 /**
