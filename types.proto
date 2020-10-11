@@ -133,6 +133,7 @@ enum ButtonRequestType {
 	ButtonRequest_RemoveWipeCode = 36;
 	ButtonRequest_ChangeWipeCode = 37;
 	ButtonRequest_CreateWipeCode = 38;
+	ButtonRequest_AuthSeed = 39;
 }
 
 /**

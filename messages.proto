@@ -14,6 +14,7 @@ import "types.proto";
 /**
  * Mapping between KeepKey wire identifier (uint) and a protobuf message
  */
+
 enum MessageType {
 	MessageType_Initialize = 0 [(wire_in) = true];
 	MessageType_Ping = 1 [(wire_in) = true];
@@ -92,6 +93,10 @@ enum MessageType {
 	MessageType_EthereumMessageSignature = 110 [(wire_out) = true];
 	MessageType_ChangeWipeCode = 111 [(wire_in) = true];
 
+	// Authenticator
+	MessageType_AuthenticatorInit = 200 [(wire_in) = true];
+	MessageType_AuthenticatorGenerate = 201 [(wire_in) = true];
+
 	// Ripple
 	MessageType_RippleGetAddress = 400 [(wire_in) = true];
 	MessageType_RippleAddress = 401 [(wire_out) = true];
@@ -136,6 +141,26 @@ enum MessageType {
 ////////////////////
 // Basic messages //
 ////////////////////
+
+// Authenticator messages 
+
+
+/**
+ * Request: Ask kk to receive new auth secret
+ * @next AuthenticatorInitAck
+ */
+
+message AuthenticatorInit {
+	required string auth_secret = 1;		// base32 encoded string
+}
+
+/**
+ * Request: Generate authenticator otp based on time value
+ * @next ButtonRequest
+ */
+message AuthenticatorGenerate {
+	required string time_message = 1;		// current unix time / 30
+}
 
 /**
  * Request: Reset device to default state and ask for device details
@@ -237,11 +262,10 @@ message ChangePin {
  * @next Success
  */
 message Ping {
-	optional string message = 1;				// message to send back in Success message
+	optional string message = 1;			// message to send back in Success message
 	optional bool button_protection = 2;		// ask for button press
-	optional bool pin_protection = 3;			// ask for PIN if set in device
+	optional bool pin_protection = 3;		// ask for PIN if set in device
 	optional bool passphrase_protection = 4;	// ask for passphrase if set in device
-	optional bool wipe_code_protection = 5;		// ask for wipe code if set in device
 }
 
 /**
