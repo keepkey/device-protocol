@@ -152,7 +152,9 @@ enum MessageType {
 
 message AuthenticatorInit {
 	required string auth_secret = 1;			// base32 encoded string
-	optional bool button_protection = 2;		// ask for button press
+	required string domain = 2;					// domain
+	required string account = 3;				// account name
+	optional bool button_protection = 4;		// ask for button press
 }
 
 /**
