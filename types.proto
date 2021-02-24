@@ -269,6 +269,7 @@ message TransactionType {
 	optional bool overwintered = 11;       // only for Zcash
 	optional uint32 version_group_id = 12; // only for Zcash, nVersionGroupId when overwintered is set
 	optional uint32 branch_id = 13;        // only for Zcash, BRANCH_ID when overwintered is set
+	optional uint32 timestamp = 14;        // only for Reddcoin
 }
 
 /**

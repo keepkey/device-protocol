@@ -649,6 +649,7 @@ message SignTx {
 	optional bool overwintered = 7;					// only for Zcash
 	optional uint32 version_group_id = 8;			// only for Zcash, nVersionGroupId when overwintered is set
 	optional uint32 branch_id = 10;					// only for Zcash, BRANCH_ID when overwintered is set
+	optional uint32 timestamp = 11 [default=0];	// only for Reddcoin
 }
 
 /**
