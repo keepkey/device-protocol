@@ -98,6 +98,14 @@ enum MessageType {
 	MessageType_RippleSignTx = 402 [(wire_in) = true];
 	MessageType_RippleSignedTx = 403 [(wire_in) = true];
 
+	// THORChain
+	MessageType_ThorchainGetAddress = 500 [(wire_in) = true];
+	MessageType_ThorchainAddress = 501 [(wire_out) = true];
+	MessageType_ThorchainSignTx = 502 [(wire_in) = true];
+	MessageType_ThorchainMsgRequest = 503 [(wire_out) = true];
+	MessageType_ThorchainMsgAck = 504 [(wire_in) = true];
+	MessageType_ThorchainSignedTx = 505 [(wire_out) = true];
+
 	// EOS
 	MessageType_EosGetPublicKey = 600 [(wire_in) = true];
 	MessageType_EosPublicKey = 601 [(wire_out) = true];
@@ -131,6 +139,7 @@ enum MessageType {
 	MessageType_CosmosMsgRequest = 903 [(wire_out) = true];
 	MessageType_CosmosMsgAck = 904 [(wire_in) = true];
 	MessageType_CosmosSignedTx = 905 [(wire_out) = true];
+
 }
 
 ////////////////////
