@@ -8,8 +8,8 @@
   "scripts": {
     "clean": "rm -rf ./lib/*.js ./lib/*.ts",
     "build": "npm run build:js && npm run build:json && npm run build:postprocess",
-    "build:js": "protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --js_out=import_style=commonjs,binary:./lib --ts_out=./lib exchange.proto types.proto messages.proto messages-eos.proto messages-nano.proto messages-cosmos.proto messages-binance.proto messages-ripple.proto",
-    "build:json": "pbjs --keep-case -t json ./types.proto ./messages.proto ./messages-eos.proto ./messages-nano.proto ./messages-cosmos.proto ./messages-binance.proto ./messages-ripple.proto ./exchange.proto > ./lib/proto.json",
+    "build:js": "protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --js_out=import_style=commonjs,binary:./lib --ts_out=./lib exchange.proto types.proto messages.proto messages-eos.proto messages-nano.proto messages-cosmos.proto messages-binance.proto messages-ripple.proto messages-thorchain.proto",
+    "build:json": "pbjs --keep-case -t json ./types.proto ./messages.proto ./messages-eos.proto ./messages-nano.proto ./messages-cosmos.proto ./messages-binance.proto ./messages-ripple.proto ./messages-thorchain.proto ./exchange.proto > ./lib/proto.json",
     "build:postprocess": "find ./lib -name \"*.js\" -exec sed -i '' -e \"s/var global = Function(\\'return this\\')();/var global = (function(){ return this }).call(null);/g\" {} \\;",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

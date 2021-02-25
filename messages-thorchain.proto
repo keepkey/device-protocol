@@ -1,0 +1,64 @@
+syntax = "proto2";
+
+// Sugar for easier handling in Java
+option java_package = "com.keepkey.deviceprotocol";
+option java_outer_classname = "KeepKeyMessageThorChain";
+
+import "types.proto";
+
+/**
+ * Request: Address at the specified index
+ * @start
+ * @next ThorChainAddress
+ */
+message ThorChainGetAddress {
+    repeated uint32 address_n = 1;  // BIP-32 path. For compatibility with other wallets, must be m/44'/148'/index'
+    optional bool show_display = 2; // optionally show on display before sending the result
+}
+
+/**
+ * Response: Address for the given index
+ * @end
+ */
+message ThorChainAddress {
+    optional string address = 1;    // Address Bech32 encoded with 'thor' prefix
+}
+
+/**
+ * Request: ask device to sign ThorChain transaction
+ * @start
+ * @next ThorChainSignedTx
+ */
+message ThorChainSignTx {
+    repeated uint32 address_n = 1;          // BIP-32 path. For compatibility with other wallets, must be m/44'/118'/index'/0/0
+    optional uint64 account_number = 2 [jstype = JS_STRING];
+    optional string chain_id = 3;
+    optional uint32 fee_amount = 4;
+    optional uint32 gas = 5;
+    optional string memo = 6;
+    optional uint64 sequence = 7 [jstype = JS_STRING];
+    optional uint32 msg_count = 8;
+}
+
+message ThorChainMsgRequest {}
+
+message ThorChainMsgAck {
+    optional ThorChainMsgSend send = 1;
+}
+
+message ThorChainMsgSend {
+    optional string from_address = 6;
+    optional string to_address = 7;
+    optional uint64 amount = 8 [jstype = JS_STRING];
+    optional OutputAddressType address_type = 9;
+    optional ExchangeType exchange_type = 10;
+}
+
+/**
+ * Response: signature for transaction
+ * @end
+ */
+message ThorChainSignedTx {
+    optional bytes public_key = 1;  // public key for the private key used to sign data
+    optional bytes signature = 2;   // signature suitable for sending to the ThorChain network
+}
