@@ -39,6 +39,7 @@ message ThorchainSignTx {
     optional string memo = 6;
     optional uint64 sequence = 7 [jstype = JS_STRING];
     optional uint32 msg_count = 8;
+    optional bool testnet = 9;      // if true, decode addresses with prefix 'tthor'
 }
 
 message ThorchainMsgRequest {}
