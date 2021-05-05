@@ -140,6 +140,15 @@ enum MessageType {
 	MessageType_CosmosMsgAck = 904 [(wire_in) = true];
 	MessageType_CosmosSignedTx = 905 [(wire_out) = true];
 
+	// Tendermint
+	MessageType_TendermintGetAddress = 1000 [(wire_in) = true];
+	MessageType_TendermintAddress = 1001 [(wire_out) = true];
+	MessageType_TendermintSignTx = 1002 [(wire_in) = true];
+	MessageType_TendermintMsgRequest = 1003 [(wire_out) = true];
+	MessageType_TendermintMsgAck = 1004 [(wire_in) = true];
+	MessageType_TendermintMsgSend = 1005 [(wire_in) = true];
+	MessageType_TendermintSignedTx = 1006 [(wire_out) = true];
+
 }
 
 ////////////////////
