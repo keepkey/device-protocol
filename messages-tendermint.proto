@@ -39,6 +39,10 @@ message TendermintSignTx {
     optional string memo = 6;
     optional uint64 sequence = 7 [jstype = JS_STRING];
     optional uint32 msg_count = 8;
+    optional string denom = 9; // Full denomination, followed by minimum resolution denomination. Ex: [BTC, SAT], [ATOM, uATOM], etc.
+    optional uint64 decimals = 10; // Decimal precision Ex: 8 if minimum unit is 1.0e-8 coins.
+    optional string chain_name = 11; // Name of chain. Ex: cosmos
+    optional string message_type_prefix = 12; // Prefix for use in message type field. Ex "cosmos-sdk" in "{type: cosmos-sdk/MsgSend"
 }
 
 message TendermintMsgRequest {}
@@ -53,8 +57,7 @@ message TendermintMsgSend {
     optional uint64 amount = 8 [jstype = JS_STRING];
     optional OutputAddressType address_type = 9;
     optional ExchangeType exchange_type = 10;
-    optional string denom = 11; // Full denomination, followed by minimum resolution denomination. Ex: [BTC, SAT], [ATOM, uATOM], etc.
-    optional uint64 decimals = 12;
+
 }
 
 /**
