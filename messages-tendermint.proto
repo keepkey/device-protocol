@@ -14,7 +14,8 @@ import "types.proto";
  message TendermintGetAddress {
     repeated uint32 address_n = 1;  // BIP-32 path. For compatibility with other wallets, must be m/44'/148'/index'
     optional bool show_display = 2; // optionally show on display before sending the result
-    optional string address_prefix = 3; // prefix to prepend to generated address
+    optional bool testnet = 3;      // if true, return an address with the testnet prefix
+    optional string address_prefix = 4; // prefix to prepend to generated address
 }
 
 /**
@@ -39,10 +40,11 @@ message TendermintSignTx {
     optional string memo = 6;
     optional uint64 sequence = 7 [jstype = JS_STRING];
     optional uint32 msg_count = 8;
-    optional string denom = 9; // Full denomination, followed by minimum resolution denomination. Ex: [BTC, SAT], [ATOM, uATOM], etc.
-    optional uint64 decimals = 10; // Decimal precision Ex: 8 if minimum unit is 1.0e-8 coins.
-    optional string chain_name = 11; // Name of chain. Ex: cosmos
-    optional string message_type_prefix = 12; // Prefix for use in message type field. Ex "cosmos-sdk" in "{type: cosmos-sdk/MsgSend"
+    optional bool testnet = 9;      // if true, decode addresses with prefix 'tthor'
+    optional string denom = 10; // Full denomination, followed by minimum resolution denomination. Ex: [BTC, SAT], [ATOM, uATOM], etc.
+    optional uint64 decimals = 11; // Decimal precision Ex: 8 if minimum unit is 1.0e-8 coins.
+    optional string chain_name = 12; // Name of chain. Ex: cosmos
+    optional string message_type_prefix = 13; // Prefix for use in message type field. Ex "cosmos-sdk" in "{type: cosmos-sdk/MsgSend"
 }
 
 message TendermintMsgRequest {}

@@ -1,5 +1,10 @@
 syntax = "proto2";
 
+/**
+ * WARNING: Make sure Thorchain messages align with the tendermint messages
+ */
+
+
 // Sugar for easier handling in Java
 option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyMessageThorchain";
