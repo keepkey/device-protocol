@@ -52,7 +52,9 @@ message TendermintMsgRequest {}
 
 message TendermintMsgAck {
     optional TendermintMsgSend send = 1;
-    optional string chain_name = 2; // Name of chain. Ex: cosmos
+    optional string denom = 2; // Name of chain. Ex: cosmos
+    optional string chain_name = 3; // Name of chain. Ex: cosmos
+    optional string message_type_prefix = 4; // Name of chain. Ex: cosmos
 }
 
 message TendermintMsgSend {
