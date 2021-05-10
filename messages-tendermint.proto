@@ -63,7 +63,6 @@ message TendermintMsgSend {
     optional uint64 amount = 8 [jstype = JS_STRING];
     optional OutputAddressType address_type = 9;
     optional ExchangeType exchange_type = 10;
-
 }
 
 /**
