@@ -1,0 +1,115 @@
+syntax = "proto2";
+
+// Sugar for easier handling in Java
+option java_package = "com.shapeshift.keepkey.lib.protobuf";
+option java_outer_classname = "KeepKeyMessageEIP712";
+
+import "types.proto";
+
+enum EIP712FrameType {
+	Invalid = 0 [(wire_in) = true];
+	Struct = 1 [(wire_in) = true];
+    DynamicData = 2 [(wire_in) = true];
+    Array = 3 [(wire_in) = true];
+}
+
+////////////////////////////////
+// Ethereum: EIP-712 messages //
+////////////////////////////////
+
+/**
+ * Request: Initialize a new EIP-712 signing context.
+ * @next EIP712ContextInfo
+ * @next Failure
+ */
+message EIP712Init {
+}
+
+/**
+ * Response: A new EIP-712 signing context has been initialized, possibly with
+ * limits on the length and complexity of the input that it can handle.
+ * @prev EIP712Init
+ */
+message EIP712ContextInfo {
+	optional uint32 stack_depth_limit = 1;		// Maximum depth of the signing context's stack; limits possible struct nesting depth
+	optional uint32 type_length_limit = 2;		// Maximum length of the name of a type
+	optional uint32 name_length_limit = 3;		// Maximum length of the name of a field
+	optional uint32 dynamic_data_limit = 4;		// Maximum length of dynamic data (for `string` or `bytes`)
+	optional uint32 field_limit = 5;			// Maximum number of fields per struct
+}
+
+/**
+ * Request: Finalize the active EIP-712 signing context and sign the resulting hash
+ * with the requested key. This MUST fail if the active signing context's stack is not
+ * empty or if any EIP-712 requests have failed since the last EIP712Init.
+ * @next EthereumMessageSignature
+ * @next Failure
+ */
+message EIP712Sign {
+	repeated uint32 address_n = 1;				// BIP-32 path to derive the key from master node
+}
+
+/**
+ * Request: Finalize the active EIP-712 signing context and verify that it matches the
+ * provided address and signature. This MUST fail if the active signing context's stack
+ * is not empty or if any EIP-712 requests have failed since the last EIP712Init.
+ * @next Success
+ * @next Failure
+ */
+message EIP712Verify {
+	optional bytes address = 1;					// address to verify
+	required bytes signature = 2;				// signature to verify
+}
+
+/**
+ * Request: Push a new frame onto the active EIP-712 signing context's stack.
+ * This MAY fail if it would cause the context's stack depth to exceed the limit
+ * returned by EIP712ContextInfo. This MUST fail if the type provided is
+ * not a struct type, if its name is not a valid identifier, if a fieldName is not
+ * provided for a child struct, if a fieldName is provided for a root struct, or if
+ * any EIP-712 requests have failed since the last EIP712Init.
+ * @next Success
+ * @next Failure
+ */
+message EIP712PushFrame {
+    required EIP712FrameType frameType = 1;
+	required string encodedType = 2;
+	optional string fieldName = 3;
+}
+
+/**
+ * Request: Finalize the top-level frame in the active EIP-712 signing context's
+ * stack. This MUST fail if the stack is empty or if any EIP-712 requests have
+ * failed since the last EIP712Init.
+ * @next Success
+ * @next Failure
+ */
+message EIP712PopFrame {
+}
+
+/**
+ * Request: Append an atomic field to the topmost struct in the active EIP-712
+ * signing context. This MUST fail if the type provided is not an atomic data type,
+ * if the length of the data provided does not match the type specified, if the
+ * name provided is not a valid identifier, or if any EIP-712 requests have failed
+ * since the last EIP712Init.
+ * @next Success
+ * @next Failure
+ */
+message EIP712AppendAtomicField {
+	required string encodedType = 1;
+	required string fieldName = 2;
+	required bytes data = 3;
+}
+
+/**
+ * Request: Append a chunk of dynamic data to the active EIP-712 signing context.
+ * This MAY fail if it would exceed the context's dynamic data limit returned by
+ * EIP712ContextInfo. This MUST fail if any EIP-712 requests have failed
+ * since the last EIP712Init.
+ * @next Success
+ * @next Failure
+ */
+message EIP712AppendDynamicData {
+	required bytes data = 1;
+}

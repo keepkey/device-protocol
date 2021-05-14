@@ -167,6 +167,15 @@ enum MessageType {
 	MessageType_OsmosisMsgSwap = 1114 [(wire_in) = true];
 	MessageType_OsmosisSignedTx = 1115 [(wire_out) = true];
 
+	// EIP-712
+	MessageType_EIP712Init = 1200 [(wire_in) = true];
+	MessageType_EIP712ContextInfo = 1201 [(wire_out) = true];
+	MessageType_EIP712Sign = 1202 [(wire_in) = true];
+	MessageType_EIP712Verify = 1203 [(wire_in) = true];
+	MessageType_EIP712PushFrame = 1204 [(wire_in) = true];
+	MessageType_EIP712PopFrame = 1205 [(wire_in) = true];
+	MessageType_EIP712AppendAtomicField = 1206 [(wire_in) = true];
+	MessageType_EIP712AppendDynamicData = 1207 [(wire_in) = true];
 }
 
 ////////////////////
