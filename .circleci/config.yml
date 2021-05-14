@@ -58,6 +58,7 @@ workflows:
             - build
           filters:
             tags:
-              only: /^v.*/
+              only: 
+                - master
             branches:
               ignore: /.*/
