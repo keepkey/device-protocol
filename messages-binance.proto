@@ -83,7 +83,7 @@ message BinanceTransferMsg {
         optional string address = 1;
         repeated BinanceCoin coins = 2;
         optional OutputAddressType address_type = 3;
-        optional ExchangeType exchange_type = 4;
+        reserved 4;
     }
 
     message BinanceCoin {

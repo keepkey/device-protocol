@@ -10,7 +10,6 @@ option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyType";
 
 import "google/protobuf/descriptor.proto";
-import "exchange.proto";
 
 /**
  * Options for specifying message direction and type of wire (normal/debug)
@@ -87,7 +86,7 @@ enum OutputAddressType {
   SPEND = 0;
   TRANSFER = 1;
   CHANGE = 2;
-  EXCHANGE = 3;
+  reserved 3;
 }
 
 /**
@@ -124,7 +123,7 @@ enum ButtonRequestType {
 	ButtonRequest_GetEntropy = 27;
 	ButtonRequest_SignMessage = 28;
 	ButtonRequest_ApplyPolicies = 29;
-	ButtonRequest_SignExchange = 30;
+	reserved 30;
 	ButtonRequest_AutoLockDelayMs = 31;
 	ButtonRequest_U2FCounter = 32;
 	ButtonRequest_ConfirmEosAction = 33;
@@ -238,7 +237,7 @@ message TxOutputType {
 	optional MultisigRedeemScriptType multisig = 5; // defines multisig address; script_type must be PAYTOMULTISIG
 	optional bytes op_return_data = 6;		    	// defines op_return data; script_type must be PAYTOOPRETURN, amount must be 0
 	optional OutputAddressType address_type = 7;	// output address type 
-	optional ExchangeType exchange_type = 8;		// exchange type data        
+	reserved 8;
 	optional uint32 decred_script_version = 9;
 }
 
@@ -320,18 +319,4 @@ message IdentityType {
 message PolicyType {
 	optional string policy_name = 1;	// name of policy
 	optional bool enabled = 2;				// status of policy
-}
-
-/**
- * Structure representing exchange data
- * @used_in TxOutputType
- */
-message ExchangeType {
-	optional SignedExchangeResponse signed_exchange_response = 1;   // exchange response
-	optional string withdrawal_coin_name = 2 [default='Bitcoin'];	// coin type of the received funds
-	repeated uint32 withdrawal_address_n = 3;			    	    // BIP-32 path for received funds
-	repeated uint32 return_address_n = 4;			    	        // BIP-32 path for return address, assumed to be the
-	                                                                // same as the coin_name of the transaction
-	optional InputScriptType withdrawal_script_type = 5 [default=SPENDADDRESS];
-	optional InputScriptType return_script_type = 6 [default=SPENDADDRESS];
 }
