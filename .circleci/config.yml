@@ -8,8 +8,6 @@ defaults: &defaults
 jobs:
   build:
     <<: *defaults
-    docker:
-      - image: safetyculture/protoc-node
     steps:
       - checkout
       - restore_cache:
@@ -17,10 +15,11 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
 
-      - run: npm install
+      - run: sudo apt-get install -y protobuf-compiler
+      - run: yarn install --frozen-lockfile
       - run:
           name: Run build
-          command: npm run build
+          command: yarn build
 
       - save_cache:
           paths:
