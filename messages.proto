@@ -710,24 +710,25 @@ message RawTxAck {
  * @next Failure
  */
 message EthereumSignTx {
-	repeated uint32 address_n = 1;			// BIP-32 path to derive the key from master node
-	optional bytes nonce = 2;			// <=256 bit unsigned big endian
-	optional bytes gas_price = 3;			// <=256 bit unsigned big endian (in wei)
-	optional bytes gas_limit = 4;			// <=256 bit unsigned big endian
-	optional bytes to = 5;				// 160 bit address hash
-	optional bytes value = 6;			// <=256 bit unsigned big endian (in wei)
-	optional bytes data_initial_chunk = 7;		// The initial data chunk (<= 1024 bytes)
-	optional uint32 data_length = 8;		// Length of transaction payload
+	repeated uint32 address_n = 1;					// BIP-32 path to derive the key from master node
+	optional bytes nonce = 2;						// <=256 bit unsigned big endian
+	optional bytes gas_price = 3;					// <=256 bit unsigned big endian (in wei)
+	optional bytes gas_limit = 4;					// <=256 bit unsigned big endian
+	optional bytes to = 5;							// 160 bit address hash
+	optional bytes value = 6;						// <=256 bit unsigned big endian (in wei)
+	optional bytes data_initial_chunk = 7;			// The initial data chunk (<= 1024 bytes)
+	optional uint32 data_length = 8;				// Length of transaction payload
 	repeated uint32 to_address_n = 9;               // BIP-32 path to derive key for fund transfer
 	optional OutputAddressType address_type = 10;	// output address type 
-	optional ExchangeType exchange_type = 11;	// exchange type data        
-	optional uint32 chain_id = 12;			// Chain Id for EIP 155
-	optional bytes max_fee_per_gas = 13;		  // EIP-1559 - The maximum total fee per gas the sender is willing to pay. <=256 bit unsigned big endian (in wei)
-	optional bytes max_priority_fee_per_gas = 14; // EIP-1559 - Maximum fee per gas the sender is willing to pay to miners. <=256 bit unsigned big endian (in wei)
-	optional bytes token_value = 100;		// How many tokens to send
-	optional bytes  token_to = 101;			// 160 bit address hash to send tokens to
-	optional string token_shortcut = 102; 		// 3 or 4 character token identifier
-	optional uint32 tx_type = 103;		// (only for Wanchain)
+	optional ExchangeType exchange_type = 11;		// exchange type data        
+	optional uint32 chain_id = 12;					// Chain Id for EIP 155
+	optional bytes max_fee_per_gas = 13;		 	// EIP-1559 - The maximum total fee per gas the sender is willing to pay. <=256 bit unsigned big endian (in wei)
+	optional bytes max_priority_fee_per_gas = 14;	// EIP-1559 - Maximum fee per gas the sender is willing to pay to miners. <=256 bit unsigned big endian (in wei)
+	optional bytes token_value = 100;				// How many tokens to send
+	optional bytes  token_to = 101;					// 160 bit address hash to send tokens to
+	optional string token_shortcut = 102; 			// 3 or 4 character token identifier
+	optional uint32 tx_type = 103;					// (only for Wanchain)
+	optional uint32 type = 104;						// Ethereum tx type (0=Legacy, 1= EIP-2930, 2=EIP-1559)
 }
 
 /**
