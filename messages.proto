@@ -149,6 +149,18 @@ enum MessageType {
 	MessageType_TendermintMsgSend = 1005 [(wire_in) = true];
 	MessageType_TendermintSignedTx = 1006 [(wire_out) = true];
 
+	// Osmosis
+	MessageType_OsmosisGetAddress = 1100 [(wire_in) = true];
+	MessageType_OsmosisAddress = 1101 [(wire_out) = true];
+	MessageType_OsmosisSignTx = 1102 [(wire_in) = true];
+	MessageType_OsmosisMsgRequest = 1103 [(wire_out) = true];
+	MessageType_OsmosisMsgAck = 1104 [(wire_in) = true];
+	MessageType_OsmosisMsgSend = 1105 [(wire_in) = true];
+	MessageType_OsmosisMsgelegate = 1106 [(wire_in) = true];
+	MessageType_OsmosisMsgUndelegate = 1107 [(wire_in) = true];
+	MessageType_OsmosisMsgClaim = 1108 [(wire_in) = true];
+	MessageType_OsmosisSignedTx = 1109 [(wire_out) = true];
+
 }
 
 ////////////////////
