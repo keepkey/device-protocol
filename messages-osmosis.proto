@@ -106,19 +106,21 @@ message OsmosisLPRemove {
 message OsmosisIBCDeposit {
   optional string source_port = 1;
   optional string source_channel = 2;
-  optional OsmosisToken token = 3;
-  optional string sender = 4;
-  optional string receiver = 5;
-  optional OsmosisTimeoutHeight timeout_height = 6;
+  optional string source_chain = 3;
+  optional OsmosisToken token = 4;
+  optional string sender = 5;
+  optional string receiver = 6;
+  optional OsmosisTimeoutHeight timeout_height = 7;
 }
 
 message OsmosisIBCWithdrawal {
   optional string source_port = 1;
   optional string source_channel = 2;
-  optional OsmosisToken token = 3;
-  optional string sender = 4;
-  optional string receiver = 5;
-  optional OsmosisTimeoutHeight timeout_height = 6;
+  optional string source_chain = 3;
+  optional OsmosisToken token = 4;
+  optional string sender = 5;
+  optional string receiver = 6;
+  optional OsmosisTimeoutHeight timeout_height = 7;
 }
 
 message OsmosisMsgClaim {
