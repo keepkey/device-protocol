@@ -27,12 +27,12 @@ message OsmosisGetAddress {
  * @end
  */
 message OsmosisAddress {
-  optional string address = 1; // Address Bech32 encoded with 'thor' prefix (or 'tthor' for testnet)
+  optional string address = 1; // Bech32-encoded address
 }
 
 message OsmosisToken {
-  optional string denom = 3;
-  optional uint64 amount = 4 [ jstype = JS_STRING ];
+  optional string denom = 1;
+  optional uint64 amount = 2 [ jstype = JS_STRING ];
 }
 
 message OsmosisTimeoutHeight {
