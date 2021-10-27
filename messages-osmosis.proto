@@ -86,12 +86,6 @@ message OsmosisMsgUndelegate {
   optional OsmosisToken token = 3;
 }
 
-message OsmosisMsgRedelegate {
-  optional string delegator_address = 1;
-  optional string validator_address = 2;
-  optional OsmosisToken token = 3;
-}
-
 
 message OsmosisLPAdd {
   optional string sender = 1;
