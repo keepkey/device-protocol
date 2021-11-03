@@ -65,12 +65,19 @@ message OsmosisMsgAck {
   optional OsmosisMsgDelegate delegate = 2;
   optional OsmosisMsgUndelegate undelegate = 3;
   optional OsmosisMsgClaim claim = 4;
+  optional OsmosisMsgLPAdd lp_add = 5;
+  optional OsmosisMsgLPRemove lp_remove = 6;
+  optional OsmosisMsgFarmTokens farm_tokens = 7;
+  optional OsmosisMsgIBCDeposit ibc_deposit = 8;
+  optional OsmosisMsgIBCWithdrawal ibc_withdrawal = 9;
+  optional OsmosisMsgSwap swap = 10;
+  
 }
 
 message OsmosisMsgSend {
   optional string from_address = 1;
   optional string to_address = 2;
-  optional uint64 amount = 3 [ jstype = JS_STRING ];
+  optional OsmosisToken token = 3;
   optional OutputAddressType address_type = 4;
 }
 
@@ -86,8 +93,13 @@ message OsmosisMsgUndelegate {
   optional OsmosisToken token = 3;
 }
 
+message OsmosisMsgClaim {
+  optional string delegator_address = 1;
+  optional string validator_address = 2;
+  optional OsmosisToken token = 3;
+}
 
-message OsmosisLPAdd {
+message OsmosisMsgLPAdd {
   optional string sender = 1;
   optional string pool_id = 2;
   optional uint64 share_out_amount = 3;
@@ -95,47 +107,12 @@ message OsmosisLPAdd {
   optional OsmosisToken token_in_max_b = 5;
 }
 
-message OsmosisLPRemove {
+message OsmosisMsgLPRemove {
   optional string sender = 1;
   optional string pool_id = 2;
   optional uint64 share_out_amount = 3;
   optional OsmosisToken token_out_min_a = 4;
   optional OsmosisToken token_out_min_b = 5;
-}
-
-message OsmosisIBCDeposit {
-  optional string source_port = 1;
-  optional string source_channel = 2;
-  optional string source_chain = 3;
-  optional OsmosisToken token = 4;
-  optional string sender = 5;
-  optional string receiver = 6;
-  optional OsmosisTimeoutHeight timeout_height = 7;
-}
-
-message OsmosisIBCWithdrawal {
-  optional string source_port = 1;
-  optional string source_channel = 2;
-  optional string source_chain = 3;
-  optional OsmosisToken token = 4;
-  optional string sender = 5;
-  optional string receiver = 6;
-  optional OsmosisTimeoutHeight timeout_height = 7;
-}
-
-message OsmosisMsgClaim {
-  optional string delegator_address = 1;
-  optional string validator_address = 2;
-  optional uint64 amount = 3 [ jstype = JS_STRING ];
-}
-
-message OsmosisMsgSwap {
-  optional string sender_address = 1;
-  optional string pool_id = 2;
-  optional string token_out_denom = 3;
-  optional string token_in_denom = 4;
-  optional uint64 amount = 5;
-  optional uint64 token_out_min_amount = 6;
 }
 
 message OsmosisMsgFarmTokens {
@@ -144,6 +121,31 @@ message OsmosisMsgFarmTokens {
   optional OsmosisToken token = 3;
 }
 
+message OsmosisMsgIBCDeposit {
+  optional string source_port = 1;
+  optional string source_channel = 2;
+  optional OsmosisToken token = 3;
+  optional string sender = 4;
+  optional string receiver = 5;
+  optional OsmosisTimeoutHeight timeout_height = 6;
+}
+
+message OsmosisMsgIBCWithdrawal {
+  optional string source_port = 1;
+  optional string source_channel = 2;
+  optional OsmosisToken token = 3;
+  optional string sender = 4;
+  optional string receiver = 5;
+  optional OsmosisTimeoutHeight timeout_height = 6;
+}
+
+message OsmosisMsgSwap {
+  optional string sender = 1;
+  optional string pool_id = 2;
+  optional string token_out_denom = 3;
+  optional OsmosisToken token_in = 4;
+  optional uint64 token_out_min_amount = 5;
+}
 /**
  * Response: signature for transaction
  * @end
