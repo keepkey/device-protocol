@@ -99,6 +99,7 @@ message CosmosMsgIBCTransfer {
   optional string revision_height = 5;
   optional string revision_number = 6;
   optional string denom = 7;
+  optional uint64 amount = 8;
 }
 
 /**
