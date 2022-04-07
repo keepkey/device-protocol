@@ -96,11 +96,9 @@ message CosmosMsgIBCTransfer {
   optional string sender = 2;
   optional string source_channel = 3;
   optional string source_port = 4;
-  message timeout_height {
-    optional string revision_height = 1;
-    optional string revision_number = 2;
-  }
-  optional string denom = 5;
+  optional string revision_height = 5;
+  optional string revision_number = 6;
+  optional string denom = 7;
 }
 
 /**
