@@ -52,9 +52,14 @@ message TendermintMsgRequest {}
 
 message TendermintMsgAck {
     optional TendermintMsgSend send = 1;
-    optional string denom = 2; // Name of chain. Ex: cosmos
-    optional string chain_name = 3; // Name of chain. Ex: cosmos
-    optional string message_type_prefix = 4; // Name of chain. Ex: cosmos
+    optional TendermintMsgDelegate delegate = 2;
+    optional TendermintMsgUndelegate undelegate = 3;
+    optional TendermintMsgRedelegate redelegate = 4;
+    optional TendermintMsgRewards rewards = 5;
+    optional TendermintMsgIBCTransfer ibc_transfer = 6;
+    optional string denom = 7; // Name of chain. Ex: cosmos
+    optional string chain_name = 8; // Name of chain. Ex: cosmos
+    optional string message_type_prefix = 9; // Name of chain. Ex: cosmos
 }
 
 message TendermintMsgSend {
@@ -64,6 +69,43 @@ message TendermintMsgSend {
     optional OutputAddressType address_type = 9;
     optional ExchangeType exchange_type = 10;
 }
+
+message TendermintMsgDelegate {
+    optional string delegator_address = 1;
+    optional string validator_address = 2;
+    optional uint64 amount = 3 [ jstype = JS_STRING ];
+  }
+  
+  message TendermintMsgUndelegate {
+    optional string delegator_address = 1;
+    optional string validator_address = 2;
+    optional uint64 amount = 3 [ jstype = JS_STRING ];
+  }
+  
+  message TendermintMsgRedelegate {
+    optional string delegator_address = 1;
+    optional string validator_src_address = 2;
+    optional string validator_dst_address = 3;
+    optional uint64 amount = 4 [ jstype = JS_STRING ];
+  }
+  
+  message TendermintMsgRewards {
+    optional string delegator_address = 1;
+    optional string validator_address = 2;
+    optional uint64 amount = 3 [ jstype = JS_STRING ];
+  }
+  
+  message TendermintMsgIBCTransfer {
+      optional string receiver = 1;
+      optional string sender = 2;
+      optional string source_channel = 3;
+      optional string source_port = 4;
+      message timeout_height {
+          optional string revision_height = 1;
+          optional string revision_number = 2;
+      }
+      optional string denom = 5;
+  }
 
 /**
  * Response: signature for transaction
