@@ -126,6 +126,18 @@ message OsmosisMsgLPRemove {
   optional uint64 amount_out_min_b = 7 [ jstype = JS_STRING ];
 }
 
+message OsmosisMsgLPStake {
+  optional string owner = 1;
+  optional uint64 duration = 2;
+  optional string denom = 4;
+  optional uint64 amount = 5 [ jstype = JS_STRING ];
+}
+
+message OsmosisMsgLPUnstake {
+  optional string owner = 1;
+  optional string id = 2;
+}
+
 message OsmosisMsgFarmTokens {
   optional string owner = 1;
   optional uint64 duration = 2;

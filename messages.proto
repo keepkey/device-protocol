@@ -171,12 +171,14 @@ enum MessageType {
 	MessageType_OsmosisMsgRedelegate = 1108 [(wire_in) = true];
 	MessageType_OsmosisMsgLPAdd = 1109 [(wire_in) = true];
 	MessageType_OsmosisMsgLPRemove = 1110 [(wire_in) = true];
-	MessageType_OsmosisMsgFarmTokens = 1111 [(wire_in) = true];
-	MessageType_OsmosisMsgIBCDeposit = 1112 [(wire_in) = true];
-	MessageType_OsmosisMsgWithdrawal = 1113 [(wire_in) = true];
-	MessageType_OsmosisMsgSwap = 1114 [(wire_in) = true];
-	MessageType_OsmosisMsgRewards = 1115 [(wire_in) = true];
-	MessageType_OsmosisSignedTx = 1116 [(wire_out) = true];
+	MessageType_OsmosisMsgLPStake = 1111 [(wire_in) = true];
+	MessageType_OsmosisMsgLPUnstake = 1112 [(wire_in) = true];
+	MessageType_OsmosisMsgFarmTokens = 1113 [(wire_in) = true];
+	MessageType_OsmosisMsgIBCDeposit = 1114 [(wire_in) = true];
+	MessageType_OsmosisMsgWithdrawal = 1115 [(wire_in) = true];
+	MessageType_OsmosisMsgSwap = 1116 [(wire_in) = true];
+	MessageType_OsmosisMsgRewards = 1117 [(wire_in) = true];
+	MessageType_OsmosisSignedTx = 1118 [(wire_out) = true];
 
 }
 
