@@ -166,16 +166,17 @@ enum MessageType {
 	MessageType_OsmosisMsgRequest = 1103 [(wire_out) = true];
 	MessageType_OsmosisMsgAck = 1104 [(wire_in) = true];
 	MessageType_OsmosisMsgSend = 1105 [(wire_in) = true];
-	MessageType_OsmosisMsgelegate = 1106 [(wire_in) = true];
+	MessageType_OsmosisMsgeDelegate = 1106 [(wire_in) = true];
 	MessageType_OsmosisMsgUndelegate = 1107 [(wire_in) = true];
-	MessageType_OsmosisMsgRewards = 1108 [(wire_in) = true];
+	MessageType_OsmosisMsgRedelegate = 1108 [(wire_in) = true];
 	MessageType_OsmosisMsgLPAdd = 1109 [(wire_in) = true];
 	MessageType_OsmosisMsgLPRemove = 1110 [(wire_in) = true];
 	MessageType_OsmosisMsgFarmTokens = 1111 [(wire_in) = true];
 	MessageType_OsmosisMsgIBCDeposit = 1112 [(wire_in) = true];
 	MessageType_OsmosisMsgWithdrawal = 1113 [(wire_in) = true];
 	MessageType_OsmosisMsgSwap = 1114 [(wire_in) = true];
-	MessageType_OsmosisSignedTx = 1115 [(wire_out) = true];
+	MessageType_OsmosisMsgRewards = 1115 [(wire_in) = true];
+	MessageType_OsmosisSignedTx = 1116 [(wire_out) = true];
 
 }
 
