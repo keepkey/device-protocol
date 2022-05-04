@@ -41,7 +41,7 @@ message OsmosisAddress {
  */
 message OsmosisSignTx {
   /* BIP-32 path. For compatibility with other wallets, must be
-   * m/44'/931'/index'/0/0 */
+   * m/44'/118'/index'/0/0 */
   repeated uint32 address_n = 1;
   optional uint64 account_number = 2 [ jstype = JS_STRING ];
   optional string chain_id = 3;
@@ -146,8 +146,8 @@ message OsmosisMsgIBCTransfer {
   optional uint64 amount = 4 [ jstype = JS_STRING ];
   optional string sender = 5;
   optional string receiver = 6;
-  optional uint64 revision_number = 7;
-  optional uint64 revision_height = 8;
+  optional string revision_number = 7;
+  optional string revision_height = 8;
 }
 
 message OsmosisMsgSwap {
