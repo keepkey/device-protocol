@@ -168,7 +168,7 @@ enum MessageType {
 	MessageType_OsmosisMsgSend = 1105 [(wire_in) = true];
 	MessageType_OsmosisMsgelegate = 1106 [(wire_in) = true];
 	MessageType_OsmosisMsgUndelegate = 1107 [(wire_in) = true];
-	MessageType_OsmosisMsgClaim = 1108 [(wire_in) = true];
+	MessageType_OsmosisMsgRewards = 1108 [(wire_in) = true];
 	MessageType_OsmosisMsgLPAdd = 1109 [(wire_in) = true];
 	MessageType_OsmosisMsgLPRemove = 1110 [(wire_in) = true];
 	MessageType_OsmosisMsgFarmTokens = 1111 [(wire_in) = true];
