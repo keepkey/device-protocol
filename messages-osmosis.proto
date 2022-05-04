@@ -4,7 +4,7 @@ syntax = "proto2";
  * WARNING: Make sure Osmosis messages align with the tendermint messages
  */
 
-// Sugar for easier handling in Java
+/* Sugar for easier handling in Java */
 option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyMessageOsmosis";
 
@@ -16,10 +16,13 @@ import "types.proto";
  * @next OsmosisAddress
  */
 message OsmosisGetAddress {
-  repeated uint32 address_n = 1; // BIP-32 path. For compatibility with other
-                                 // wallets, must be m/44'/931'/index'
-  optional bool show_display = 2; // optionally show on display before sending the result
-  optional bool testnet = 3; // if true, return an address with the testnet prefix
+  /* BIP-32 path. For compatibility with other wallets, must be
+   * m/44'/931'/index' */
+  repeated uint32 address_n = 1;
+  /* optionally show on display before sending the result */
+  optional bool show_display = 2;
+  /* if true, return an address with the testnet prefix */
+  optional bool testnet = 3;
 }
 
 /**
@@ -27,17 +30,8 @@ message OsmosisGetAddress {
  * @end
  */
 message OsmosisAddress {
-  optional string address = 1; // Bech32-encoded address
-}
-
-message OsmosisToken {
-  optional string denom = 1;
-  optional uint64 amount = 2 [ jstype = JS_STRING ];
-}
-
-message OsmosisTimeoutHeight {
-  optional uint64 revision_number = 1;
-  optional uint64 revision_height = 2;
+  /* Bech32-encoded address */
+  optional string address = 1;
 }
 
 /**
@@ -46,8 +40,9 @@ message OsmosisTimeoutHeight {
  * @next OsmosisSignedTx
  */
 message OsmosisSignTx {
-  repeated uint32 address_n = 1; // BIP-32 path. For compatibility with other
-                                 // wallets, must be m/44'/931'/index'/0/0
+  /* BIP-32 path. For compatibility with other wallets, must be
+   * m/44'/931'/index'/0/0 */
+  repeated uint32 address_n = 1;
   optional uint64 account_number = 2 [ jstype = JS_STRING ];
   optional string chain_id = 3;
   optional uint32 fee_amount = 4;
@@ -55,7 +50,8 @@ message OsmosisSignTx {
   optional string memo = 6;
   optional uint64 sequence = 7 [ jstype = JS_STRING ];
   optional uint32 msg_count = 8;
-  optional bool testnet = 9; // if true, decode addresses with prefix 'tthor'
+  /* if true, decode addresses with prefix 'tosmo' */
+  optional bool testnet = 9;
 }
 
 message OsmosisMsgRequest {}
@@ -64,93 +60,111 @@ message OsmosisMsgAck {
   optional OsmosisMsgSend send = 1;
   optional OsmosisMsgDelegate delegate = 2;
   optional OsmosisMsgUndelegate undelegate = 3;
-  optional OsmosisMsgClaim claim = 4;
-  optional OsmosisMsgLPAdd lp_add = 5;
-  optional OsmosisMsgLPRemove lp_remove = 6;
-  optional OsmosisMsgFarmTokens farm_tokens = 7;
-  optional OsmosisMsgIBCDeposit ibc_deposit = 8;
-  optional OsmosisMsgIBCWithdrawal ibc_withdrawal = 9;
-  optional OsmosisMsgSwap swap = 10;
-  
+  optional OsmosisMsgRedelegate redelegate = 4;
+  optional OsmosisMsgRewards rewards = 5;
+  optional OsmosisMsgLPAdd lp_add = 6;
+  optional OsmosisMsgLPRemove lp_remove = 7;
+  optional OsmosisMsgLPStake lp_stake = 8;
+  optional OsmosisMsgLPUnstake lp_unstake = 9;
+  optional OsmosisMsgIBCTransfer ibc_transfer = 10;
+  optional OsmosisMsgSwap swap = 11;
 }
 
 message OsmosisMsgSend {
   optional string from_address = 1;
   optional string to_address = 2;
-  optional OsmosisToken token = 3;
-  optional OutputAddressType address_type = 4;
+  optional string denom = 3;
+  optional uint64 amount = 4 [ jstype = JS_STRING ];
+  optional OutputAddressType address_type = 5;
 }
 
 message OsmosisMsgDelegate {
   optional string delegator_address = 1;
   optional string validator_address = 2;
-  optional OsmosisToken token = 3;
+  optional string denom = 3;
+  optional uint64 amount = 4 [ jstype = JS_STRING ];
 }
 
 message OsmosisMsgUndelegate {
   optional string delegator_address = 1;
   optional string validator_address = 2;
-  optional OsmosisToken token = 3;
+  optional string denom = 3;
+  optional uint64 amount = 4 [ jstype = JS_STRING ];
 }
 
-message OsmosisMsgClaim {
+message OsmosisMsgRedelegate {
+  optional string delegator_address = 1;
+  optional string validator_src_address = 2;
+  optional string validator_dst_address = 3;
+  optional string denom = 4;
+  optional uint64 amount = 5 [ jstype = JS_STRING ];
+}
+
+message OsmosisMsgRewards {
   optional string delegator_address = 1;
   optional string validator_address = 2;
-  optional OsmosisToken token = 3;
+  optional string denom = 3;
+  optional uint64 amount = 4 [ jstype = JS_STRING ];
 }
 
 message OsmosisMsgLPAdd {
   optional string sender = 1;
   optional string pool_id = 2;
   optional uint64 share_out_amount = 3;
-  optional OsmosisToken token_in_max_a = 4;
-  optional OsmosisToken token_in_max_b = 5;
+  optional string denom_in_max_a = 4;
+  optional uint64 amount_in_max_a = 5 [ jstype = JS_STRING ];
+  optional string denom_in_max_b = 6;
+  optional uint64 amount_in_max_b = 7 [ jstype = JS_STRING ];
 }
 
 message OsmosisMsgLPRemove {
   optional string sender = 1;
   optional string pool_id = 2;
   optional uint64 share_out_amount = 3;
-  optional OsmosisToken token_out_min_a = 4;
-  optional OsmosisToken token_out_min_b = 5;
+  optional string denom_out_min_a = 4;
+  optional uint64 amount_out_min_a = 5 [ jstype = JS_STRING ];
+  optional string denom_out_min_b = 6;
+  optional uint64 amount_out_min_b = 7 [ jstype = JS_STRING ];
 }
 
-message OsmosisMsgFarmTokens {
+message OsmosisMsgLPStake {
   optional string owner = 1;
   optional uint64 duration = 2;
-  optional OsmosisToken token = 3;
+  optional string denom = 4;
+  optional uint64 amount = 5 [ jstype = JS_STRING ];
 }
 
-message OsmosisMsgIBCDeposit {
-  optional string source_port = 1;
-  optional string source_channel = 2;
-  optional OsmosisToken token = 3;
-  optional string sender = 4;
-  optional string receiver = 5;
-  optional OsmosisTimeoutHeight timeout_height = 6;
+message OsmosisMsgLPUnstake {
+  optional string owner = 1;
+  optional string id = 2;
 }
 
-message OsmosisMsgIBCWithdrawal {
+message OsmosisMsgIBCTransfer {
   optional string source_port = 1;
   optional string source_channel = 2;
-  optional OsmosisToken token = 3;
-  optional string sender = 4;
-  optional string receiver = 5;
-  optional OsmosisTimeoutHeight timeout_height = 6;
+  optional string denom = 3;
+  optional uint64 amount = 4 [ jstype = JS_STRING ];
+  optional string sender = 5;
+  optional string receiver = 6;
+  optional uint64 revision_number = 7;
+  optional uint64 revision_height = 8;
 }
 
 message OsmosisMsgSwap {
   optional string sender = 1;
   optional string pool_id = 2;
   optional string token_out_denom = 3;
-  optional OsmosisToken token_in = 4;
-  optional uint64 token_out_min_amount = 5;
+  optional string token_in_denom = 4;
+  optional uint64 token_in_amount = 5 [ jstype = JS_STRING ];
+  optional uint64 token_out_min_amount = 6;
 }
 /**
  * Response: signature for transaction
  * @end
  */
 message OsmosisSignedTx {
-  optional bytes public_key = 1; // public key for the private key used to sign data
-  optional bytes signature = 2; // signature suitable for sending to the Osmosis network
+  /* public key for the private key used to sign data */
+  optional bytes public_key = 1;
+  /* signature suitable for sending to the Osmosis network */
+  optional bytes signature = 2;
 }
