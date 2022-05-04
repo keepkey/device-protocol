@@ -60,13 +60,14 @@ message OsmosisMsgAck {
   optional OsmosisMsgSend send = 1;
   optional OsmosisMsgDelegate delegate = 2;
   optional OsmosisMsgUndelegate undelegate = 3;
-  optional OsmosisMsgRewards rewards = 4;
-  optional OsmosisMsgLPAdd lp_add = 5;
-  optional OsmosisMsgLPRemove lp_remove = 6;
-  optional OsmosisMsgFarmTokens farm_tokens = 7;
-  optional OsmosisMsgIBCDeposit ibc_deposit = 8;
-  optional OsmosisMsgIBCWithdrawal ibc_withdrawal = 9;
-  optional OsmosisMsgSwap swap = 10;
+  optional OsmosisMsgRedelegate redelegate = 4;
+  optional OsmosisMsgRewards rewards = 5;
+  optional OsmosisMsgLPAdd lp_add = 6;
+  optional OsmosisMsgLPRemove lp_remove = 7;
+  optional OsmosisMsgLPStake lp_stake = 8;
+  optional OsmosisMsgLPUnstake lp_unstake = 9;
+  optional OsmosisMsgIBCTransfer ibc_transfer = 10;
+  optional OsmosisMsgSwap swap = 11;
 }
 
 message OsmosisMsgSend {
@@ -138,25 +139,7 @@ message OsmosisMsgLPUnstake {
   optional string id = 2;
 }
 
-message OsmosisMsgFarmTokens {
-  optional string owner = 1;
-  optional uint64 duration = 2;
-  optional string denom = 3;
-  optional uint64 amount = 4 [ jstype = JS_STRING ];
-}
-
-message OsmosisMsgIBCDeposit {
-  optional string source_port = 1;
-  optional string source_channel = 2;
-  optional string denom = 3;
-  optional uint64 amount = 4 [ jstype = JS_STRING ];
-  optional string sender = 5;
-  optional string receiver = 6;
-  optional uint64 revision_number = 7;
-  optional uint64 revision_height = 8;
-}
-
-message OsmosisMsgIBCWithdrawal {
+message OsmosisMsgIBCTransfer {
   optional string source_port = 1;
   optional string source_channel = 2;
   optional string denom = 3;
