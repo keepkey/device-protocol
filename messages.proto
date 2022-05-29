@@ -750,7 +750,7 @@ message EthereumSignTx {
 	optional uint32 data_length = 8;		// Length of transaction payload
 	repeated uint32 to_address_n = 9;               // BIP-32 path to derive key for fund transfer
 	optional OutputAddressType address_type = 10;	// output address type 
-	optional ExchangeType exchange_type = 11;	// exchange type data        
+	reserved 11;
 	optional uint32 chain_id = 12;			// Chain Id for EIP 155
 	optional bytes max_fee_per_gas = 13;		// EIP-1559 - The maximum total fee per gas the sender is willing to pay. <=256 bit unsigned big endian (in wei)
 	optional bytes max_priority_fee_per_gas = 14;	// EIP-1559 - Maximum fee per gas the sender is willing to pay to miners. <=256 bit unsigned big endian (in wei)

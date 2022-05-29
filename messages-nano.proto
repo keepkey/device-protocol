@@ -9,8 +9,6 @@ syntax = "proto2";
 option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyMessageNano";
 
-import "types.proto";
-
 /**
  * Request: Ask device for Nano address corresponding to address_n path
  * @next PassphraseRequest
@@ -45,7 +43,7 @@ message NanoSignTx {
     repeated uint32 link_recipient_n = 6;         // BIP-32 path to derive address for recipient
     optional string representative = 7;
     optional bytes balance = 8;                   // uint128 (big-endian encoded)
-    optional ExchangeType exchange_type = 9;      // exchange type data
+    reserved 9;
 
     message ParentBlock {
         optional bytes parent_hash = 1;
