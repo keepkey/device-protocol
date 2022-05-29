@@ -139,6 +139,11 @@ enum MessageType {
 	MessageType_CosmosMsgRequest = 903 [(wire_out) = true];
 	MessageType_CosmosMsgAck = 904 [(wire_in) = true];
 	MessageType_CosmosSignedTx = 905 [(wire_out) = true];
+	MessageType_CosmosMsgDelegate = 906 [(wire_out) = true];
+	MessageType_CosmosMsgUndelegate = 907 [(wire_out) = true];
+	MessageType_CosmosMsgRedelegate = 908 [(wire_out) = true];
+	MessageType_CosmosMsgRewards = 909 [(wire_out) = true];
+	MessageType_CosmosMsgIBCTransfer = 910 [(wire_out) = true];
 
 	// Tendermint
 	MessageType_TendermintGetAddress = 1000 [(wire_in) = true];
@@ -148,6 +153,30 @@ enum MessageType {
 	MessageType_TendermintMsgAck = 1004 [(wire_in) = true];
 	MessageType_TendermintMsgSend = 1005 [(wire_in) = true];
 	MessageType_TendermintSignedTx = 1006 [(wire_out) = true];
+	MessageType_TendermintMsgDelegate = 1007 [(wire_out) = true];
+	MessageType_TendermintMsgUndelegate = 1008 [(wire_out) = true];
+	MessageType_TendermintMsgRedelegate = 1009 [(wire_out) = true];
+	MessageType_TendermintMsgRewards = 1010 [(wire_out) = true];
+	MessageType_TendermintMsgIBCTransfer = 1011 [(wire_out) = true];
+
+	// Osmosis
+	MessageType_OsmosisGetAddress = 1100 [(wire_in) = true];
+	MessageType_OsmosisAddress = 1101 [(wire_out) = true];
+	MessageType_OsmosisSignTx = 1102 [(wire_in) = true];
+	MessageType_OsmosisMsgRequest = 1103 [(wire_out) = true];
+	MessageType_OsmosisMsgAck = 1104 [(wire_in) = true];
+	MessageType_OsmosisMsgSend = 1105 [(wire_in) = true];
+	MessageType_OsmosisMsgDelegate = 1106 [(wire_in) = true];
+	MessageType_OsmosisMsgUndelegate = 1107 [(wire_in) = true];
+	MessageType_OsmosisMsgRedelegate = 1108 [(wire_in) = true];
+	MessageType_OsmosisMsgRewards = 1109 [(wire_in) = true];
+	MessageType_OsmosisMsgLPAdd = 1110 [(wire_in) = true];
+	MessageType_OsmosisMsgLPRemove = 1111 [(wire_in) = true];
+	MessageType_OsmosisMsgLPStake = 1112 [(wire_in) = true];
+	MessageType_OsmosisMsgLPUnstake = 1113 [(wire_in) = true];
+	MessageType_OsmosisMsgIBCTranfer = 1114 [(wire_in) = true];
+	MessageType_OsmosisMsgSwap = 1115 [(wire_in) = true];
+	MessageType_OsmosisSignedTx = 1116 [(wire_out) = true];
 
 }
 
@@ -198,6 +227,7 @@ message Features {
 	optional bytes firmware_hash = 23;		// double sha256 hash of the firmware
 	optional bool no_backup = 24;			// Device was initialized without displaying recovery sentence.
 	optional bool wipe_code_protection = 25;
+	optional uint32 auto_lock_delay_ms = 26; // Current auto lock delay (in milliseconds)
 }
 
 /**
@@ -722,12 +752,13 @@ message EthereumSignTx {
 	optional OutputAddressType address_type = 10;	// output address type 
 	reserved 11;
 	optional uint32 chain_id = 12;			// Chain Id for EIP 155
-	optional bytes max_fee_per_gas = 13;		  // EIP-1559 - The maximum total fee per gas the sender is willing to pay. <=256 bit unsigned big endian (in wei)
-	optional bytes max_priority_fee_per_gas = 14; // EIP-1559 - Maximum fee per gas the sender is willing to pay to miners. <=256 bit unsigned big endian (in wei)
+	optional bytes max_fee_per_gas = 13;		// EIP-1559 - The maximum total fee per gas the sender is willing to pay. <=256 bit unsigned big endian (in wei)
+	optional bytes max_priority_fee_per_gas = 14;	// EIP-1559 - Maximum fee per gas the sender is willing to pay to miners. <=256 bit unsigned big endian (in wei)
 	optional bytes token_value = 100;		// How many tokens to send
 	optional bytes  token_to = 101;			// 160 bit address hash to send tokens to
 	optional string token_shortcut = 102; 		// 3 or 4 character token identifier
-	optional uint32 tx_type = 103;		// (only for Wanchain)
+	optional uint32 tx_type = 103;			// (only for Wanchain)
+	optional uint32 type = 104;			// Ethereum tx type (0=Legacy, 1=EIP-2930, 2=EIP-1559)
 }
 
 /**
