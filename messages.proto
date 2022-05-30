@@ -174,7 +174,7 @@ enum MessageType {
 	MessageType_OsmosisMsgLPRemove = 1111 [(wire_in) = true];
 	MessageType_OsmosisMsgLPStake = 1112 [(wire_in) = true];
 	MessageType_OsmosisMsgLPUnstake = 1113 [(wire_in) = true];
-	MessageType_OsmosisMsgIBCTranfer = 1114 [(wire_in) = true];
+	MessageType_OsmosisMsgIBCTransfer = 1114 [(wire_in) = true];
 	MessageType_OsmosisMsgSwap = 1115 [(wire_in) = true];
 	MessageType_OsmosisSignedTx = 1116 [(wire_out) = true];
 
