@@ -93,14 +93,15 @@ enum MessageType {
 	MessageType_ChangeWipeCode = 111 [(wire_in) = true];
 
 	// eip-712 messages
-  MessageType_EthereumTypedDataSignature = 112 [(wire_out) = true];
-  MessageType_EthereumSignTypedHash = 113 [(wire_in) = true];
+  MessageType_EthereumSignTypedHash = 112 [(wire_in) = true];
+  MessageType_EthereumTypedDataSignature = 113 [(wire_out) = true];
 
-  MessageType_EthereumSignTypedData = 114 [(wire_in) = true];
-  MessageType_EthereumTypedDataStructRequest = 115 [(wire_out) = true];
-  MessageType_EthereumTypedDataStructAck = 116 [(wire_in) = true];
-  MessageType_EthereumTypedDataValueRequest = 117 [(wire_out) = true];
-  MessageType_EthereumTypedDataValueAck = 118 [(wire_in) = true];
+	// not implemented
+  //MessageType_EthereumSignTypedData = 114 [(wire_in) = true];
+  //MessageType_EthereumTypedDataStructRequest = 115 [(wire_out) = true];
+  //MessageType_EthereumTypedDataStructAck = 116 [(wire_in) = true];
+  //MessageType_EthereumTypedDataValueRequest = 117 [(wire_out) = true];
+  //MessageType_EthereumTypedDataValueAck = 118 [(wire_in) = true];
 
 
 	// Ripple
