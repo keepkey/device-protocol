@@ -142,6 +142,8 @@ message EthereumSignTypedHash {
 message EthereumTypedDataSignature {
     required bytes signature = 1;    // signature of the typed data
     required string address = 2;     // address used to sign the typed data
+    optional bytes domain_separator_hash = 3;   // Hash of domainSeparator of typed data that was calculated
+    optional bytes message_hash = 4;            // Hash of the data of typed data that was calculated
 }
 
 
