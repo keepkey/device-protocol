@@ -167,8 +167,7 @@ These are the messages for eip-712 verify and sign
  * Types property must be sent first in order to avoid state machine error
  */
 message E712TypesProp {
-    repeated uint32 address_n = 1;      // BIP-32 path to derive the key from master node
-		required bytes eip712types = 2;			// "types" json string (up to 2048)
+		required bytes eip712types = 1;			// "types" json string (up to 2048)
 }
 
 /**
@@ -191,6 +190,7 @@ message E712PrimeTypeProp {
  * "domain" must be sent first, then "message"
  */
 message E712Values {
-		required bytes eip712data = 1;			// json string (up to 2048)
-	  required uint32 eip712property = 2;	// eip-712 property in EIP712data (0=domain, 1=message)
+    repeated uint32 address_n = 1;      // BIP-32 path to derive the key from master node
+		required bytes eip712data = 2;			// json string (up to 2048)
+	  required uint32 eip712property = 3;	// eip-712 property in EIP712data (0=domain, 1=message)
 }
