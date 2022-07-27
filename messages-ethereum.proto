@@ -143,44 +143,20 @@ message EthereumSignTypedHash {
 message EthereumTypedDataSignature {
     required bytes signature = 1;    						// signature of the typed data
     required string address = 2;     						// address used to sign the typed data
-		optional uint32 eip712typevals = 3;					// device requests values 1 = "domain", 2 = "message"
-    optional bytes domain_separator_hash = 4;   // Hash of domainSeparator of typed data that was calculated
-    optional bytes message_hash = 5;            // Hash of the data of typed data that was calculated
+    optional bytes domain_separator_hash = 3;   // Hash of domainSeparator of typed data that was calculated
+    optional bytes message_hash = 4;            // Hash of the data of typed data that was calculated
 }
 
-
-/*
-These are the messages for eip-712 verify and sign
-
-	eip-712 message properties must be sent in the following order to prevent state machine error:
-
-			request  E712Types - send types property and primaryType
-			response EthereumTypedDataSignature - device requests eip712typedata for "domain"
-			request EIP712ValuesRequest - send "domain" property data
-			response EthereumTypedDataSignature - device requests eip712typedata for "message"
-			request EIP712ValuesRequest - send "message" property data
-			response EthereumTypedDataSignature - device responds with signature and hashes
-*/
-
 /**
- * Request: Send types data to the device
+ * Request: Send the device types+domain or types+message data, return appropriate hash
  * @start
  * @next EthereumTypedDataSignature
  * @next Failure
- * 
- * Types property must be sent first in order to avoid state machine error
  */
-message E712Types {
-		required string eip712types = 1;					// "types" json string (up to 2048)
-		optional string eip712primetype = 2;			// primaryType (up to 80 bytes)
-}
-
-/**
- * Request: Send types values requested by the device to the device
- * @next EthereumTypedDataSignature
- * @next Failure
- */
-message E712ValuesRequest {
-    repeated uint32 address_n = 1;      // BIP-32 path to derive the key from master node
-		required string eip712data = 2;			// json string (up to 2048)
+message E712TypesValues {
+    repeated uint32 address_n = 1;      	// BIP-32 path to derive the key from master node
+		required string eip712types = 2;			// "types" json string (up to 2048)
+		required string eip712primetype = 3;	// primaryType (up to 80 bytes)
+		required string eip712data = 4;				// "domain" or "message" json string (up to 2048)
+		optional uint32 eip712typevals = 5;		// device calculates hash for 1 = domain sep, 2 = message
 }
