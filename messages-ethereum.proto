@@ -158,5 +158,5 @@ message E712TypesValues {
 		required string eip712types = 2;			// "types" json string (up to 2048)
 		required string eip712primetype = 3;	// primaryType (up to 80 bytes)
 		required string eip712data = 4;				// "domain" or "message" json string (up to 2048)
-		optional uint32 eip712typevals = 5;		// device calculates hash for 1 = domain sep, 2 = message
+		required uint32 eip712typevals = 5;		// device calculates hash for 1 = domain sep, 2 = message
 }
