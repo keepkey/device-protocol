@@ -153,7 +153,7 @@ message EthereumTypedDataSignature {
  * @next EthereumTypedDataSignature
  * @next Failure
  */
-message E712TypesValues {
+message Ethereum712TypesValues {
     repeated uint32 address_n = 1;      	// BIP-32 path to derive the key from master node
 		required string eip712types = 2;			// "types" json string (up to 2048)
 		required string eip712primetype = 3;	// primaryType (up to 80 bytes)
