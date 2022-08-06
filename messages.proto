@@ -95,6 +95,7 @@ enum MessageType {
 	// eip-712 messages
   MessageType_EthereumSignTypedHash = 112 [(wire_in) = true];
   MessageType_EthereumTypedDataSignature = 113 [(wire_out) = true];
+  MessageType_Ethereum712TypesValues = 114  [(wire_in) = true];
 
 	// Ripple
 	MessageType_RippleGetAddress = 400 [(wire_in) = true];

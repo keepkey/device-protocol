@@ -137,9 +137,27 @@ message EthereumSignTypedHash {
 
 /**
  * Response: Signed typed data
+ * @E712ValuesRequest
  * @end
  */
 message EthereumTypedDataSignature {
-    required bytes signature = 1;    // signature of the typed data
-    required string address = 2;     // address used to sign the typed data
+    required bytes signature = 1;    						// signature of the typed data
+    required string address = 2;     						// address used to sign the typed data
+    optional bytes domain_separator_hash = 3;   // Hash of domainSeparator of typed data that was calculated
+		required bool has_msg_hash = 4;							// message_hash is null if FALSE
+    optional bytes message_hash = 5;            // Hash of the data of typed data that was calculated
+}
+
+/**
+ * Request: Send the device types+domain or types+message data, return appropriate hash
+ * @start
+ * @next EthereumTypedDataSignature
+ * @next Failure
+ */
+message Ethereum712TypesValues {
+    repeated uint32 address_n = 1;      	// BIP-32 path to derive the key from master node
+		required string eip712types = 2;			// "types" json string (up to 2048)
+		required string eip712primetype = 3;	// primaryType (up to 80 bytes)
+		required string eip712data = 4;				// "domain" or "message" json string (up to 2048)
+		required uint32 eip712typevals = 5;		// device calculates hash for 1 = domain sep, 2 = message
 }
