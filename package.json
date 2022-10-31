@@ -1,5 +1,5 @@
 {
-  "name": "@markrypto/device-protocol",
+  "name": "@keepkey/device-protocol",
   "version": "7.10.0",
   "publishConfig": {
     "access": "public"
