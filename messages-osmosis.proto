@@ -103,8 +103,6 @@ message OsmosisMsgRedelegate {
 message OsmosisMsgRewards {
   optional string delegator_address = 1;
   optional string validator_address = 2;
-  optional string denom = 3;
-  optional string amount = 4;
 }
 
 message OsmosisMsgLPAdd {
