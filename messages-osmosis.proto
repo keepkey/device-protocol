@@ -100,14 +100,9 @@ message OsmosisMsgRedelegate {
   optional string amount = 5;
 }
 
-message OsmosisMsgRewards {
-  optional string delegator_address = 1;
-  optional string validator_address = 2;
-}
-
 message OsmosisMsgLPAdd {
   optional string sender = 1;
-  optional uint64 pool_id = 2;
+  optional uint64 pool_id = 2 [ jstype = JS_STRING ];
   optional string share_out_amount = 3;
   optional string denom_in_max_a = 4;
   optional string amount_in_max_a = 5;
@@ -117,7 +112,7 @@ message OsmosisMsgLPAdd {
 
 message OsmosisMsgLPRemove {
   optional string sender = 1;
-  optional uint64 pool_id = 2;
+  optional uint64 pool_id = 2 [ jstype = JS_STRING ];
   optional string share_out_amount = 3;
   optional string denom_out_min_a = 4;
   optional string amount_out_min_a = 5;
@@ -127,7 +122,7 @@ message OsmosisMsgLPRemove {
 
 message OsmosisMsgLPStake {
   optional string owner = 1;
-  optional uint64 duration = 2;
+  optional uint64 duration = 2 [ jstype = JS_STRING ];
   optional string denom = 4;
   optional string amount = 5;
 }
@@ -135,6 +130,11 @@ message OsmosisMsgLPStake {
 message OsmosisMsgLPUnstake {
   optional string owner = 1;
   optional string id = 2;
+}
+
+message OsmosisMsgRewards {
+  optional string delegator_address = 1;
+  optional string validator_address = 2;
 }
 
 message OsmosisMsgIBCTransfer {
@@ -150,7 +150,7 @@ message OsmosisMsgIBCTransfer {
 
 message OsmosisMsgSwap {
   optional string sender = 1;
-  optional uint64 pool_id = 2;
+  optional uint64 pool_id = 2 [ jstype = JS_STRING ];
   optional string token_out_denom = 3;
   optional string token_in_denom = 4;
   optional string token_in_amount = 5;
