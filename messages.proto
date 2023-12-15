@@ -111,6 +111,14 @@ enum MessageType {
 	MessageType_ThorchainMsgAck = 504 [(wire_in) = true];
 	MessageType_ThorchainSignedTx = 505 [(wire_out) = true];
 
+ 	// MAYAChain
+	MessageType_MayachainGetAddress = 500 [(wire_in) = true];
+	MessageType_MayachainAddress = 501 [(wire_out) = true];
+	MessageType_MayachainSignTx = 502 [(wire_in) = true];
+	MessageType_MayachainMsgRequest = 503 [(wire_out) = true];
+	MessageType_MayachainMsgAck = 504 [(wire_in) = true];
+	MessageType_MayachainSignedTx = 505 [(wire_out) = true];
+
 	// EOS
 	MessageType_EosGetPublicKey = 600 [(wire_in) = true];
 	MessageType_EosPublicKey = 601 [(wire_out) = true];
