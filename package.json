@@ -1,6 +1,6 @@
 {
   "name": "@keepkey/device-protocol",
-  "version": "7.12.2",
+  "version": "7.13.0",
   "publishConfig": {
     "access": "public"
   },
@@ -8,8 +8,8 @@
   "scripts": {
     "clean": "rm -rf ./lib/*.js ./lib/*.ts",
     "build": "npm run build:js && npm run build:json && npm run build:postprocess",
-    "build:js": "protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --js_out=import_style=commonjs,binary:./lib --ts_out=./lib types.proto messages.proto messages-ethereum.proto messages-eos.proto messages-nano.proto messages-cosmos.proto messages-binance.proto messages-ripple.proto messages-tendermint.proto messages-thorchain.proto messages-osmosis.proto",
-    "build:json": "pbjs --keep-case -t json ./types.proto ./messages.proto ./messages-ethereum.proto ./messages-eos.proto ./messages-nano.proto ./messages-cosmos.proto ./messages-binance.proto ./messages-ripple.proto ./messages-tendermint.proto ./messages-thorchain.proto ./messages-osmosis.proto > ./lib/proto.json",
+    "build:js": "protoc --plugin=protoc-gen-ts=./node_modules/.bin/protoc-gen-ts --js_out=import_style=commonjs,binary:./lib --ts_out=./lib types.proto messages.proto messages-ethereum.proto messages-eos.proto messages-nano.proto messages-cosmos.proto messages-binance.proto messages-ripple.proto messages-tendermint.proto messages-thorchain.proto messages-osmosis.proto messages-mayachain.proto",
+    "build:json": "pbjs --keep-case -t json ./types.proto ./messages.proto ./messages-ethereum.proto ./messages-eos.proto ./messages-nano.proto ./messages-cosmos.proto ./messages-binance.proto ./messages-ripple.proto ./messages-tendermint.proto ./messages-thorchain.proto ./messages-osmosis.proto ./messages-mayachain.proto > ./lib/proto.json",
     "build:postprocess": "find ./lib -name \"*.js\" -exec sed -i '' -e \"s/var global = Function(\\'return this\\')();/var global = (function(){ return this }).call(null);/g\" {} \\;",
     "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"

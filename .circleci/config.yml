@@ -1,63 +1,64 @@
 version: 2
 
 defaults: &defaults
-  working_directory: ~/device-protocol
-  docker:
-    - image: circleci/node
+    working_directory: ~/device-protocol
+    docker:
+        - image: circleci/node
 
 jobs:
-  build:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
+    build:
+        <<: *defaults
+        steps:
+            - checkout
+            - restore_cache:
+                  keys:
+                      - v1-dependencies-{{ checksum "package.json" }}
+                      - v1-dependencies-
 
-      - run: sudo apt-get install -y protobuf-compiler
-      - run: yarn install --frozen-lockfile
-      - run:
-          name: Run build
-          command: yarn build
+            - run: sudo apt-get update
+            - run: sudo apt-get install -y protobuf-compiler
+            - run: yarn install --frozen-lockfile
+            - run:
+                  name: Run build
+                  command: yarn build
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            - save_cache:
+                  paths:
+                      - node_modules
+                  key: v1-dependencies-{{ checksum "package.json" }}
 
-      - persist_to_workspace:
-          root: ~/device-protocol
-          paths: .
-  deploy:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/device-protocol
-      - run:
-          name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/device-protocol/.npmrc
-      - run:
-          name: Publish package
-          command: npm publish
+            - persist_to_workspace:
+                  root: ~/device-protocol
+                  paths: .
+    deploy:
+        <<: *defaults
+        steps:
+            - attach_workspace:
+                  at: ~/device-protocol
+            - run:
+                  name: Authenticate with registry
+                  command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/device-protocol/.npmrc
+            - run:
+                  name: Publish package
+                  command: npm publish
 
 workflows:
-  version: 2
-  build:
-    jobs:
-      - build
-  build-and-deploy:
-    jobs:
-      - build:
-          filters:
-            tags:
-              only: /.*/
-      - deploy:
-          requires:
+    version: 2
+    build:
+        jobs:
             - build
-          filters:
-            tags:
-              only: 
-                - master
-            branches:
-              ignore: /.*/
+    build-and-deploy:
+        jobs:
+            - build:
+                  filters:
+                      tags:
+                          only: /.*/
+            - deploy:
+                  requires:
+                      - build
+                  filters:
+                      tags:
+                          only:
+                              - master
+                      branches:
+                          ignore: /.*/
