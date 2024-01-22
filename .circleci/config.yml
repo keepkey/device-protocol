@@ -15,7 +15,7 @@ jobs:
                       - v1-dependencies-{{ checksum "package.json" }}
                       - v1-dependencies-
 
-            - run: sudo ap-get update
+            - run: sudo apt-get update
             - run: sudo apt-get install -y protobuf-compiler
             - run: yarn install --frozen-lockfile
             - run:
