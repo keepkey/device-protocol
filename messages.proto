@@ -192,6 +192,20 @@ enum MessageType {
   MessageType_MayachainSignedTx = 1205 [ (wire_out) = true ];
 }
 
+// Kujira
+  MessageType_KujiraGetAddress = 1300 [ (wire_in) = true ];
+  MessageType_KujiraAddress = 1301 [ (wire_out) = true ];
+  MessageType_KujiraSignTx = 1302 [ (wire_in) = true ];
+  MessageType_KujiraMsgRequest = 1303 [ (wire_out) = true ];
+  MessageType_KujiraMsgAck = 1304 [ (wire_in) = true ];
+  MessageType_KujiraMsgSend = 1305 [ (wire_in) = true ];
+  MessageType_KujiraMsgDelegate = 1306 [ (wire_in) = true ];
+  MessageType_KujiraMsgUndelegate = 1307 [ (wire_in) = true ];
+  MessageType_KujiraMsgRedelegate = 1308 [ (wire_in) = true ];
+  MessageType_KujiraMsgRewards = 1309 [ (wire_in) = true ];
+  MessageType_KujiraMsgIBCTransfer = 1310 [ (wire_in) = true ];
+  MessageType_KujiraSignedTx = 1311 [ (wire_out) = true ];
+
 ////////////////////
 // Basic messages //
 ////////////////////
