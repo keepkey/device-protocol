@@ -64,6 +64,7 @@ message MayachainMsgSend {
   optional uint64 amount = 8 [ jstype = JS_STRING ];
   optional OutputAddressType address_type = 9;
   reserved 10;
+  optional string denom = 11;
 }
 
 message MayachainMsgDeposit {
