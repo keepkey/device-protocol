@@ -45,13 +45,13 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
 
-"@types/long@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.0.tgz#719551d2352d301ac8b81db732acb6bdc28dbdef"
+"@types/long@^4.0.1":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.2.tgz#b74129719fc8d11c01868010082d483b7545591a"
 
-"@types/node@^10.1.0":
-  version "10.12.24"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.24.tgz#b13564af612a22a20b5d95ca40f1bffb3af315cf"
+"@types/node@^13.7.0":
+  version "13.13.52"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.52.tgz#03c13be70b9031baaed79481c0c0cfb0045e53f7"
 
 bytebuffer@5.0.1:
   version "5.0.1"
@@ -94,8 +94,8 @@ pbjs@^0.0.5:
     protocol-buffers-schema "3.1.0"
 
 protobufjs@^6.8.8:
-  version "6.8.8"
-  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-6.8.8.tgz#c8b4f1282fd7a90e6f5b109ed11c84af82908e7c"
+  version "6.10.3"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-6.10.3.tgz#11ed1dd02acbfcb330becf1611461d4b407f9eef"
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
     "@protobufjs/base64" "^1.1.2"
@@ -107,8 +107,8 @@ protobufjs@^6.8.8:
     "@protobufjs/path" "^1.1.2"
     "@protobufjs/pool" "^1.1.0"
     "@protobufjs/utf8" "^1.1.0"
-    "@types/long" "^4.0.0"
-    "@types/node" "^10.1.0"
+    "@types/long" "^4.0.1"
+    "@types/node" "^13.7.0"
     long "^4.0.0"
 
 protocol-buffers-schema@3.1.0:
