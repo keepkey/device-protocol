@@ -234,7 +234,7 @@ message TxInputType {
   // optional bytes orig_hash = 16;                                      // tx_hash of the original transaction where this input was spent (used when creating a replacement transaction)
   // optional uint32 orig_index = 17;                                    // index of the input in the original transaction (used when creating a replacement transaction)
   // optional DecredStakingSpendType decred_staking_spend = 18;          // if not None this holds the type of stake spend: revocation or stake generation
-  optional bytes script_pubkey = 19;                                  // scriptPubKey of the previous output spent by this input, only set of EXTERNAL inputs
+  // optional bytes script_pubkey = 19;                                  // scriptPubKey of the previous output spent by this input, only set of EXTERNAL inputs
   // optional uint32 coinjoin_flags = 20 [default=0];                    // bit field of CoinJoin-specific flags
 }
 
