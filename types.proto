@@ -198,8 +198,7 @@ message CoinType {
 	optional uint32 xpub_magic_segwit_p2sh = 25;
 	optional uint32 xpub_magic_segwit_native = 26;
 	optional string nanoaddr_prefix = 27;
-	optional uint32 address_type_p2tr = 28 [default=6];
-  optional bool taproot = 29;
+  optional bool taproot = 28;
 }
 
 /**
