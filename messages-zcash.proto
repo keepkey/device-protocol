@@ -1,0 +1,117 @@
+/*
+ * Messages (Zcash specific) for KeepKey Communication
+ *
+ * Zcash shielded transaction signing via PCZT (Partially Constructed
+ * Zcash Transaction) format. Supports Orchard spend authorization.
+ */
+
+syntax = "proto2";
+
+// Sugar for easier handling in Java
+option java_package = "com.keepkey.deviceprotocol";
+option java_outer_classname = "KeepKeyMessageZcash";
+
+/**
+ * Request: Sign a Zcash shielded transaction (PCZT format)
+ *
+ * The PCZT contains pre-constructed transaction data with proofs.
+ * The device derives spend authorization keys, computes the sighash,
+ * and returns RedPallas signatures for each Orchard action.
+ *
+ * @next ZcashPCZTActionAck
+ * @next Failure
+ */
+message ZcashSignPCZT {
+    repeated uint32 address_n = 1;              // ZIP-32 derivation path [32', 133', account']
+    optional uint32 account = 2;                // Account index (alternative to full path)
+    optional bytes pczt_data = 3;               // Serialized PCZT data (may be chunked)
+    optional uint32 n_actions = 4;              // Number of Orchard actions to sign
+    optional uint64 total_amount = 5;           // Total ZEC amount (zatoshis) for user confirmation
+    optional uint64 fee = 6;                    // Transaction fee (zatoshis)
+    optional uint32 branch_id = 7;              // Consensus branch ID
+    // Phase 2a: sub-digests for on-device sighash computation
+    optional bytes header_digest = 8;           // 32-byte pre-computed header digest
+    optional bytes transparent_digest = 9;      // 32-byte transparent digest (or empty)
+    optional bytes sapling_digest = 10;         // 32-byte sapling digest (or empty)
+    optional bytes orchard_digest = 11;         // 32-byte orchard digest
+    // Phase 2b: bundle metadata for orchard digest verification
+    optional uint32 orchard_flags = 12;         // Orchard bundle flags byte
+    optional int64 orchard_value_balance = 13;  // Orchard value balance (LE i64)
+    optional bytes orchard_anchor = 14;         // 32-byte orchard anchor
+}
+
+/**
+ * Per-action signing data extracted from PCZT.
+ * Sent as individual messages for streaming large transactions.
+ *
+ * @next ZcashSignedPCZT
+ * @next ZcashPCZTActionAck
+ * @next Failure
+ */
+message ZcashPCZTAction {
+    optional uint32 index = 1;              // Action index within the Orchard bundle
+    optional bytes alpha = 2;               // 32-byte spend authorization randomizer
+    optional bytes sighash = 3;             // 32-byte transaction sighash (ZIP 244) - legacy mode
+    optional bytes cv_net = 4;              // 32-byte value commitment
+    optional uint64 value = 5;              // Action value in zatoshis (for display)
+    optional bool is_spend = 6;             // True if this action spends a note
+    // Phase 2b: action fields for incremental orchard digest verification
+    optional bytes nullifier = 7;           // 32-byte nullifier
+    optional bytes cmx = 8;                 // 32-byte note commitment
+    optional bytes epk = 9;                 // 32-byte ephemeral key
+    optional bytes enc_compact = 10;        // 52-byte compact encrypted note
+    optional bytes enc_memo = 11;           // 512-byte encrypted memo
+    optional bytes enc_noncompact = 12;     // Remaining encrypted note bytes
+    optional bytes rk = 13;                 // 32-byte randomized verification key
+    optional bytes out_ciphertext = 14;     // 80-byte output ciphertext
+}
+
+/**
+ * Response: Acknowledgment requesting next action data
+ *
+ * @prev ZcashSignPCZT
+ * @prev ZcashPCZTAction
+ */
+message ZcashPCZTActionAck {
+    optional uint32 next_index = 1;         // Index of next action to process
+}
+
+/**
+ * Response: Signed PCZT with spend authorization signatures
+ *
+ * @prev ZcashPCZTAction
+ */
+message ZcashSignedPCZT {
+    repeated bytes signatures = 1;          // 64-byte RedPallas signatures, one per action
+    optional bytes txid = 2;               // 32-byte computed transaction ID
+}
+
+/**
+ * Request: Get the Orchard Full Viewing Key for a given account.
+ *
+ * The FVK (ak, nk, rivk) is safe to export - it allows viewing
+ * transactions but cannot spend funds. Used to construct unified addresses.
+ *
+ * @next ZcashOrchardFVK
+ * @next Failure
+ */
+message ZcashGetOrchardFVK {
+    repeated uint32 address_n = 1;          // ZIP-32 derivation path [32', 133', account']
+    optional uint32 account = 2;            // Account index (alternative to full path)
+    optional bool show_display = 3;         // Show on device display
+}
+
+/**
+ * Response: Orchard Full Viewing Key components.
+ *
+ * ak = [ask]G on Pallas curve (serialized point, 32 bytes)
+ * nk = nullifier deriving key (32 bytes)
+ * rivk = commitment randomness key (32 bytes)
+ *
+ * @prev ZcashGetOrchardFVK
+ */
+message ZcashOrchardFVK {
+    optional bytes ak = 1;                  // 32-byte authorizing key (Pallas point)
+    optional bytes nk = 2;                  // 32-byte nullifier deriving key
+    optional bytes rivk = 3;               // 32-byte commitment randomness key
+}
