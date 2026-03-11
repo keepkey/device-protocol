@@ -1,0 +1,55 @@
+/*
+ * Messages (TRON specific) for KeepKey Communication
+ *
+ */
+
+syntax = "proto2";
+
+// Sugar for easier handling in Java
+option java_package = "com.keepkey.deviceprotocol";
+option java_outer_classname = "KeepKeyMessageTron";
+
+/**
+ * Request: Ask device for TRON address corresponding to address_n path
+ * @next PassphraseRequest
+ * @next TronAddress
+ * @next Failure
+ */
+message TronGetAddress {
+    repeated uint32 address_n = 1;                // BIP-32 path to derive the key from master node
+    optional string coin_name = 2 [default='Tron'];
+    optional bool show_display = 3;               // optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains a TRON address derived from device private seed
+ * @prev TronGetAddress
+ */
+message TronAddress {
+    optional string address = 1;                  // TRON address in Base58Check encoding
+}
+
+/**
+ * Request: ask device to sign TRON transaction
+ * @start
+ * @next TronSignedTx
+ */
+message TronSignTx {
+    repeated uint32 address_n = 1;                // BIP-32 path to derive the key from master node
+    optional string coin_name = 2 [default='Tron'];
+    optional bytes raw_data = 3;                  // Raw transaction data (serialized by client)
+    optional bytes ref_block_bytes = 4;           // Reference block bytes
+    optional bytes ref_block_hash = 5;            // Reference block hash
+    optional uint64 expiration = 6;               // Transaction expiration timestamp
+    optional string contract_type = 7;            // Contract type (e.g., "TransferContract")
+    optional string to_address = 8;               // Destination address (for display)
+    optional uint64 amount = 9;                   // Transfer amount in SUN (for display)
+}
+
+/**
+ * Response: signature for transaction
+ * @end
+ */
+message TronSignedTx {
+    optional bytes signature = 1;                 // ECDSA signature (65 bytes: r + s + recovery_id)
+}

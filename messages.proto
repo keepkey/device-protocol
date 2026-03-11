@@ -190,6 +190,12 @@ enum MessageType {
   MessageType_MayachainMsgRequest = 1203 [ (wire_out) = true ];
   MessageType_MayachainMsgAck = 1204 [ (wire_in) = true ];
   MessageType_MayachainSignedTx = 1205 [ (wire_out) = true ];
+
+  // TRON
+  MessageType_TronGetAddress = 1400 [ (wire_in) = true ];
+  MessageType_TronAddress = 1401 [ (wire_out) = true ];
+  MessageType_TronSignTx = 1402 [ (wire_in) = true ];
+  MessageType_TronSignedTx = 1403 [ (wire_out) = true ];
 }
 
 ////////////////////
