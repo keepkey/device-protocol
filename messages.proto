@@ -129,6 +129,14 @@ enum MessageType {
   MessageType_NanoSignTx = 702 [ (wire_in) = true ];
   MessageType_NanoSignedTx = 703 [ (wire_out) = true ];
 
+  // Solana
+  MessageType_SolanaGetAddress = 750 [ (wire_in) = true ];
+  MessageType_SolanaAddress = 751 [ (wire_out) = true ];
+  MessageType_SolanaSignTx = 752 [ (wire_in) = true ];
+  MessageType_SolanaSignedTx = 753 [ (wire_out) = true ];
+  MessageType_SolanaSignMessage = 754 [ (wire_in) = true ];
+  MessageType_SolanaMessageSignature = 755 [ (wire_out) = true ];
+
   // Binance
   MessageType_BinanceGetAddress = 800 [ (wire_in) = true ];
   MessageType_BinanceAddress = 801 [ (wire_out) = true ];

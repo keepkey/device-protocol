@@ -1,0 +1,71 @@
+/*
+ * Messages (Solana specific) for KeepKey Communication
+ *
+ * Solana address derivation, transaction signing, and message signing
+ * via Ed25519 on the device.
+ */
+
+syntax = "proto2";
+
+// Sugar for easier handling in Java
+option java_package = "com.keepkey.deviceprotocol";
+option java_outer_classname = "KeepKeyMessageSolana";
+
+/**
+ * Request: Ask device for Solana address corresponding to address_n path
+ * @next SolanaAddress
+ * @next Failure
+ */
+message SolanaGetAddress {
+    repeated uint32 address_n = 1;          // BIP-32/BIP-44 path (e.g. m/44'/501'/0'/0')
+    optional string coin_name = 2 [default = "Solana"];
+    optional bool show_display = 3;         // optionally show on display before sending the result
+}
+
+/**
+ * Response: Contains Solana address (Base58-encoded Ed25519 public key)
+ * @prev SolanaGetAddress
+ */
+message SolanaAddress {
+    optional string address = 1;            // Base58-encoded Solana address
+}
+
+/**
+ * Request: Ask device to sign a raw Solana transaction
+ * @next SolanaSignedTx
+ * @next Failure
+ */
+message SolanaSignTx {
+    repeated uint32 address_n = 1;          // BIP-32/BIP-44 path to signing key
+    optional string coin_name = 2 [default = "Solana"];
+    optional bytes raw_tx = 3;              // Serialized Solana transaction bytes
+}
+
+/**
+ * Response: Contains Ed25519 signature of the transaction
+ * @prev SolanaSignTx
+ */
+message SolanaSignedTx {
+    optional bytes signature = 1;           // 64-byte Ed25519 signature
+}
+
+/**
+ * Request: Ask device to sign an arbitrary message with Ed25519
+ * @next SolanaMessageSignature
+ * @next Failure
+ */
+message SolanaSignMessage {
+    repeated uint32 address_n = 1;          // BIP-32/BIP-44 path to signing key
+    optional string coin_name = 2 [default = "Solana"];
+    optional bytes message = 3;             // Arbitrary message bytes to sign
+    optional bool show_display = 4;         // Show message on device display
+}
+
+/**
+ * Response: Contains Ed25519 signature and public key for the signed message
+ * @prev SolanaSignMessage
+ */
+message SolanaMessageSignature {
+    optional bytes public_key = 1;          // 32-byte Ed25519 public key
+    optional bytes signature = 2;           // 64-byte Ed25519 signature
+}
