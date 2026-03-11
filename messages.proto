@@ -97,6 +97,10 @@ enum MessageType {
   MessageType_EthereumTypedDataSignature = 113 [ (wire_out) = true ];
   MessageType_Ethereum712TypesValues = 114 [ (wire_in) = true ];
 
+  // BIP-85
+  MessageType_GetBip85Mnemonic = 120 [ (wire_in) = true ];
+  MessageType_Bip85Mnemonic = 121 [ (wire_out) = true ];
+
   // Ripple
   MessageType_RippleGetAddress = 400 [ (wire_in) = true ];
   MessageType_RippleAddress = 401 [ (wire_out) = true ];
@@ -697,6 +701,27 @@ message CipherKeyValue {
  */
 message CipheredKeyValue {
   optional bytes value = 1; // ciphered/deciphered value
+}
+
+//////////////////////
+// BIP-85 messages //
+//////////////////////
+
+/**
+ * Request: Ask device to derive a BIP-85 child mnemonic
+ * @next Bip85Mnemonic
+ */
+message GetBip85Mnemonic {
+  required uint32 word_count = 1; // number of words in derived mnemonic (12, 18, or 24)
+  required uint32 index = 2;     // BIP-85 child index
+}
+
+/**
+ * Response: Contains BIP-85 derived child mnemonic
+ * @prev GetBip85Mnemonic
+ */
+message Bip85Mnemonic {
+  required string mnemonic = 1; // BIP-85 derived mnemonic
 }
 
 //////////////////////////////////
