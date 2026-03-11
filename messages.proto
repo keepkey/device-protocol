@@ -190,6 +190,12 @@ enum MessageType {
   MessageType_MayachainMsgRequest = 1203 [ (wire_out) = true ];
   MessageType_MayachainMsgAck = 1204 [ (wire_in) = true ];
   MessageType_MayachainSignedTx = 1205 [ (wire_out) = true ];
+
+  // TON
+  MessageType_TonGetAddress = 1500 [ (wire_in) = true ];
+  MessageType_TonAddress = 1501 [ (wire_out) = true ];
+  MessageType_TonSignTx = 1502 [ (wire_in) = true ];
+  MessageType_TonSignedTx = 1503 [ (wire_out) = true ];
 }
 
 ////////////////////
