@@ -31,6 +31,15 @@ message SolanaAddress {
 }
 
 /**
+ * Host-provided token metadata for SPL token display
+ */
+message SolanaTokenInfo {
+    optional bytes mint = 1;                // 32-byte mint public key
+    optional string symbol = 2;            // Token symbol e.g. "USDC" (max 12)
+    optional uint32 decimals = 3;          // Token decimals e.g. 6
+}
+
+/**
  * Request: Ask device to sign a raw Solana transaction
  * @next SolanaSignedTx
  * @next Failure
@@ -39,6 +48,7 @@ message SolanaSignTx {
     repeated uint32 address_n = 1;          // BIP-32/BIP-44 path to signing key
     optional string coin_name = 2 [default = "Solana"];
     optional bytes raw_tx = 3;              // Serialized Solana transaction bytes
+    repeated SolanaTokenInfo token_info = 4; // Token metadata for display (max 4)
 }
 
 /**
