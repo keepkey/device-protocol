@@ -97,6 +97,10 @@ enum MessageType {
   MessageType_EthereumTypedDataSignature = 113 [ (wire_out) = true ];
   MessageType_Ethereum712TypesValues = 114 [ (wire_in) = true ];
 
+  // BIP-85
+  MessageType_GetBip85Mnemonic = 120 [ (wire_in) = true ];
+  MessageType_Bip85Mnemonic = 121 [ (wire_out) = true ];
+
   // Ripple
   MessageType_RippleGetAddress = 400 [ (wire_in) = true ];
   MessageType_RippleAddress = 401 [ (wire_out) = true ];
@@ -124,6 +128,14 @@ enum MessageType {
   MessageType_NanoAddress = 701 [ (wire_out) = true ];
   MessageType_NanoSignTx = 702 [ (wire_in) = true ];
   MessageType_NanoSignedTx = 703 [ (wire_out) = true ];
+
+  // Solana
+  MessageType_SolanaGetAddress = 750 [ (wire_in) = true ];
+  MessageType_SolanaAddress = 751 [ (wire_out) = true ];
+  MessageType_SolanaSignTx = 752 [ (wire_in) = true ];
+  MessageType_SolanaSignedTx = 753 [ (wire_out) = true ];
+  MessageType_SolanaSignMessage = 754 [ (wire_in) = true ];
+  MessageType_SolanaMessageSignature = 755 [ (wire_out) = true ];
 
   // Binance
   MessageType_BinanceGetAddress = 800 [ (wire_in) = true ];
@@ -190,6 +202,18 @@ enum MessageType {
   MessageType_MayachainMsgRequest = 1203 [ (wire_out) = true ];
   MessageType_MayachainMsgAck = 1204 [ (wire_in) = true ];
   MessageType_MayachainSignedTx = 1205 [ (wire_out) = true ];
+
+  // TRON
+  MessageType_TronGetAddress = 1400 [ (wire_in) = true ];
+  MessageType_TronAddress = 1401 [ (wire_out) = true ];
+  MessageType_TronSignTx = 1402 [ (wire_in) = true ];
+  MessageType_TronSignedTx = 1403 [ (wire_out) = true ];
+
+  // TON
+  MessageType_TonGetAddress = 1500 [ (wire_in) = true ];
+  MessageType_TonAddress = 1501 [ (wire_out) = true ];
+  MessageType_TonSignTx = 1502 [ (wire_in) = true ];
+  MessageType_TonSignedTx = 1503 [ (wire_out) = true ];
 }
 
 ////////////////////
@@ -697,6 +721,27 @@ message CipherKeyValue {
  */
 message CipheredKeyValue {
   optional bytes value = 1; // ciphered/deciphered value
+}
+
+//////////////////////
+// BIP-85 messages //
+//////////////////////
+
+/**
+ * Request: Ask device to derive a BIP-85 child mnemonic
+ * @next Bip85Mnemonic
+ */
+message GetBip85Mnemonic {
+  required uint32 word_count = 1; // number of words in derived mnemonic (12, 18, or 24)
+  required uint32 index = 2;     // BIP-85 child index
+}
+
+/**
+ * Response: Contains BIP-85 derived child mnemonic
+ * @prev GetBip85Mnemonic
+ */
+message Bip85Mnemonic {
+  required string mnemonic = 1; // BIP-85 derived mnemonic
 }
 
 //////////////////////////////////
