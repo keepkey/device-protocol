@@ -97,6 +97,10 @@ enum MessageType {
   MessageType_EthereumTypedDataSignature = 113 [ (wire_out) = true ];
   MessageType_Ethereum712TypesValues = 114 [ (wire_in) = true ];
 
+  // Ethereum Clear Signing
+  MessageType_EthereumTxMetadata = 115 [ (wire_in) = true ];
+  MessageType_EthereumMetadataAck = 116 [ (wire_out) = true ];
+
   // BIP-85
   MessageType_GetBip85Mnemonic = 120 [ (wire_in) = true ];
   MessageType_Bip85Mnemonic = 121 [ (wire_out) = true ];
