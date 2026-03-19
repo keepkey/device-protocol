@@ -38,6 +38,8 @@ message ZcashSignPCZT {
     optional uint32 orchard_flags = 12;         // Orchard bundle flags byte
     optional int64 orchard_value_balance = 13;  // Orchard value balance (LE i64)
     optional bytes orchard_anchor = 14;         // 32-byte orchard anchor
+    // Phase 3: transparent shielding support
+    optional uint32 n_transparent_inputs = 30;  // 0 for shielded-only (default), >0 for hybrid shielding tx
 }
 
 /**
@@ -114,4 +116,35 @@ message ZcashOrchardFVK {
     optional bytes ak = 1;                  // 32-byte authorizing key (Pallas point)
     optional bytes nk = 2;                  // 32-byte nullifier deriving key
     optional bytes rivk = 3;               // 32-byte commitment randomness key
+}
+
+/**
+ * Request: Transparent input data for hybrid shielding transactions.
+ * Sent one per transparent input during the transparent signing phase.
+ * The device ECDSA-signs the per-input sighash with the secp256k1 key
+ * at the provided BIP44 path.
+ *
+ * Flow: after ZcashSignPCZT with n_transparent_inputs > 0, the device
+ * responds with ZcashPCZTActionAck. For each transparent input, the host
+ * sends ZcashTransparentInput and receives ZcashTransparentSig. After
+ * all transparent inputs, the device transitions to the Orchard phase.
+ *
+ * @next ZcashTransparentSig
+ * @next Failure
+ */
+message ZcashTransparentInput {
+    required uint32 index = 1;              // Input index within the transaction
+    required bytes sighash = 2;             // 32-byte per-input sighash (host-computed, ZIP-244)
+    repeated uint32 address_n = 3;          // BIP44 path [44', 133', 0', 0, 0]
+    optional uint64 amount = 4;             // Input value in zatoshis (for display verification)
+}
+
+/**
+ * Response: ECDSA signature for a transparent input.
+ *
+ * @prev ZcashTransparentInput
+ */
+message ZcashTransparentSig {
+    required bytes signature = 1;           // DER ECDSA signature (72-73 bytes)
+    optional uint32 next_index = 2;         // Next transparent input index, or 0xFF = done
 }
