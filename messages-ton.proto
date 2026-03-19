@@ -35,18 +35,32 @@ message TonAddress {
 
 /**
  * Request: ask device to sign TON transaction
+ *
+ * Two modes:
+ * 1. Clear-signing (preferred): provide to_address + amount + seqno + expire_at.
+ *    Device reconstructs the v4r2 unsigned body cell, computes its hash,
+ *    and verifies it matches raw_tx before signing. Shows "TON Transfer"
+ *    confirmation with verified amount and recipient.
+ *
+ * 2. Blind-signing (fallback): provide only raw_tx. Device signs the hash
+ *    directly with a blind-sign warning. Used for non-standard transactions.
+ *
  * @start
  * @next TonSignedTx
  */
 message TonSignTx {
     repeated uint32 address_n = 1;                // BIP-32 path to derive the key from master node
     optional string coin_name = 2 [default='Ton'];
-    optional bytes raw_tx = 3;                    // Raw transaction data (serialized by client)
+    optional bytes raw_tx = 3;                    // 32-byte unsigned body cell hash (always required)
     optional uint32 expire_at = 4;                // Transaction expiration timestamp
     optional uint32 seqno = 5;                    // Wallet sequence number
-    optional sint32 workchain = 6 [default=0];    // Workchain ID (-1 or 0)
-    optional string to_address = 7;               // Destination address (for display)
-    optional uint64 amount = 8;                   // Transfer amount in nanoTON (for display)
+    optional sint32 workchain = 6 [default=0];    // Destination workchain ID (-1 or 0)
+    optional string to_address = 7;               // Destination address (user-friendly base64)
+    optional uint64 amount = 8;                   // Transfer amount in nanoTON
+    // Clear-signing fields (new)
+    optional bool bounce = 9;                     // Message bounce flag (default true for clear-sign)
+    optional string memo = 10;                    // Optional text memo/comment
+    optional bool is_deploy = 11;                 // True if wallet needs StateInit (first tx)
 }
 
 /**
