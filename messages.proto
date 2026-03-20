@@ -742,8 +742,10 @@ message CipheredKeyValue {
 //////////////////////
 
 /**
- * Request: Ask device to derive a BIP-85 child mnemonic
- * @next Bip85Mnemonic
+ * Request: Ask device to derive and display a BIP-85 child mnemonic.
+ * The mnemonic is shown on the device screen only — never sent over USB.
+ * @next Success
+ * @next Failure
  */
 message GetBip85Mnemonic {
   required uint32 word_count = 1; // number of words in derived mnemonic (12, 18, or 24)
@@ -751,11 +753,13 @@ message GetBip85Mnemonic {
 }
 
 /**
- * Response: Contains BIP-85 derived child mnemonic
+ * Response: Contains BIP-85 derived child mnemonic (DEPRECATED).
+ * Firmware >= 7.14.0 responds with Success instead — mnemonic is display-only.
+ * Retained for wire compatibility with older firmware.
  * @prev GetBip85Mnemonic
  */
 message Bip85Mnemonic {
-  required string mnemonic = 1; // BIP-85 derived mnemonic
+  required string mnemonic = 1; // BIP-85 derived mnemonic (legacy, no longer sent)
 }
 
 //////////////////////////////////
