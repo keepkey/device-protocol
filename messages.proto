@@ -101,6 +101,9 @@ enum MessageType {
   MessageType_GetBip85Mnemonic = 120 [ (wire_in) = true ];
   MessageType_Bip85Mnemonic = 121 [ (wire_out) = true ];
 
+  // Ethereum Clear Signing
+  MessageType_EthereumTxMetadata = 115 [ (wire_in) = true ];
+  MessageType_EthereumMetadataAck = 116 [ (wire_out) = true ];
   // Ripple
   MessageType_RippleGetAddress = 400 [ (wire_in) = true ];
   MessageType_RippleAddress = 401 [ (wire_out) = true ];
