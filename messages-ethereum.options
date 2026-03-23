@@ -1,0 +1,2 @@
+EthereumTxMetadata.signed_payload max_size:1024
+EthereumMetadataAck.display_summary max_size:32

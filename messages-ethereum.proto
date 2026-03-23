@@ -87,6 +87,32 @@ message EthereumTxAck {
 	optional bytes data_chunk = 1;			// Bytes from transaction payload (<= 1024 bytes)
 }
 
+///////////////////////////////////////////
+// Ethereum: Clear signing metadata     //
+///////////////////////////////////////////
+
+/**
+ * Request: Send signed metadata before EthereumSignTx for clear signing.
+ * Host sends this BEFORE EthereumSignTx when metadata is available.
+ * If not sent, existing signing flow is unchanged (backwards compatible).
+ * @next EthereumMetadataAck
+ * @next Failure
+ */
+message EthereumTxMetadata {
+	optional bytes signed_payload = 1;		// Canonical signed metadata blob
+	optional uint32 metadata_version = 2;		// Schema version (defaults to 1)
+	optional uint32 key_id = 3;			// Embedded verification key slot (0-3)
+}
+
+/**
+ * Response: Result of metadata verification.
+ * @prev EthereumTxMetadata
+ */
+message EthereumMetadataAck {
+	required uint32 classification = 1;		// 0=OPAQUE, 1=VERIFIED, 2=MALFORMED
+	optional string display_summary = 2;		// Brief result for host logging
+}
+
 ////////////////////////////////////////
 // Ethereum: Message signing messages //
 ////////////////////////////////////////
