@@ -30,20 +30,47 @@ message TronAddress {
 }
 
 /**
+ * Structured TransferContract for reconstruct-then-sign
+ */
+message TronTransferContract {
+    optional string to_address = 1;               // Base58 "T..." destination (max 35)
+    optional uint64 amount = 2;                   // Amount in SUN
+}
+
+/**
+ * Structured TriggerSmartContract for reconstruct-then-sign
+ */
+message TronTriggerSmartContract {
+    optional string contract_address = 1;         // Base58 smart contract address (max 35)
+    optional bytes data = 2;                      // ABI-encoded call data (max 512)
+    optional uint64 call_value = 3;               // TRX sent with call (in SUN)
+}
+
+/**
  * Request: ask device to sign TRON transaction
  * @start
  * @next TronSignedTx
+ *
+ * Two modes:
+ * 1. Legacy blind-sign: provide raw_data (shows warning)
+ * 2. Structured reconstruct-then-sign: provide transfer or trigger_smart
+ *    plus ref_block_bytes, ref_block_hash, expiration, timestamp
  */
 message TronSignTx {
     repeated uint32 address_n = 1;                // BIP-32 path to derive the key from master node
     optional string coin_name = 2 [default='Tron'];
-    optional bytes raw_data = 3;                  // Raw transaction data (serialized by client)
-    optional bytes ref_block_bytes = 4;           // Reference block bytes
-    optional bytes ref_block_hash = 5;            // Reference block hash
-    optional uint64 expiration = 6;               // Transaction expiration timestamp
-    optional string contract_type = 7;            // Contract type (e.g., "TransferContract")
-    optional string to_address = 8;               // Destination address (for display)
-    optional uint64 amount = 9;                   // Transfer amount in SUN (for display)
+    optional bytes raw_data = 3;                  // Legacy: raw transaction data (blind-sign with warning)
+    optional bytes ref_block_bytes = 4;           // Reference block bytes (2 bytes)
+    optional bytes ref_block_hash = 5;            // Reference block hash (8 bytes)
+    optional uint64 expiration = 6;               // Transaction expiration timestamp (ms)
+    optional string contract_type = 7;            // DEPRECATED: use transfer/trigger_smart instead
+    optional string to_address = 8;               // DEPRECATED: use transfer/trigger_smart instead
+    optional uint64 amount = 9;                   // DEPRECATED: use transfer/trigger_smart instead
+    optional TronTransferContract transfer = 10;  // Structured: TRX transfer
+    optional TronTriggerSmartContract trigger_smart = 11; // Structured: smart contract call
+    optional uint64 fee_limit = 12;               // Fee limit for smart contracts (in SUN)
+    optional uint64 timestamp = 13;               // Transaction creation timestamp (ms)
+    optional bytes data = 14;                     // Transaction memo/note (max 256 bytes)
 }
 
 /**
@@ -52,4 +79,5 @@ message TronSignTx {
  */
 message TronSignedTx {
     optional bytes signature = 1;                 // ECDSA signature (65 bytes: r + s + recovery_id)
+    optional bytes serialized_tx = 2;             // Reconstructed raw_data bytes (for host verification)
 }
