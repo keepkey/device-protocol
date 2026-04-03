@@ -31,3 +31,11 @@ ZcashTransparentInput.sighash max_size:32
 ZcashTransparentInput.address_n max_count:8
 
 ZcashTransparentSig.signature max_size:73
+
+ZcashDisplayAddress.address_n max_count:8
+ZcashDisplayAddress.address max_size:256
+ZcashDisplayAddress.ak max_size:32
+ZcashDisplayAddress.nk max_size:32
+ZcashDisplayAddress.rivk max_size:32
+
+ZcashAddress.address max_size:256
