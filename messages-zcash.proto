@@ -148,3 +148,32 @@ message ZcashTransparentSig {
     required bytes signature = 1;           // DER ECDSA signature (72-73 bytes)
     optional uint32 next_index = 2;         // Next transparent input index, or 0xFF = done
 }
+
+/**
+ * Request: Display and verify a Zcash unified address on device.
+ *
+ * The host provides the unified address string and the FVK components
+ * (ak, nk, rivk). The device re-derives its own Orchard keys from seed
+ * and compares them against the provided FVK to verify the Orchard
+ * receiver belongs to this device.
+ *
+ * @next ZcashAddress
+ * @next Failure
+ */
+message ZcashDisplayAddress {
+    repeated uint32 address_n = 1;          // ZIP-32 derivation path [32', 133', account']
+    optional uint32 account = 2;            // Account index (alternative to full path)
+    optional string address = 3;            // Unified address string (u1...)
+    optional bytes ak = 4;                  // 32-byte authorizing key for verification
+    optional bytes nk = 5;                  // 32-byte nullifier deriving key for verification
+    optional bytes rivk = 6;               // 32-byte commitment randomness key for verification
+}
+
+/**
+ * Response: Verified Zcash address.
+ *
+ * @prev ZcashDisplayAddress
+ */
+message ZcashAddress {
+    optional string address = 1;            // Verified unified address string
+}

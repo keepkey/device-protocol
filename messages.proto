@@ -216,6 +216,8 @@ enum MessageType {
   MessageType_ZcashOrchardFVK = 1305 [ (wire_out) = true ];
   MessageType_ZcashTransparentInput = 1306 [ (wire_in) = true ];
   MessageType_ZcashTransparentSig = 1307 [ (wire_out) = true ];
+  MessageType_ZcashDisplayAddress = 1308 [ (wire_in) = true ];
+  MessageType_ZcashAddress = 1309 [ (wire_out) = true ];
 
   // TRON
   MessageType_TronGetAddress = 1400 [ (wire_in) = true ];
