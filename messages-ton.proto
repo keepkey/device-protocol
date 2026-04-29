@@ -70,3 +70,31 @@ message TonSignTx {
 message TonSignedTx {
     optional bytes signature = 1;                 // Ed25519 signature (64 bytes)
 }
+
+//////////////////////////////////////
+// TON: Message signing             //
+//////////////////////////////////////
+
+/**
+ * Request: Ask device to sign an arbitrary message with Ed25519
+ * Note: lacks domain separation by default. Firmware policy may gate
+ * this behind AdvancedMode (matching the SolanaSignMessage pattern)
+ * until a TON Connect-style envelope (ton_proof) is implemented.
+ * @next TonMessageSignature
+ * @next Failure
+ */
+message TonSignMessage {
+    repeated uint32 address_n = 1;                // BIP-32 path to derive the key from master node
+    optional string coin_name = 2 [default='Ton'];
+    optional bytes message = 3;                   // Message bytes to sign
+    optional bool show_display = 4;               // Show message on device display
+}
+
+/**
+ * Response: Ed25519 signature and public key for the signed message
+ * @prev TonSignMessage
+ */
+message TonMessageSignature {
+    optional bytes public_key = 1;                // 32-byte Ed25519 public key
+    optional bytes signature = 2;                 // 64-byte Ed25519 signature
+}

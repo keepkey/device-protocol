@@ -235,6 +235,8 @@ enum MessageType {
   MessageType_TonAddress = 1501 [ (wire_out) = true ];
   MessageType_TonSignTx = 1502 [ (wire_in) = true ];
   MessageType_TonSignedTx = 1503 [ (wire_out) = true ];
+  MessageType_TonSignMessage = 1504 [ (wire_in) = true ];
+  MessageType_TonMessageSignature = 1505 [ (wire_out) = true ];
 }
 
 ////////////////////
