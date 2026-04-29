@@ -224,6 +224,11 @@ enum MessageType {
   MessageType_TronAddress = 1401 [ (wire_out) = true ];
   MessageType_TronSignTx = 1402 [ (wire_in) = true ];
   MessageType_TronSignedTx = 1403 [ (wire_out) = true ];
+  MessageType_TronSignMessage = 1404 [ (wire_in) = true ];
+  MessageType_TronMessageSignature = 1405 [ (wire_out) = true ];
+  MessageType_TronVerifyMessage = 1406 [ (wire_in) = true ];
+  MessageType_TronSignTypedHash = 1407 [ (wire_in) = true ];
+  MessageType_TronTypedDataSignature = 1408 [ (wire_out) = true ];
 
   // TON
   MessageType_TonGetAddress = 1500 [ (wire_in) = true ];
