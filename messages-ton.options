@@ -8,3 +8,8 @@ TonSignTx.memo max_size:121
 TonAddress.address max_size:50
 TonAddress.raw_address max_size:70
 TonSignedTx.signature max_size:64
+TonSignMessage.address_n max_count:8
+TonSignMessage.coin_name max_size:21
+TonSignMessage.message max_size:1024
+TonMessageSignature.public_key max_size:32
+TonMessageSignature.signature max_size:64

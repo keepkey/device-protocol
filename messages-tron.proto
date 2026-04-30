@@ -81,3 +81,68 @@ message TronSignedTx {
     optional bytes signature = 1;                 // ECDSA signature (65 bytes: r + s + recovery_id)
     optional bytes serialized_tx = 2;             // Reconstructed raw_data bytes (for host verification)
 }
+
+//////////////////////////////////////
+// TRON: Message signing (TIP-191)  //
+//////////////////////////////////////
+
+/**
+ * Request: Ask device to sign a message using TIP-191 personal_sign
+ * Hash: keccak256("\x19TRON Signed Message:\n" + len(message) + message)
+ * @next TronMessageSignature
+ * @next Failure
+ */
+message TronSignMessage {
+    repeated uint32 address_n = 1;                // BIP-32 path to derive the key from master node
+    optional string coin_name = 2 [default='Tron'];
+    optional bytes message = 3;                   // Message bytes to sign
+    optional bool show_display = 4;               // Show message on device display
+}
+
+/**
+ * Response: Signed message
+ * @prev TronSignMessage
+ */
+message TronMessageSignature {
+    optional string address = 1;                  // Base58Check TRON address that signed
+    optional bytes signature = 2;                 // 65-byte signature (r + s + v)
+}
+
+/**
+ * Request: Ask device to verify a TIP-191 message signature
+ * @next Success
+ * @next Failure
+ */
+message TronVerifyMessage {
+    optional string address = 1;                  // Base58Check TRON address claimed to have signed
+    optional bytes signature = 2;                 // 65-byte signature to verify
+    optional bytes message = 3;                   // Message that was signed
+}
+
+//////////////////////////////////////
+// TRON: Typed data signing (TIP-712)//
+//////////////////////////////////////
+
+/**
+ * Request: Ask device to sign hash of typed data (TIP-712 hash mode)
+ * Domain separation: keccak256("\x19\x01" + domain_separator_hash + message_hash)
+ * Host pre-computes the EIP-712-style domainSeparator and message hashes.
+ * @start
+ * @next TronTypedDataSignature
+ * @next Failure
+ */
+message TronSignTypedHash {
+    repeated uint32 address_n = 1;                // BIP-32 path to derive the key from master node
+    optional string coin_name = 2 [default='Tron'];
+    required bytes domain_separator_hash = 3;     // 32-byte domainSeparator hash
+    optional bytes message_hash = 4;              // 32-byte message hash (empty if domain-only)
+}
+
+/**
+ * Response: Signed typed data
+ * @prev TronSignTypedHash
+ */
+message TronTypedDataSignature {
+    required string address = 1;                  // Base58Check TRON address that signed
+    required bytes signature = 2;                 // 65-byte signature (r + s + v)
+}
