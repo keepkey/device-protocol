@@ -21,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "protobufjs": "^6.8.8",
+    "protobufjs": "^7.5.5",
     "ts-protoc-gen": "^0.10.0"
   },
   "dependencies": {
