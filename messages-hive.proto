@@ -1,0 +1,53 @@
+syntax = "proto2";
+
+option java_package = "com.shapeshift.keepkey.lib.protobuf";
+option java_outer_classname = "KeepKeyMessageHive";
+
+/**
+ * Request: Ask device for Hive public key at given BIP-32 path
+ * @start
+ * @next HivePublicKey
+ * @next Failure
+ */
+message HiveGetPublicKey {
+    repeated uint32 address_n = 1;      // BIP-32 path, e.g. m/44'/1275'/0'/0/0
+    optional bool show_display = 2;     // show on device before returning
+}
+
+/**
+ * Response: Hive public key
+ * @end
+ */
+message HivePublicKey {
+    optional string public_key = 1;     // STM-prefixed base58 public key
+    optional bytes raw_public_key = 2;  // 33-byte compressed public key
+}
+
+/**
+ * Request: Sign a Hive transfer transaction
+ * @start
+ * @next HiveSignedTx
+ * @next Failure
+ */
+message HiveSignTx {
+    repeated uint32 address_n = 1;          // BIP-32 path
+    optional bytes chain_id = 2;            // 32-byte chain id (mainnet = beeab0de...)
+    optional uint32 ref_block_num = 3;      // reference block number (uint16)
+    optional uint32 ref_block_prefix = 4;   // reference block prefix (uint32)
+    optional uint32 expiration = 5;         // expiration Unix timestamp (uint32)
+    optional string from = 6;               // sender account name
+    optional string to = 7;                 // recipient account name
+    optional uint64 amount = 8;             // amount in smallest unit (e.g. milliHIVE = 1/1000 HIVE)
+    optional uint32 decimals = 9;           // token decimal places (3 for HIVE/HBD)
+    optional string asset_symbol = 10;      // "HIVE" or "HBD"
+    optional string memo = 11;             // optional memo
+}
+
+/**
+ * Response: Signature for the Hive transaction
+ * @end
+ */
+message HiveSignedTx {
+    optional bytes signature = 1;           // 65-byte secp256k1 signature (recoverable)
+    optional bytes serialized_tx = 2;       // full serialized transaction bytes
+}

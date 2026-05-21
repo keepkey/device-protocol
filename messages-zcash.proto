@@ -161,38 +161,30 @@ message ZcashTransparentSig {
 }
 
 /**
- * Request: Display a Zcash unified address on the device screen.
+ * Request: Display the device-derived Orchard unified address on screen.
  *
- * The host provides the unified address string and the FVK components
- * (ak, nk, rivk) used to derive it. The device independently derives
- * the FVK from the seed and verifies it matches the provided components
- * before displaying the address with a QR code.
+ * The device derives the Orchard-only Unified Address (Sinsemilla + SWU
+ * hash-to-curve, default diversifier index 0) from its own seed at the
+ * requested account and shows it on the OLED with a QR code. What appears
+ * on screen is bound to this device — there is no host-supplied address
+ * to validate.
  *
- * VERIFICATION SCOPE: The device only verifies that the Orchard FVK
- * (ak, nk, rivk) in this request matches what it derives from the seed
- * at the given account. A Unified Address may bundle receivers from
- * multiple pools (transparent, Sapling, Orchard). The device CANNOT
- * verify non-Orchard receivers — the guarantee is limited to:
- *   "This UA contains an Orchard receiver from this account."
- * It does NOT guarantee that transparent or Sapling receivers (if
- * present) are also controlled by this device.
+ * Either account or a complete address_n path (m/32'/133'/account', all
+ * hardened) is REQUIRED. The device rejects requests that omit both.
  *
- * Full on-device UA derivation (Sinsemilla + SWU hash-to-curve)
- * is planned for a future firmware release.
- *
- * Either account or a complete address_n path is REQUIRED.
- * The device will reject requests that omit both.
+ * Fields 3–6 (host-supplied address, ak, nk, rivk) were removed when the
+ * device gained on-device UA derivation: FVK-match attestation against a
+ * host-built UA is strictly weaker than device-derived display and was
+ * dropped. Field numbers are reserved to prevent reuse.
  *
  * @next ZcashAddress
  * @next Failure
  */
 message ZcashDisplayAddress {
+    reserved 3, 4, 5, 6;
+    reserved "address", "ak", "nk", "rivk";
     repeated uint32 address_n = 1;          // ZIP-32 path [32', 133', account'] — required if account omitted
     optional uint32 account = 2;            // Account index — required if address_n omitted
-    optional string address = 3;            // Host-computed unified address ("u1...")
-    optional bytes ak = 4;                  // 32-byte ak for Orchard FVK verification
-    optional bytes nk = 5;                  // 32-byte nk for Orchard FVK verification
-    optional bytes rivk = 6;               // 32-byte rivk for Orchard FVK verification
     optional bytes expected_seed_fingerprint = 7;  // 32-byte ZIP-32 §6.1 seed fingerprint.
                                                    // If present, device verifies match against its own
                                                    // seed fingerprint and rejects with Failure on mismatch.

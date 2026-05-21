@@ -141,6 +141,7 @@ message TronSignTypedHash {
 /**
  * Response: Signed typed data
  * @prev TronSignTypedHash
+ * @end
  */
 message TronTypedDataSignature {
     required string address = 1;                  // Base58Check TRON address that signed

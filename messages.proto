@@ -239,6 +239,12 @@ enum MessageType {
   MessageType_TonSignedTx = 1503 [ (wire_out) = true ];
   MessageType_TonSignMessage = 1504 [ (wire_in) = true ];
   MessageType_TonMessageSignature = 1505 [ (wire_out) = true ];
+
+  // Hive
+  MessageType_HiveGetPublicKey = 1600 [ (wire_in) = true ];
+  MessageType_HivePublicKey = 1601 [ (wire_out) = true ];
+  MessageType_HiveSignTx = 1602 [ (wire_in) = true ];
+  MessageType_HiveSignedTx = 1603 [ (wire_out) = true ];
 }
 
 ////////////////////
