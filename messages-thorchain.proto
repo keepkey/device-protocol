@@ -60,6 +60,7 @@ message ThorchainMsgSend {
     optional uint64 amount = 8 [jstype = JS_STRING];
     optional OutputAddressType address_type = 9;
     reserved 10;
+    optional string denom = 11;         // asset denom, e.g. "rune" or IBC denom
 }
 
 message ThorchainMsgDeposit {
