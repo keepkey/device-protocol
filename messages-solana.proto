@@ -91,10 +91,9 @@ message SolanaMessageSignature {
  * domain separation that plain SolanaSignMessage lacks. Firmware constructs
  * the envelope from the components below; host supplies version/format/message.
  *
- * Format values:
+ * Format values (KeepKey supports formats 0 and 1 only; max message size 1212 bytes):
  *   0 = Restricted ASCII (printable, max 1212 bytes) — renderable on display
  *   1 = UTF-8 (max 1212 bytes) — renderable, may need policy gate
- *   2 = UTF-8 (max 65515 bytes) — Ledger-only mode, blind-sign
  *
  * @next SolanaOffchainMessageSignature
  * @next Failure
@@ -103,7 +102,7 @@ message SolanaSignOffchainMessage {
     repeated uint32 address_n = 1;          // BIP-32/BIP-44 path to signing key
     optional string coin_name = 2 [default = "Solana"];
     optional uint32 version = 3 [default = 0];   // Off-chain message spec version (0 = current)
-    optional uint32 message_format = 4;          // 0=ASCII, 1=UTF8 limited, 2=UTF8 extended
+    optional uint32 message_format = 4;          // 0=ASCII, 1=UTF8 (format 2 not supported)
     optional bytes message = 5;                  // Raw message payload (firmware wraps with envelope)
     optional bool show_display = 6;              // Show message on device display
 }

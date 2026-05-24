@@ -1,0 +1,149 @@
+syntax = "proto2";
+
+option java_package = "com.shapeshift.keepkey.lib.protobuf";
+option java_outer_classname = "KeepKeyMessageHive";
+
+/**
+ * Request: Ask device for a single Hive public key at a given SLIP-0048 path.
+ * Path format: m/48'/13'/role'/account'/0'
+ *   role: 0'=owner  1'=active  3'=memo  4'=posting
+ * @start
+ * @next HivePublicKey
+ * @next Failure
+ */
+message HiveGetPublicKey {
+    repeated uint32 address_n = 1;      // Full SLIP-0048 path (all 5 components hardened)
+    optional bool   show_display = 2;   // Confirm on device before returning
+    optional uint32 role = 3;           // 0=owner 1=active 3=memo 4=posting (for display label only)
+}
+
+/**
+ * Response: Single Hive public key
+ * @end
+ */
+message HivePublicKey {
+    optional string public_key     = 1; // STM-prefixed base58check public key
+    optional bytes  raw_public_key = 2; // 33-byte compressed secp256k1 public key
+}
+
+/**
+ * Request: Ask device for all four Hive role keys in one interaction.
+ * Derives owner/active/memo/posting keys for the given account index.
+ * Paths:
+ *   owner:   m/48'/13'/0'/account_index'/0'
+ *   active:  m/48'/13'/1'/account_index'/0'
+ *   memo:    m/48'/13'/3'/account_index'/0'
+ *   posting: m/48'/13'/4'/account_index'/0'
+ * @start
+ * @next HivePublicKeys
+ * @next Failure
+ */
+message HiveGetPublicKeys {
+    optional uint32 account_index = 1 [default = 0]; // Hive account slot (0 = first account)
+    optional bool   show_display  = 2;               // Confirm on device before returning
+}
+
+/**
+ * Response: All four Hive role public keys
+ * @end
+ */
+message HivePublicKeys {
+    optional string owner_key   = 1;   // STM... owner public key
+    optional string active_key  = 2;   // STM... active public key
+    optional string memo_key    = 3;   // STM... memo public key
+    optional string posting_key = 4;   // STM... posting public key
+}
+
+/**
+ * Request: Sign a Hive transfer transaction (op type 2).
+ * Signing key should be the active key: m/48'/13'/1'/account'/0'
+ * @start
+ * @next HiveSignedTx
+ * @next Failure
+ */
+message HiveSignTx {
+    repeated uint32 address_n       = 1;  // Full SLIP-0048 path of signing key
+    optional bytes  chain_id        = 2;  // 32-byte chain ID (mainnet = beeab0de...)
+    optional uint32 ref_block_num   = 3;  // Reference block number (uint16)
+    optional uint32 ref_block_prefix = 4; // Reference block prefix (uint32)
+    optional uint32 expiration      = 5;  // Expiration Unix timestamp (uint32)
+    optional string from            = 6;  // Sender account name
+    optional string to              = 7;  // Recipient account name
+    optional uint64 amount          = 8;  // Amount in milliHIVE (1000 = 1.000 HIVE)
+    optional uint32 decimals        = 9;  // Decimal places (3 for HIVE/HBD)
+    optional string asset_symbol    = 10; // "HIVE" or "HBD"
+    optional string memo            = 11; // Optional transfer memo
+}
+
+/**
+ * Response: Signed Hive transfer transaction
+ * @end
+ */
+message HiveSignedTx {
+    optional bytes signature     = 1;    // 65-byte recoverable secp256k1 signature
+    optional bytes serialized_tx = 2;    // Serialized Graphene transaction bytes
+}
+
+/**
+ * Request: Sign a Hive account_create operation (op type 9).
+ * All four role public keys become the account authorities at genesis.
+ * No software keys are generated. KeepKey is sole root of trust from block 1.
+ * Signing key: owner key at m/48'/13'/0'/account_index'/0'
+ * @start
+ * @next HiveSignedAccountCreate
+ * @next Failure
+ */
+message HiveSignAccountCreate {
+    repeated uint32 address_n        = 1;  // Owner key path (m/48'/13'/0'/account'/0')
+    optional bytes  chain_id         = 2;  // 32-byte chain ID
+    optional uint32 ref_block_num    = 3;
+    optional uint32 ref_block_prefix = 4;
+    optional uint32 expiration       = 5;
+    optional string creator          = 6;  // Pioneer sponsor account name
+    optional string new_account_name = 7;  // Desired Hive username
+    optional string owner_key        = 8;  // STM... owner public key (from device)
+    optional string active_key       = 9;  // STM... active public key (from device)
+    optional string posting_key      = 10; // STM... posting public key (from device)
+    optional string memo_key         = 11; // STM... memo public key (from device)
+    optional uint64 fee_amount       = 12; // Creation fee in milliHIVE (3000 = 3.000 HIVE)
+}
+
+/**
+ * Response: Signed Hive account_create transaction
+ * @end
+ */
+message HiveSignedAccountCreate {
+    optional bytes signature     = 1;    // 65-byte recoverable signature
+    optional bytes serialized_tx = 2;    // Serialized Graphene transaction bytes
+}
+
+/**
+ * Request: Sign a Hive account_update operation (op type 10).
+ * Replaces all account authorities with KeepKey-derived keys.
+ * Used to secure an existing Hive account.
+ * Signing key: owner key at m/48'/13'/0'/account_index'/0'
+ * @start
+ * @next HiveSignedAccountUpdate
+ * @next Failure
+ */
+message HiveSignAccountUpdate {
+    repeated uint32 address_n        = 1;  // Owner key path (must match account's current owner)
+    optional bytes  chain_id         = 2;  // 32-byte chain ID
+    optional uint32 ref_block_num    = 3;
+    optional uint32 ref_block_prefix = 4;
+    optional uint32 expiration       = 5;
+    optional string account          = 6;  // Hive account name to update
+    optional string new_owner_key    = 7;  // STM... new owner public key
+    optional string new_active_key   = 8;  // STM... new active public key
+    optional string new_posting_key  = 9;  // STM... new posting public key
+    optional string new_memo_key     = 10; // STM... new memo public key
+}
+
+/**
+ * Response: Signed Hive account_update transaction
+ * @end
+ */
+message HiveSignedAccountUpdate {
+    optional bytes signature     = 1;    // 65-byte recoverable signature
+    optional bytes serialized_tx = 2;    // Serialized Graphene transaction bytes
+}
