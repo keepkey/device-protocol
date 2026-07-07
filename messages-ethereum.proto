@@ -127,6 +127,10 @@ message LoadClearsignSigner {
 	optional uint32 key_id = 1;		// target key slot (0-3); must not hold a built-in key
 	optional bytes pubkey = 2;		// 33-byte compressed secp256k1 public key
 	optional string alias = 3;		// short display name shown on load confirm + per-tx warning
+	optional bytes icon = 4;		// optional identity logo: 1bpp mono row-major bitmap, <= 384 bytes
+	optional uint32 icon_width = 5;		// icon pixel width  (<= 64; icon+dims omitted => text-only identity)
+	optional uint32 icon_height = 6;	// icon pixel height (<= 64)
+	optional bool persist = 7;		// store in flash so the identity survives reboot (shown on boot); default RAM-only
 }
 
 ////////////////////////////////////////
