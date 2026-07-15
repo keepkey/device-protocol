@@ -147,3 +147,30 @@ message HiveSignedAccountUpdate {
     optional bytes signature     = 1;    // 65-byte recoverable signature
     optional bytes serialized_tx = 2;    // Serialized Graphene transaction bytes
 }
+
+/**
+ * Request: Sign an arbitrary message with a Hive role key.
+ * Implements the Hive Keychain requestSignBuffer contract (hive-js
+ * Signature.signBuffer): signature over SHA256(message bytes) — a single
+ * hash of the raw bytes only, NO chain_id prepend (unlike transactions)
+ * and NO Bitcoin/Solana-style message prefix. This is the Hive dApp login
+ * primitive (Aioha / Keychain SDK).
+ * Signing key: any SLIP-0048 role; dApp login uses posting
+ * (m/48'/13'/4'/account'/0').
+ * @start
+ * @next HiveSignedMessage
+ * @next Failure
+ */
+message HiveSignMessage {
+    repeated uint32 address_n = 1;  // Full SLIP-0048 path of signing key
+    optional bytes  message   = 2;  // Raw message bytes (max 1024)
+}
+
+/**
+ * Response: Signed Hive message
+ * @end
+ */
+message HiveSignedMessage {
+    optional bytes signature  = 1;  // 65-byte recoverable secp256k1 signature (27+recid+4, r, s)
+    optional bytes public_key = 2;  // 33-byte compressed public key of the signing key
+}
