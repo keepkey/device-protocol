@@ -155,7 +155,8 @@ message HiveSignedAccountUpdate {
  * hash of the raw bytes only, NO chain_id prepend (unlike transactions)
  * and NO Bitcoin/Solana-style message prefix. This is the Hive dApp login
  * primitive (Aioha / Keychain SDK).
- * Signing key: any SLIP-0048 role; dApp login uses posting
+ * Signing key: posting/active/memo role (Keychain's requestSignBuffer
+ * surface — owner' is rejected); dApp login uses posting
  * (m/48'/13'/4'/account'/0').
  * @start
  * @next HiveSignedMessage
