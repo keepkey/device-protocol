@@ -114,12 +114,14 @@ message EthereumMetadataAck {
 }
 
 /**
- * Request: Load a clearsign signer public key + alias into a runtime key slot.
+ * Request: Load a clearsign signer public key + alias into a key slot.
  * The device shows a mandatory confirmation (alias + key fingerprint) before
- * accepting; there is no way to load a signer without user consent. Loaded
- * signers live in RAM only and are cleared on reboot. Every transaction whose
- * metadata was verified by a loaded (non built-in) signer is preceded by a
- * warning screen naming the alias during transaction confirmation.
+ * accepting; there is no way to load a signer without user consent.
+ * A signer is RAM-only by default and is cleared on reboot; set persist=true
+ * to also write it to flash, where it survives reboot and is reloaded
+ * automatically. Every transaction whose metadata was verified by a loaded
+ * (non built-in) signer is preceded by a warning screen naming the alias
+ * during transaction confirmation.
  * @next Success
  * @next Failure
  */
@@ -128,8 +130,11 @@ message LoadClearsignSigner {
 	optional bytes pubkey = 2;		// 33-byte compressed secp256k1 public key
 	optional string alias = 3;		// short display name shown on load confirm + per-tx warning
 	/*
-	 * Optional identity logo, <= 384 bytes, run-length encoded (NOT a packed
-	 * bitmap — a packed 1bpp 64x64 would need 512 bytes and cannot fit the cap).
+	 * Optional identity logo, <= 384 bytes, run-length encoded — NOT a packed
+	 * bitmap. (This is the format because draw_bitmap_mono_rle() is the decoder
+	 * of record and every bundled image already uses it; it is NOT a size
+	 * workaround — a packed 1bpp icon at the legal maximum geometry, 40x64,
+	 * would be 320 bytes and would fit the cap.)
 	 * Pixels are BYTE-VALUED intensity, one byte per pixel after decoding; the
 	 * device renders each as (value * color / 100). Decoder of record:
 	 * keepkey-firmware lib/board/draw.c: draw_bitmap_mono_rle().
@@ -143,10 +148,12 @@ message LoadClearsignSigner {
 	 *                              packet is undecodable. Encoders MUST split a
 	 *                              128-byte literal into two packets. Firmware
 	 *                              rejects 0x80 rather than rendering.
-	 * Runs may not straddle the end of the image. Packets are decoded until
-	 * exactly icon_width*icon_height pixels have been emitted, filling row-major
-	 * (left->right, top->bottom). So a RUN emits at most 127 pixels and a
-	 * LITERAL at most 127.
+	 * The stream must decode EXACTLY, and the device validates this before the
+	 * icon is shown or stored: no run may straddle the end of the image,
+	 * exactly icon_width*icon_height pixels are emitted (row-major,
+	 * left->right, top->bottom), and the ENTIRE input must be consumed —
+	 * trailing packets after the final pixel are rejected. So a RUN emits at
+	 * most 127 pixels and a LITERAL at most 127.
 	 *
 	 * Golden vector (2x2, w=2 h=2): bytes 03 FF FF 00
 	 *   03 -> RUN of 3, value FF   => pixels [FF, FF, FF]
