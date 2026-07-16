@@ -135,13 +135,18 @@ message LoadClearsignSigner {
 	 * keepkey-firmware lib/board/draw.c: draw_bitmap_mono_rle().
 	 *
 	 * Grammar — the stream is a sequence of packets. Read n = (int8)data[i++]:
-	 *   n > 0  RUN     : one value byte follows; emit it n times.      [n][v]
-	 *   n < 0  LITERAL : (-n) value bytes follow; emit each once.      [n][v1]..[v-n]
-	 *   n == 0         : invalid.
+	 *   n in [1, 127]    RUN     : one value byte follows; emit it n times.  [n][v]
+	 *   n in [-127, -1]  LITERAL : (-n) value bytes follow; emit each once.  [n][v1]..[v-n]
+	 *   n == 0                   : invalid.
+	 *   n == -128 (0x80)         : INVALID. The decoder's run counter is int8_t,
+	 *                              so it cannot represent -(-128) = 128; a 0x80
+	 *                              packet is undecodable. Encoders MUST split a
+	 *                              128-byte literal into two packets. Firmware
+	 *                              rejects 0x80 rather than rendering.
 	 * Runs may not straddle the end of the image. Packets are decoded until
 	 * exactly icon_width*icon_height pixels have been emitted, filling row-major
-	 * (left->right, top->bottom). n is a signed 8-bit value, so a RUN emits at
-	 * most 127 pixels and a LITERAL at most 128.
+	 * (left->right, top->bottom). So a RUN emits at most 127 pixels and a
+	 * LITERAL at most 127.
 	 *
 	 * Golden vector (2x2, w=2 h=2): bytes 03 FF FF 00
 	 *   03 -> RUN of 3, value FF   => pixels [FF, FF, FF]
@@ -149,8 +154,15 @@ message LoadClearsignSigner {
 	 *   decoded = FF FF FF 00  (row0 = FF FF, row1 = FF 00)
 	 */
 	optional bytes icon = 4;
-	optional uint32 icon_width = 5;		// icon pixel width  (<= 64; icon+dims omitted => text-only identity)
-	optional uint32 icon_height = 6;	// icon pixel height (<= 64)
+	/*
+	 * Icon pixel width, 1..40. The cap is the confirm screen's left icon column
+	 * (LEFT_MARGIN_WITH_ICON = 40); title/body text begins at x=40 and the icon
+	 * is drawn AFTER the text, so a wider icon would paint over the alias,
+	 * fingerprint and the "NOT verified by KeepKey" warning on the trust screen.
+	 * Icon + both dimensions omitted => text-only identity.
+	 */
+	optional uint32 icon_width = 5;
+	optional uint32 icon_height = 6;	// icon pixel height (1..64; the icon column is 64px tall)
 	optional bool persist = 7;		// store in flash so the identity survives reboot (shown on boot); default RAM-only
 }
 
