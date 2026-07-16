@@ -147,3 +147,60 @@ message HiveSignedAccountUpdate {
     optional bytes signature     = 1;    // 65-byte recoverable signature
     optional bytes serialized_tx = 2;    // Serialized Graphene transaction bytes
 }
+
+/**
+ * Request: Sign an arbitrary message with a Hive role key.
+ * Implements the Hive Keychain requestSignBuffer contract (hive-js
+ * Signature.signBuffer): signature over SHA256(message bytes) — a single
+ * hash of the raw bytes only, NO chain_id prepend (unlike transactions)
+ * and NO Bitcoin/Solana-style message prefix. This is the Hive dApp login
+ * primitive (Aioha / Keychain SDK).
+ * Signing key: posting/active/memo role (Keychain's requestSignBuffer
+ * surface — owner' is rejected); dApp login uses posting
+ * (m/48'/13'/4'/account'/0').
+ * @start
+ * @next HiveSignedMessage
+ * @next Failure
+ */
+message HiveSignMessage {
+    repeated uint32 address_n = 1;  // Full SLIP-0048 path of signing key
+    optional bytes  message   = 2;  // Raw message bytes (max 1024)
+}
+
+/**
+ * Response: Signed Hive message
+ * @end
+ */
+message HiveSignedMessage {
+    optional bytes signature  = 1;  // 65-byte recoverable secp256k1 signature (27+recid+4, r, s)
+    optional bytes public_key = 2;  // 33-byte compressed public key of the signing key
+}
+
+/**
+ * Request: Sign a host-serialized Graphene transaction after parsing and
+ * clear-signing every operation in it. The firmware re-derives everything it
+ * displays from the bytes themselves; transactions containing operations
+ * outside the supported table are refused (no blind-sign fallback).
+ * Phase-1 table: vote (0), comment (1), custom_json (18).
+ * Op types 2/9/10 (transfer, account_create, account_update) are PERMANENTLY
+ * excluded — they keep their dedicated message types and invariants.
+ * Signing key: posting (m/48'/13'/4'/account'/0') for posting-tier txs,
+ * active (m/48'/13'/1'/account'/0') when custom_json carries required_auths.
+ * Digest: SHA256(chain_id || serialized_tx), same as HiveSignTx.
+ * @start
+ * @next HiveSignedOperations
+ * @next Failure
+ */
+message HiveSignOperations {
+    repeated uint32 address_n     = 1;  // Full SLIP-0048 path of signing key
+    optional bytes  chain_id      = 2;  // 32-byte chain ID (mainnet = beeab0de...)
+    optional bytes  serialized_tx = 3;  // Graphene tx bytes: header..extensions, NO chain_id prefix (max 2048)
+}
+
+/**
+ * Response: Signed Hive operations transaction
+ * @end
+ */
+message HiveSignedOperations {
+    optional bytes signature = 1;  // 65-byte recoverable secp256k1 signature (27+recid+4, r, s)
+}
