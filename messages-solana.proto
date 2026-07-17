@@ -37,6 +37,13 @@ message SolanaTokenInfo {
     optional bytes mint = 1;                // 32-byte mint public key
     optional string symbol = 2;            // Token symbol e.g. "USDC" (max 12)
     optional uint32 decimals = 3;          // Token decimals e.g. 6
+    // Optional attestation: ECDSA(secp256k1) signature over a domain-separated
+    // digest of (mint, decimals, symbol), signed by a clear-sign signer the
+    // user loaded via LoadClearsignSigner. When present and valid, the device
+    // trusts the symbol; when absent it falls back to displaying the raw mint.
+    // (Firmware verifies; the host/SDK signing side is a follow-up.)
+    optional bytes signature = 4;          // 64-byte compact ECDSA signature
+    optional uint32 signer_key_id = 5;     // which loaded clear-sign signer
 }
 
 /**
