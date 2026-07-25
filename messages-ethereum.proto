@@ -117,9 +117,9 @@ message EthereumMetadataAck {
  * Request: Load a clearsign signer public key + alias into a key slot.
  * The device shows a mandatory confirmation (alias + key fingerprint) before
  * accepting; there is no way to load a signer without user consent.
- * A signer is RAM-only by default and is cleared on reboot; set persist=true
- * to also write it to flash, where it survives reboot and is reloaded
- * automatically. Every transaction whose metadata was verified by a loaded
+ * A signer is RAM-only and is cleared on reboot. The persist field is retained
+ * for wire compatibility and future authenticated storage; firmware 7.15
+ * rejects persist=true. Every transaction whose metadata was verified by a loaded
  * (non built-in) signer is preceded by a warning screen naming the alias
  * during transaction confirmation.
  * @next Success
@@ -170,7 +170,7 @@ message LoadClearsignSigner {
 	 */
 	optional uint32 icon_width = 5;
 	optional uint32 icon_height = 6;	// icon pixel height (1..64; the icon column is 64px tall)
-	optional bool persist = 7;		// store in flash so the identity survives reboot (shown on boot); default RAM-only
+	optional bool persist = 7;		// reserved for future authenticated persistence; firmware 7.15 rejects true
 }
 
 ////////////////////////////////////////
