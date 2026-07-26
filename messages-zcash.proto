@@ -15,8 +15,9 @@ option java_outer_classname = "KeepKeyMessageZcash";
  * Request: Sign a Zcash shielded transaction (PCZT format)
  *
  * The PCZT contains pre-constructed transaction data with proofs.
- * The device derives spend authorization keys, computes the sighash,
- * and returns RedPallas signatures for each Orchard action.
+ * The device derives spend authorization keys, computes the sighash, validates
+ * every Orchard action, and returns compact RedPallas signatures only for
+ * actions explicitly marked is_spend=true.
  *
  * @next ZcashTransparentAck
  * @next ZcashPCZTActionAck
@@ -26,7 +27,7 @@ message ZcashSignPCZT {
     repeated uint32 address_n = 1;              // ZIP-32 derivation path [32', 133', account']
     optional uint32 account = 2;                // Account index (alternative to full path)
     optional bytes pczt_data = 3;               // Serialized PCZT data (may be chunked)
-    optional uint32 n_actions = 4;              // Number of Orchard actions to sign
+    optional uint32 n_actions = 4;              // Number of Orchard actions to stream and validate
     optional uint64 total_amount = 5;           // Total ZEC amount (zatoshis) for user confirmation
     optional uint64 fee = 6;                    // Transaction fee (zatoshis)
     optional uint32 branch_id = 7;              // Consensus branch ID
@@ -69,7 +70,8 @@ message ZcashPCZTAction {
     optional bytes sighash = 3;             // 32-byte transaction sighash (ZIP 244) - legacy mode
     optional bytes cv_net = 4;              // 32-byte value commitment
     optional uint64 value = 5;              // Action value in zatoshis (for display)
-    optional bool is_spend = 6;             // True if this action spends a note
+    optional bool is_spend = 6;             // REQUIRED by firmware 7.15: true only for a real spend;
+                                            // false for dummy spends/output-only actions
     // Phase 2b: action fields for incremental orchard digest verification
     optional bytes nullifier = 7;           // 32-byte nullifier
     optional bytes cmx = 8;                 // 32-byte note commitment
@@ -102,7 +104,9 @@ message ZcashPCZTActionAck {
  * @prev ZcashPCZTAction
  */
 message ZcashSignedPCZT {
-    repeated bytes signatures = 1;          // 64-byte RedPallas signatures, one per action
+    repeated bytes signatures = 1;          // Compact 64-byte RedPallas signatures: one per
+                                            // is_spend=true action, in ascending action-index order;
+                                            // an all-dummy shield transaction returns zero
     optional bytes txid = 2;               // 32-byte computed transaction ID
 }
 
