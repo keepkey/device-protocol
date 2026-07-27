@@ -56,6 +56,22 @@ message SolanaSignTx {
     optional string coin_name = 2 [default = "Solana"];
     optional bytes raw_tx = 3;              // Serialized Solana transaction bytes
     repeated SolanaTokenInfo token_info = 4; // Token metadata for display (max 4)
+    /*
+     * KKSOLSC1 instruction schema (see solana.h). A schema describes how to
+     * read ONE program instruction: program id, discriminator, and the
+     * labelled args/accounts to display. It carries no amounts and no
+     * transaction hash, so a signer attests it ONCE per program+instruction
+     * and every later transaction reuses it — the device decodes the values
+     * out of the raw_tx bytes it is about to sign.
+     *
+     * Safety comes from structural completeness rather than binding to one
+     * transaction: firmware requires the schema to account for the
+     * instruction data exactly, and every other instruction in the
+     * transaction to be a program it already recognises.
+     */
+    optional bytes schema_payload = 5;
+    optional bytes schema_signature = 6;       // 64-byte compact secp256k1 over SHA256(payload)
+    optional uint32 schema_signer_key_id = 7;  // trusted clearsign signer slot (0-3)
 }
 
 /**
