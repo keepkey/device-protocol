@@ -259,6 +259,12 @@ enum MessageType {
   MessageType_HiveSignedMessage = 1615 [ (wire_out) = true ];
   MessageType_HiveSignOperations = 1616 [ (wire_in) = true ];
   MessageType_HiveSignedOperations = 1617 [ (wire_out) = true ];
+
+  // Clearsign attestor (server/emulator attestor tier)
+  MessageType_ClearsignAttestorGetPublicKey = 1700 [ (wire_in) = true ];
+  MessageType_ClearsignAttestorPublicKey = 1701 [ (wire_out) = true ];
+  MessageType_ClearsignAttestorSign = 1702 [ (wire_in) = true ];
+  MessageType_ClearsignAttestorSignature = 1703 [ (wire_out) = true ];
 }
 
 ////////////////////
@@ -1039,4 +1045,49 @@ message DebugLinkFillConfig {}
  */
 message ChangeWipeCode {
   optional bool remove = 1; // is wipe code removal requested?
+}
+
+//////////////////////////
+// Clearsign attestor   //
+//////////////////////////
+
+/**
+ * Request: derive and return the clearsign attestation public key.
+ * The attestation key is derived from the seed at a dedicated hardened path
+ * and is unrelated to any coin key. Used to provision verifying devices
+ * (METADATA_PUBKEYS baking, or LoadClearsignSigner for test slots) and to
+ * let hosts confirm which attestor they are talking to.
+ * @next ClearsignAttestorPublicKey
+ * @next Failure
+ */
+message ClearsignAttestorGetPublicKey {}
+
+/**
+ * Response: compressed attestation public key
+ * @prev ClearsignAttestorGetPublicKey
+ */
+message ClearsignAttestorPublicKey {
+  optional bytes public_key = 1;  // 33-byte compressed secp256k1
+}
+
+/**
+ * Request: validate a clearsign descriptor payload and attest it.
+ * The device parses the payload with the SAME validator verifying devices
+ * run (currently KKSOLSW1 cross-chain swap descriptors) and refuses
+ * anything malformed — this message can never sign arbitrary bytes.
+ * Requires an unlocked session and an on-device confirmation.
+ * @next ClearsignAttestorSignature
+ * @next Failure
+ */
+message ClearsignAttestorSign {
+  optional bytes payload = 1;  // canonical descriptor payload (magic-prefixed)
+}
+
+/**
+ * Response: attestation over the validated payload
+ * @prev ClearsignAttestorSign
+ */
+message ClearsignAttestorSignature {
+  optional bytes signature = 1;   // 64-byte compact secp256k1 ECDSA over SHA256(payload)
+  optional bytes public_key = 2;  // 33-byte compressed attestation pubkey
 }
