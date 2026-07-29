@@ -1073,7 +1073,7 @@ message ClearsignAttestorPublicKey {
 /**
  * Request: validate a clearsign descriptor payload and attest it.
  * The device parses the payload with the SAME validator verifying devices
- * run (currently KKSOLSW1 cross-chain swap descriptors) and refuses
+ * run (currently KKSOLSC1 reusable Solana instruction schemas) and refuses
  * anything malformed — this message can never sign arbitrary bytes.
  * Requires an unlocked session and an on-device confirmation.
  * @next ClearsignAttestorSignature
