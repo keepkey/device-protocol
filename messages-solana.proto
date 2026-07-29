@@ -67,11 +67,13 @@ message SolanaSignTx {
      * Safety comes from structural completeness rather than binding to one
      * transaction: firmware requires the schema to account for the
      * instruction data exactly, and every other instruction in the
-     * transaction to be a program it already recognises.
+     * transaction to be a program it already recognises. Runtime-loaded
+     * signers are annotation-only, so the normal Advanced-mode unverified
+     * transaction warning remains additive.
      */
-    optional bytes schema_payload = 5;
-    optional bytes schema_signature = 6;       // 64-byte compact secp256k1 over SHA256(payload)
-    optional uint32 schema_signer_key_id = 7;  // trusted clearsign signer slot (0-3)
+    optional bytes schema_payload = 9;
+    optional bytes schema_signature = 10;       // 64-byte compact secp256k1 over SHA256(payload)
+    optional uint32 schema_signer_key_id = 11;  // trusted clearsign signer slot (0-3)
 }
 
 /**

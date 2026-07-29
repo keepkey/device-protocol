@@ -260,7 +260,7 @@ enum MessageType {
   MessageType_HiveSignOperations = 1616 [ (wire_in) = true ];
   MessageType_HiveSignedOperations = 1617 [ (wire_out) = true ];
 
-  // Clearsign attestor (server/emulator attestor tier)
+  // Advanced-mode ClearSign studio / schema attestation
   MessageType_ClearsignAttestorGetPublicKey = 1700 [ (wire_in) = true ];
   MessageType_ClearsignAttestorPublicKey = 1701 [ (wire_out) = true ];
   MessageType_ClearsignAttestorSign = 1702 [ (wire_in) = true ];
@@ -1054,9 +1054,8 @@ message ChangeWipeCode {
 /**
  * Request: derive and return the clearsign attestation public key.
  * The attestation key is derived from the seed at a dedicated hardened path
- * and is unrelated to any coin key. Used to provision verifying devices
- * (METADATA_PUBKEYS baking, or LoadClearsignSigner for test slots) and to
- * let hosts confirm which attestor they are talking to.
+ * and is unrelated to any coin key. Available in regular firmware only while
+ * AdvancedMode is enabled.
  * @next ClearsignAttestorPublicKey
  * @next Failure
  */

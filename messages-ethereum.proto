@@ -170,7 +170,7 @@ message LoadClearsignSigner {
 	 */
 	optional uint32 icon_width = 5;
 	optional uint32 icon_height = 6;	// icon pixel height (1..64; the icon column is 64px tall)
-	optional bool persist = 7;		// reserved for future authenticated persistence; firmware 7.15 rejects true
+	optional bool persist = 7;		// reserved compatibility field; firmware rejects true (RAM-only)
 }
 
 ////////////////////////////////////////
