@@ -56,6 +56,10 @@ message SolanaSignTx {
     optional string coin_name = 2 [default = "Solana"];
     optional bytes raw_tx = 3;              // Serialized Solana transaction bytes
     repeated SolanaTokenInfo token_info = 4; // Token metadata for display (max 4)
+    // Reserved for the transaction-bound KKSOLSW1 descriptor and one-request
+    // opaque-signing consent. Keeping this reservation in the canonical
+    // protocol makes reusing a planned tag an explicit review decision.
+    reserved 5 to 8;
     /*
      * KKSOLSC1 instruction schema (see solana.h). A schema describes how to
      * read ONE program instruction: program id, discriminator, and the
