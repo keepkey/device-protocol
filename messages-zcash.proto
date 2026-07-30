@@ -7,6 +7,11 @@
 
 syntax = "proto2";
 
+enum ZcashShieldedPool {
+    ZCASH_SHIELDED_POOL_ORCHARD = 0;
+    ZCASH_SHIELDED_POOL_IRONWOOD = 1;
+}
+
 // Sugar for easier handling in Java
 option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyMessageZcash";
@@ -45,6 +50,11 @@ message ZcashSignPCZT {
     optional uint32 version_group_id = 16;      // Version group ID
     optional uint32 lock_time = 17;             // Transaction lock time
     optional uint32 expiry_height = 18;         // Transaction expiry height
+    // NU6.3 / transaction-v6 Orchard-family pool selection. The existing
+    // orchard_* metadata fields describe the selected action bundle for wire
+    // compatibility; ironwood_digest is the fifth v6 transaction component.
+    optional ZcashShieldedPool shielded_pool = 19 [default = ZCASH_SHIELDED_POOL_ORCHARD];
+    optional bytes ironwood_digest = 20;        // 32-byte Ironwood component digest (v6)
     // Phase 3: transparent shielding support
     optional uint32 n_transparent_outputs = 29; // 0 for shielded-only (default)
     optional uint32 n_transparent_inputs = 30;  // 0 for shielded-only (default), >0 for hybrid shielding tx

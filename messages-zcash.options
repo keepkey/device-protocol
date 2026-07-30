@@ -5,6 +5,7 @@ ZcashSignPCZT.transparent_digest max_size:32
 ZcashSignPCZT.sapling_digest max_size:32
 ZcashSignPCZT.orchard_digest max_size:32
 ZcashSignPCZT.orchard_anchor max_size:32
+ZcashSignPCZT.ironwood_digest max_size:32
 ZcashSignPCZT.expected_seed_fingerprint max_size:32
 
 ZcashPCZTAction.alpha max_size:32
