@@ -29,8 +29,11 @@ jobs:
       - name: Install JavaScript generator dependencies
         run: npm ci
 
-      - name: Generate JavaScript bindings
-        run: npm run build:js
+      - name: Verify install generated JavaScript bindings
+        run: |
+          test -s lib/messages_pb.js
+          test -s lib/messages-solana_pb.js
+          test -s lib/messages-zcash_pb.js
 
       - name: Compile protocol descriptors
         run: |
