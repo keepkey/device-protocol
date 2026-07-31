@@ -78,6 +78,15 @@ message SolanaSignTx {
     optional bytes schema_payload = 9;
     optional bytes schema_signature = 10;       // 64-byte compact secp256k1 over SHA256(payload)
     optional uint32 schema_signer_key_id = 11;  // trusted clearsign signer slot (0-3)
+    /*
+     * Candidate owners for SPL associated-token-account destinations. For a
+     * TransferChecked instruction, firmware may display an owner only after
+     * independently deriving ATA(owner, token_program, mint) and matching it
+     * to the signed destination account. An unmatched candidate is never
+     * treated as a recipient. This lets payment protocols such as x402 show
+     * their payTo address without trusting host-side decoding or chain RPC.
+     */
+    repeated bytes token_recipient_owner = 12;  // 32-byte Solana public keys (max 4)
 }
 
 /**
