@@ -2,9 +2,9 @@ name: Protocol CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, up/release-protocol]
   pull_request:
-    branches: [master]
+    branches: [master, up/release-protocol]
 
 permissions:
   contents: read
@@ -19,6 +19,18 @@ jobs:
 
       - name: Install protobuf compiler
         run: sudo apt-get update && sudo apt-get install -y protobuf-compiler
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install JavaScript generator dependencies
+        run: npm ci
+
+      - name: Generate JavaScript bindings
+        run: npm run build:js
 
       - name: Compile protocol descriptors
         run: |
