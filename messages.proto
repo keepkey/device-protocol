@@ -319,6 +319,11 @@ message Features {
   optional bool wipe_code_protection = 25;
   optional uint32 auto_lock_delay_ms =
       26; // Current auto lock delay (in milliseconds)
+  optional bool supports_taproot =
+      27; // Firmware can derive and spend P2TR (BIP-86 / BIP-340 / BIP-341).
+          // Lets a host detect taproot support directly instead of inferring
+          // it from a firmware version, which breaks whenever the feature is
+          // retargeted to a different release.
 }
 
 /**
