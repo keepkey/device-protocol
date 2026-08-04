@@ -576,6 +576,9 @@ message ResetDevice {
       7; // Initialize without ever showing the recovery sentence.
   optional uint32 auto_lock_delay_ms = 8; // Screensaver Timeout
   optional uint32 u2f_counter = 9;        // U2F Counter
+  optional bool dice_entropy =
+      10; // collect dice rolls on the device and mix them into the internal
+          // entropy before it is displayed or committed
 }
 
 /**
@@ -986,6 +989,10 @@ message FirmwareUpload {
  */
 message DebugLinkDecision {
   required bool yes_no = 1; // true for "Confirm", false for "Cancel"
+  optional string input =
+      2; // synthetic keyboard input for on-device entry flows (e.g. dice
+         // rolls '1'-'6', 'u' for undo); kept short so the decoded struct
+         // fits the tiny-message buffer
 }
 
 /**
@@ -1020,6 +1027,9 @@ message DebugLinkState {
       12;                            // last auto completed recovery word
   optional bytes firmware_hash = 13; // hash of the application and meta header
   optional bytes storage_hash = 14;  // hash of storage
+  optional bytes dice_digest =
+      15; // SHA-256 of the ASCII dice-roll string collected during a
+          // dice_entropy ResetDevice workflow
 }
 
 /**
