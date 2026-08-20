@@ -113,6 +113,66 @@ message EthereumMetadataAck {
 	optional string display_summary = 2;		// Brief result for host logging
 }
 
+/**
+ * Request: Load a clearsign signer public key + alias into a key slot.
+ * The device shows a mandatory confirmation (alias + key fingerprint) before
+ * accepting; there is no way to load a signer without user consent.
+ * A signer is RAM-only and is cleared on reboot. The persist field is retained
+ * for wire compatibility and future authenticated storage; firmware 7.15
+ * rejects persist=true. Every transaction whose metadata was verified by a loaded
+ * (non built-in) signer is preceded by a warning screen naming the alias
+ * during transaction confirmation.
+ * @next Success
+ * @next Failure
+ */
+message LoadClearsignSigner {
+	optional uint32 key_id = 1;		// target key slot (0-3); must not hold a built-in key
+	optional bytes pubkey = 2;		// 33-byte compressed secp256k1 public key
+	optional string alias = 3;		// short display name shown on load confirm + per-tx warning
+	/*
+	 * Optional identity logo, <= 384 bytes, run-length encoded — NOT a packed
+	 * bitmap. (This is the format because draw_bitmap_mono_rle() is the decoder
+	 * of record and every bundled image already uses it; it is NOT a size
+	 * workaround — a packed 1bpp icon at the legal maximum geometry, 40x64,
+	 * would be 320 bytes and would fit the cap.)
+	 * Pixels are BYTE-VALUED intensity, one byte per pixel after decoding; the
+	 * device renders each as (value * color / 100). Decoder of record:
+	 * keepkey-firmware lib/board/draw.c: draw_bitmap_mono_rle().
+	 *
+	 * Grammar — the stream is a sequence of packets. Read n = (int8)data[i++]:
+	 *   n in [1, 127]    RUN     : one value byte follows; emit it n times.  [n][v]
+	 *   n in [-127, -1]  LITERAL : (-n) value bytes follow; emit each once.  [n][v1]..[v-n]
+	 *   n == 0                   : invalid.
+	 *   n == -128 (0x80)         : INVALID. The decoder's run counter is int8_t,
+	 *                              so it cannot represent -(-128) = 128; a 0x80
+	 *                              packet is undecodable. Encoders MUST split a
+	 *                              128-byte literal into two packets. Firmware
+	 *                              rejects 0x80 rather than rendering.
+	 * The stream must decode EXACTLY, and the device validates this before the
+	 * icon is shown or stored: no run may straddle the end of the image,
+	 * exactly icon_width*icon_height pixels are emitted (row-major,
+	 * left->right, top->bottom), and the ENTIRE input must be consumed —
+	 * trailing packets after the final pixel are rejected. So a RUN emits at
+	 * most 127 pixels and a LITERAL at most 127.
+	 *
+	 * Golden vector (2x2, w=2 h=2): bytes 03 FF FF 00
+	 *   03 -> RUN of 3, value FF   => pixels [FF, FF, FF]
+	 *   FF -> n = -1, LITERAL of 1 => next byte 00 => pixel [00]
+	 *   decoded = FF FF FF 00  (row0 = FF FF, row1 = FF 00)
+	 */
+	optional bytes icon = 4;
+	/*
+	 * Icon pixel width, 1..40. The cap is the confirm screen's left icon column
+	 * (LEFT_MARGIN_WITH_ICON = 40); title/body text begins at x=40 and the icon
+	 * is drawn AFTER the text, so a wider icon would paint over the alias,
+	 * fingerprint and the "NOT verified by KeepKey" warning on the trust screen.
+	 * Icon + both dimensions omitted => text-only identity.
+	 */
+	optional uint32 icon_width = 5;
+	optional uint32 icon_height = 6;	// icon pixel height (1..64; the icon column is 64px tall)
+	optional bool persist = 7;		// reserved compatibility field; firmware rejects true (RAM-only)
+}
+
 ////////////////////////////////////////
 // Ethereum: Message signing messages //
 ////////////////////////////////////////

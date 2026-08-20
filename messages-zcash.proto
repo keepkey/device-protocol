@@ -7,6 +7,11 @@
 
 syntax = "proto2";
 
+enum ZcashShieldedPool {
+    ZCASH_SHIELDED_POOL_ORCHARD = 0;
+    ZCASH_SHIELDED_POOL_IRONWOOD = 1;
+}
+
 // Sugar for easier handling in Java
 option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyMessageZcash";
@@ -15,8 +20,9 @@ option java_outer_classname = "KeepKeyMessageZcash";
  * Request: Sign a Zcash shielded transaction (PCZT format)
  *
  * The PCZT contains pre-constructed transaction data with proofs.
- * The device derives spend authorization keys, computes the sighash,
- * and returns RedPallas signatures for each Orchard action.
+ * The device derives spend authorization keys, computes the sighash, validates
+ * every Orchard action, and returns compact RedPallas signatures only for
+ * actions explicitly marked is_spend=true.
  *
  * @next ZcashTransparentAck
  * @next ZcashPCZTActionAck
@@ -26,7 +32,7 @@ message ZcashSignPCZT {
     repeated uint32 address_n = 1;              // ZIP-32 derivation path [32', 133', account']
     optional uint32 account = 2;                // Account index (alternative to full path)
     optional bytes pczt_data = 3;               // Serialized PCZT data (may be chunked)
-    optional uint32 n_actions = 4;              // Number of Orchard actions to sign
+    optional uint32 n_actions = 4;              // Number of Orchard actions to stream and validate
     optional uint64 total_amount = 5;           // Total ZEC amount (zatoshis) for user confirmation
     optional uint64 fee = 6;                    // Transaction fee (zatoshis)
     optional uint32 branch_id = 7;              // Consensus branch ID
@@ -44,6 +50,11 @@ message ZcashSignPCZT {
     optional uint32 version_group_id = 16;      // Version group ID
     optional uint32 lock_time = 17;             // Transaction lock time
     optional uint32 expiry_height = 18;         // Transaction expiry height
+    // NU6.3 / transaction-v6 Orchard-family pool selection. The existing
+    // orchard_* metadata fields describe the selected action bundle for wire
+    // compatibility; ironwood_digest is the fifth v6 transaction component.
+    optional ZcashShieldedPool shielded_pool = 19 [default = ZCASH_SHIELDED_POOL_ORCHARD];
+    optional bytes ironwood_digest = 20;        // 32-byte Ironwood component digest (v6)
     // Phase 3: transparent shielding support
     optional uint32 n_transparent_outputs = 29; // 0 for shielded-only (default)
     optional uint32 n_transparent_inputs = 30;  // 0 for shielded-only (default), >0 for hybrid shielding tx
@@ -69,7 +80,8 @@ message ZcashPCZTAction {
     optional bytes sighash = 3;             // 32-byte transaction sighash (ZIP 244) - legacy mode
     optional bytes cv_net = 4;              // 32-byte value commitment
     optional uint64 value = 5;              // Action value in zatoshis (for display)
-    optional bool is_spend = 6;             // True if this action spends a note
+    optional bool is_spend = 6;             // REQUIRED by firmware 7.15: true only for a real spend;
+                                            // false for dummy spends/output-only actions
     // Phase 2b: action fields for incremental orchard digest verification
     optional bytes nullifier = 7;           // 32-byte nullifier
     optional bytes cmx = 8;                 // 32-byte note commitment
@@ -102,7 +114,9 @@ message ZcashPCZTActionAck {
  * @prev ZcashPCZTAction
  */
 message ZcashSignedPCZT {
-    repeated bytes signatures = 1;          // 64-byte RedPallas signatures, one per action
+    repeated bytes signatures = 1;          // Compact 64-byte RedPallas signatures: one per
+                                            // is_spend=true action, in ascending action-index order;
+                                            // an all-dummy shield transaction returns zero
     optional bytes txid = 2;               // 32-byte computed transaction ID
 }
 
