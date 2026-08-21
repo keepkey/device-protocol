@@ -56,10 +56,37 @@ message SolanaSignTx {
     optional string coin_name = 2 [default = "Solana"];
     optional bytes raw_tx = 3;              // Serialized Solana transaction bytes
     repeated SolanaTokenInfo token_info = 4; // Token metadata for display (max 4)
-    // Reserved for the transaction-bound KKSOLSW1 descriptor and one-request
-    // opaque-signing consent. Keeping this reservation in the canonical
-    // protocol makes reusing a planned tag an explicit review decision.
-    reserved 5 to 8;
+    /*
+     * KKSOLSW1 -- transaction-bound account attestation.
+     *
+     * A Solana v0 transaction may source instruction accounts from an Address
+     * Lookup Table. Those accounts are NOT in the bytes being signed, so the
+     * device cannot derive them and refuses to guess: such a transaction is
+     * forced to SOL_TX_REVIEW_OPAQUE, which is refused outright unless the user
+     * has enabled AdvancedMode and is then an explicit BLIND SIGN. The
+     * instruction's meaning is never shown.
+     *
+     * So this does not rescue a blank screen -- it upgrades a blind sign into a
+     * provider-attested clear sign, which is the whole point of the tier.
+     *
+     * A provider may attest the resolved account list for THIS transaction.
+     * The attestation is bound to the exact message hash, so it cannot be
+     * replayed onto another transaction, and it is domain-tagged so a
+     * signature made for any other purpose cannot be replayed as one.
+     *
+     * This is annotation, not authority: the accounts are displayed as
+     * PROVIDER-ATTESTED alongside the provider's alias, and the normal
+     * unverified-transaction review still runs. Rendering nothing while
+     * signing is the outcome this replaces.
+     *
+     * Preimage: "KeepKeySolanaTxAccounts/1" || message_hash(32)
+     *           || count(le32) || account[0..count-1] (32 bytes each)
+     */
+    repeated bytes lut_account = 5;         // resolved 32-byte account keys (max 8)
+    optional bytes lut_signature = 6;       // 64-byte compact secp256k1 over SHA256(preimage)
+    optional uint32 lut_signer_key_id = 7;  // trusted clearsign signer slot (0-3)
+    // Still reserved: one-request opaque-signing consent.
+    reserved 8;
     /*
      * KKSOLSC1 instruction schema (see solana.h). A schema describes how to
      * read ONE program instruction: program id, discriminator, and the
