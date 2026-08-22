@@ -247,3 +247,132 @@ message Ethereum712TypesValues {
 		required string eip712data = 4;				// "domain" or "message" json string (up to 2048)
 		required uint32 eip712typevals = 5;		// device calculates hash for 1 = domain sep, 2 = message
 }
+
+// ── Structured EIP-712, device-driven field streaming ────────────────
+//
+// The device drives. It asks for one type definition, or one leaf VALUE, at a
+// time, and hashes each value in the same pass that displays it. The host owns
+// the document; the device holds only the digest stack for the containers
+// currently open, so a 10,000-element array costs the same RAM as a 2-element
+// one and there is no document-size limit to raise later.
+//
+// This replaces Ethereum712TypesValues, which shipped the whole document in two
+// 2048-byte JSON blobs and was withdrawn in 7.14.2: its parser could not
+// guarantee that the value shown on screen was the value being hashed. Here
+// that property is structural -- a value is displayed and absorbed from the
+// same buffer in the same call, and each member_path is requested exactly once.
+//
+// Shapes follow Trezor's where they can, so a host that can drive a Trezor can
+// drive a KeepKey with the same traversal logic. ONE deliberate divergence is
+// described at EthereumFieldType.
+
+/**
+ * Request: Begin structured EIP-712 signing. The device replies with
+ * EthereumTypedDataStructRequest and drives from there.
+ * @start
+ * @next EthereumTypedDataStructRequest
+ * @next Failure
+ */
+message EthereumSignTypedData {
+    repeated uint32 address_n = 1;              // BIP-32 path to derive the key from master node
+    required string primary_type = 2;           // primaryType of the message being signed
+    optional bool metamask_v4_compat = 3 [default = true];  // array-of-struct hashing follows MetaMask v4
+}
+
+/**
+ * Response: The device needs this struct's member list before it can hash.
+ * @next EthereumTypedDataStructAck
+ */
+message EthereumTypedDataStructRequest {
+    required string name = 1;                   // struct name, "EIP712Domain" for the domain
+}
+
+/**
+ * Request: The member list for the struct the device just asked about, in
+ * declaration order. Order is part of the signature: it determines encodeType
+ * and the order encodeData concatenates members.
+ * @next EthereumTypedDataStructRequest
+ * @next EthereumTypedDataValueRequest
+ * @next Failure
+ */
+message EthereumTypedDataStructAck {
+    repeated EthereumStructMember members = 1;
+
+    message EthereumStructMember {
+        required EthereumFieldType type = 1;
+        required string name = 2;
+    }
+
+    /**
+     * DIVERGENCE FROM TREZOR, and the reason for it.
+     *
+     * Trezor and OneKey describe an array as a field whose `entry_type` is
+     * another EthereumFieldType -- a self-referential message. Trezor can do
+     * that because core is Python. OneKey does it on nanopb by compiling that
+     * one field as a POINTER, which needs PB_ENABLE_MALLOC, and then flattens
+     * the pointer chain into a fixed pool to sever the recursion.
+     *
+     * KeepKey's nanopb is static-allocation only, and a heap inside a signing
+     * device is a liability we are not taking on for one field. So the array
+     * nesting is FLATTENED onto the wire, the way Ledger describes it:
+     * data_type is always the LEAF type, and array_levels carries the
+     * dimensions.
+     *
+     * array_levels lists the bracket groups in the order they are written in
+     * the Solidity type string, left to right -- which is the order encodeType
+     * must reproduce. 0 means a dynamic dimension, N means a fixed one:
+     *
+     *     uint256          -> data_type=UINT,  size=32, array_levels=[]
+     *     address[]        -> data_type=ADDRESS,        array_levels=[0]
+     *     Person[3]        -> data_type=STRUCT, struct_name="Person",
+     *                                                   array_levels=[3]
+     *     int16[2][][4]    -> data_type=INT, size=2,    array_levels=[2,0,4]
+     *
+     * Nothing EIP-712 permits is lost, and the encoding is bounded, flat and
+     * statically sized.
+     */
+    message EthereumFieldType {
+        required EthereumDataType data_type = 1;    // the LEAF type; never ARRAY
+        optional uint32 size = 2;                   // bytesN: N. intN/uintN: N in BYTES, 1..32.
+        optional string struct_name = 3;            // STRUCT: its name, to request in turn
+        repeated uint32 array_levels = 4;           // see above. Empty for a non-array.
+    }
+
+    // Values match Trezor's enum so a shared host implementation keeps its
+    // mapping. ARRAY is reserved and never sent -- see EthereumFieldType.
+    enum EthereumDataType {
+        UINT = 1;
+        INT = 2;
+        BYTES = 3;
+        STRING = 4;
+        BOOL = 5;
+        ADDRESS = 6;
+        ARRAY = 7;     // reserved, unused
+        STRUCT = 8;
+    }
+}
+
+/**
+ * Response: The device needs one leaf value. member_path addresses it: element
+ * 0 is 0 for the domain and 1 for the message, and the rest index members and
+ * array elements from there. A struct is never requested as a value -- the
+ * device walks into it. An array's LENGTH is requested as its own value, big
+ * endian uint16, before its elements.
+ * @next EthereumTypedDataValueAck
+ */
+message EthereumTypedDataValueRequest {
+    repeated uint32 member_path = 1;
+}
+
+/**
+ * Request: The raw big-endian bytes of the requested leaf, already the exact
+ * declared width. Not JSON: the device does no number parsing, so there is no
+ * integer width ceiling and no decimal-to-binary step that could disagree with
+ * what the host meant.
+ * @next EthereumTypedDataValueRequest
+ * @next EthereumTypedDataSignature
+ * @next Failure
+ */
+message EthereumTypedDataValueAck {
+    required bytes value = 1;
+}
