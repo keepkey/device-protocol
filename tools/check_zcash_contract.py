@@ -67,4 +67,29 @@ for name, (number, direction) in MESSAGE_IDS.items():
 if not re.search(r"one per\s*// is_spend=true action", ZCASH):
     raise AssertionError("ZcashSignedPCZT must document compact real-spend signatures")
 
+
+# RC18 is Orchard-only. The Ironwood/transaction-v6 surface is defined so tags
+# 19-20 and ZcashShieldedPool value 1 stay allocated, but no firmware in this
+# release implements it. Keep the fields marked schema-only so a host cannot
+# read them as supported behavior.
+require_field("ZcashSignPCZT", r"optional ZcashShieldedPool shielded_pool = 19 \[default = ZCASH_SHIELDED_POOL_ORCHARD\];")
+require_field("ZcashSignPCZT", r"optional bytes ironwood_digest = 20;")
+
+for pattern, description in [
+    (r"^.*ZCASH_SHIELDED_POOL_IRONWOOD\s*=\s*1\s*;.*$", "the Ironwood pool value"),
+    (r"^.*ironwood_digest\s*=\s*20\s*;.*$", "the Ironwood digest field"),
+]:
+    line = re.search(pattern, ZCASH, re.M)
+    if line is None:
+        raise AssertionError("missing declaration for %s" % description)
+    if "SCHEMA ONLY" not in line.group(0):
+        raise AssertionError(
+            "%s must be marked SCHEMA ONLY on its declaration line" % description
+        )
+
+if not re.search(r"SCHEMA ONLY -- NOT IMPLEMENTED BY FIRMWARE 7\.15 / RC18", ZCASH):
+    raise AssertionError(
+        "ZcashSignPCZT must document that the Ironwood pool selection is schema-only"
+    )
+
 print("RC18 Zcash protocol contract: ok")
