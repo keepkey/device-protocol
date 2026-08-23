@@ -12,8 +12,6 @@ NearAddress.public_key                  max_size:32
 NearSignTx.address_n                    max_count:8
 NearSignTx.coin_name                    max_size:21
 NearSignTx.raw_tx                       max_size:1024
-NearSignTx.receiver_id                  max_size:65
-NearSignTx.action_display               max_size:128
 
 NearSignedTx.signature                  max_size:64
 NearSignedTx.public_key                 max_size:32
