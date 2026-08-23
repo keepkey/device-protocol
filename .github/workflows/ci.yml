@@ -42,6 +42,7 @@ jobs:
             types.proto messages.proto messages-binance.proto \
             messages-cosmos.proto messages-eos.proto messages-ethereum.proto \
             messages-hive.proto messages-mayachain.proto messages-nano.proto \
+            messages-near.proto \
             messages-osmosis.proto messages-ripple.proto messages-solana.proto \
             messages-tendermint.proto messages-thorchain.proto messages-ton.proto \
             messages-tron.proto messages-zcash.proto

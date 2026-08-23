@@ -3,6 +3,48 @@
  *
  * Zcash shielded transaction signing via PCZT (Partially Constructed
  * Zcash Transaction) format. Supports Orchard spend authorization.
+ *
+ * ---------------------------------------------------------------------------
+ * BREAKING CHANGE -- Zcash wire protocol v2 (firmware 7.15 / RC18)
+ * ---------------------------------------------------------------------------
+ *
+ * Unlike the rest of this release, the Zcash surface is NOT backward
+ * compatible. Zcash shielded support shipped as a preview and had no stable
+ * host implementations, so the flow was corrected in place rather than
+ * duplicated behind new message IDs. A host written against Zcash v1
+ * (firmware <= 7.14.x) will not interoperate with 7.15 and must be updated.
+ *
+ * 1. MessageType 1307 was renamed ZcashTransparentSig -> ZcashTransparentSigned
+ *    and its shape changed from one signature per request
+ *    (required bytes signature = 1; optional uint32 next_index = 2)
+ *    to a single batched response (repeated bytes signatures = 1).
+ *    The wire ID is unchanged, so a v1 host decodes 1307 into the wrong
+ *    message. Generated symbol names change accordingly.
+ *
+ * 2. The transparent phase gained ZcashTransparentOutput (1310) and
+ *    ZcashTransparentAck (1311). Transparent outputs are now streamed before
+ *    inputs, and all inputs are buffered before any signature is emitted,
+ *    because ZIP-244 per-input transparent sighashes commit to every
+ *    transparent prevout, value, script, sequence and output. The device
+ *    therefore computes the sighash itself: ZcashTransparentInput.sighash is
+ *    demoted from required to optional and is REJECTED when present.
+ *
+ * 3. ZcashDisplayAddress fields 3-6 (address, ak, nk, rivk) were removed and
+ *    reserved. FVK-match attestation against a host-built unified address is
+ *    strictly weaker than device-derived display, so the device now derives
+ *    and shows its own Orchard UA. A v1 host that sends those fields gets a
+ *    Failure. Either account or a full address_n path is now REQUIRED.
+ *
+ * 4. ZcashPCZTAction.is_spend is REQUIRED by firmware 7.15, and
+ *    ZcashSignedPCZT.signatures is compact: one 64-byte RedPallas signature
+ *    per is_spend=true action in ascending action order, rather than one per
+ *    action. A v1 host that indexes signatures by action index will read the
+ *    wrong signature.
+ *
+ * 5. ZcashSignPCZT.sapling_digest is reserved for future Sapling support and
+ *    is currently rejected when set.
+ *
+ * These semantics are pinned by tools/check_zcash_contract.py.
  */
 
 syntax = "proto2";

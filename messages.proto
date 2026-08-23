@@ -265,11 +265,19 @@ enum MessageType {
   MessageType_HiveSignAccountUpdate = 1608 [ (wire_in) = true ];
   MessageType_HiveSignedAccountUpdate = 1609 [ (wire_out) = true ];
 
-  // NEAR
+  // NEAR -- SCHEMA ONLY, NOT YET IMPLEMENTED BY FIRMWARE.
+  // These IDs and messages-near.proto define the intended NEAR wire surface so
+  // that 1610-1613 stay allocated and cannot be reused. Firmware 7.15 / RC18
+  // ships NO NEAR handler, so a device on that release answers any of these
+  // requests with Failure_UnexpectedMessage. Hosts must not advertise NEAR
+  // support on the basis of these bindings; treat the schema as reserved until
+  // a firmware release documents NEAR as supported.
   MessageType_NearGetAddress = 1610 [ (wire_in) = true ];
   MessageType_NearAddress = 1611 [ (wire_out) = true ];
   MessageType_NearSignTx = 1612 [ (wire_in) = true ];
   MessageType_NearSignedTx = 1613 [ (wire_out) = true ];
+
+  // Hive (continued)
   MessageType_HiveSignMessage = 1614 [ (wire_in) = true ];
   MessageType_HiveSignedMessage = 1615 [ (wire_out) = true ];
   MessageType_HiveSignOperations = 1616 [ (wire_in) = true ];

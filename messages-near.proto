@@ -5,6 +5,13 @@
  * Derivation path: m/44'/397'/0' (SLIP-0010 hardened-only)
  * Address: lowercase hex of 32-byte Ed25519 public key (implicit account)
  * Signing: Ed25519(SHA256(borsh_serialized_transaction))
+ *
+ * STATUS: SCHEMA ONLY -- NOT IMPLEMENTED BY FIRMWARE 7.15 / RC18.
+ * This file exists so MessageType 1610-1613 stay allocated and the intended
+ * wire surface is reviewable. That release ships no NEAR handler and answers
+ * these requests with Failure_UnexpectedMessage. Hosts must not advertise NEAR
+ * support on the basis of these bindings. nanopb bounds live in
+ * messages-near.options so firmware can adopt the schema without a redesign.
  */
 
 syntax = "proto2";

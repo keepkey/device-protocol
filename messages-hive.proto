@@ -99,10 +99,6 @@ message HiveSignedTx {
  * All four role public keys become the account authorities at genesis; no
  * software keys are generated (KeepKey is sole root of trust from block 1).
  * Attestation signing key: owner key at m/48'/13'/0'/account_index'/0'
- * Request: Sign a Hive account_create operation (op type 9).
- * All four role public keys become the account authorities at genesis.
- * No software keys are generated. KeepKey is sole root of trust from block 1.
- * Signing key: owner key at m/48'/13'/0'/account_index'/0'
  * @start
  * @next HiveSignedAccountCreate
  * @next Failure
