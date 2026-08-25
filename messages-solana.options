@@ -11,6 +11,7 @@ SolanaSignTx.lut_account max_size:32
 SolanaSignTx.lut_signature max_size:64
 SolanaSignTx.token_recipient_owner max_count:4
 SolanaSignTx.token_recipient_owner max_size:32
+SolanaSignTx.clearsign_certificate max_size:139
 SolanaTokenInfo.mint max_size:32
 SolanaTokenInfo.symbol max_size:13
 SolanaTokenInfo.signature max_size:64

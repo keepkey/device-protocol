@@ -74,10 +74,14 @@ message SolanaSignTx {
      * replayed onto another transaction, and it is domain-tagged so a
      * signature made for any other purpose cannot be replayed as one.
      *
-     * This is annotation, not authority: the accounts are displayed as
-     * PROVIDER-ATTESTED alongside the provider's alias, and the normal
-     * unverified-transaction review still runs. Rendering nothing while
-     * signing is the outcome this replaces.
+     * Runtime-loaded signers are annotation only: the accounts are displayed
+     * as PROVIDER-ATTESTED and the normal Advanced Mode blind-sign review still
+     * runs. A KeepKey root certificate scoped to Solana may instead authorize
+     * firmware to use the resolved keys while parsing the exact message. That
+     * certified path still requires a signed, structurally-complete KKSOLSC1
+     * schema before the raw/blind review can be omitted. Self-contained
+     * legacy/v0 messages omit fields 5-7 because every account is already in
+     * raw_tx; their certified authority covers the schema only.
      *
      * Preimage: "KeepKeySolanaTxAccounts/1" || message_hash(32)
      *           || count(le32) || account[0..count-1] (32 bytes each)
@@ -114,6 +118,16 @@ message SolanaSignTx {
      * their payTo address without trusting host-side decoding or chain RPC.
      */
     repeated bytes token_recipient_owner = 12;  // 32-byte Solana public keys (max 4)
+    /*
+     * KeepKey root certificate for the delegate that signed the instruction
+     * schema and, when the message contains address lookups, the LUT account
+     * binding. The certificate uses the fixed 139-byte ClearSign delegation
+     * format and MUST be scoped to Solana (scope id 501). schema_signer_key_id
+     * and any present lut_signer_key_id MUST use the reserved delegate sentinel
+     * (0x80). Firmware rejects partial, mixed-runtime/certified, wrong-scope,
+     * invalid, missing-required-LUT, or unexpected-LUT requests.
+     */
+    optional bytes clearsign_certificate = 13;
 }
 
 /**
