@@ -100,6 +100,17 @@ enum MessageType {
   // Ethereum Clear Signing
   MessageType_EthereumTxMetadata = 115 [ (wire_in) = true ];
   MessageType_EthereumMetadataAck = 116 [ (wire_out) = true ];
+  MessageType_LoadClearsignSigner = 117 [ (wire_in) = true ];
+
+  // Structured EIP-712, device-driven field streaming. Allocated in a fresh
+  // block rather than after the 108-117 Ethereum run: the low range is where
+  // upstream Trezor allocates too, and keeping clear of it means adopting more
+  // of their messages later never collides.
+  MessageType_EthereumSignTypedData = 1704 [ (wire_in) = true ];
+  MessageType_EthereumTypedDataStructRequest = 1705 [ (wire_out) = true ];
+  MessageType_EthereumTypedDataStructAck = 1706 [ (wire_in) = true ];
+  MessageType_EthereumTypedDataValueRequest = 1707 [ (wire_out) = true ];
+  MessageType_EthereumTypedDataValueAck = 1708 [ (wire_in) = true ];
 
   // BIP-85
   MessageType_GetBip85Mnemonic = 120 [ (wire_in) = true ];
@@ -217,9 +228,11 @@ enum MessageType {
   MessageType_ZcashGetOrchardFVK = 1304 [ (wire_in) = true ];
   MessageType_ZcashOrchardFVK = 1305 [ (wire_out) = true ];
   MessageType_ZcashTransparentInput = 1306 [ (wire_in) = true ];
-  MessageType_ZcashTransparentSig = 1307 [ (wire_out) = true ];
+  MessageType_ZcashTransparentSigned = 1307 [ (wire_out) = true ];
   MessageType_ZcashDisplayAddress = 1308 [ (wire_in) = true ];
   MessageType_ZcashAddress = 1309 [ (wire_out) = true ];
+  MessageType_ZcashTransparentOutput = 1310 [ (wire_in) = true ];
+  MessageType_ZcashTransparentAck = 1311 [ (wire_out) = true ];
 
   // TRON
   MessageType_TronGetAddress = 1400 [ (wire_in) = true ];
@@ -239,6 +252,42 @@ enum MessageType {
   MessageType_TonSignedTx = 1503 [ (wire_out) = true ];
   MessageType_TonSignMessage = 1504 [ (wire_in) = true ];
   MessageType_TonMessageSignature = 1505 [ (wire_out) = true ];
+
+  // Hive
+  MessageType_HiveGetPublicKey = 1600 [ (wire_in) = true ];
+  MessageType_HivePublicKey = 1601 [ (wire_out) = true ];
+  MessageType_HiveSignTx = 1602 [ (wire_in) = true ];
+  MessageType_HiveSignedTx = 1603 [ (wire_out) = true ];
+  MessageType_HiveGetPublicKeys = 1604 [ (wire_in) = true ];
+  MessageType_HivePublicKeys = 1605 [ (wire_out) = true ];
+  MessageType_HiveSignAccountCreate = 1606 [ (wire_in) = true ];
+  MessageType_HiveSignedAccountCreate = 1607 [ (wire_out) = true ];
+  MessageType_HiveSignAccountUpdate = 1608 [ (wire_in) = true ];
+  MessageType_HiveSignedAccountUpdate = 1609 [ (wire_out) = true ];
+
+  // NEAR -- SCHEMA ONLY, NOT YET IMPLEMENTED BY FIRMWARE.
+  // These IDs and messages-near.proto define the intended NEAR wire surface so
+  // that 1610-1613 stay allocated and cannot be reused. Firmware 7.15 / RC18
+  // ships NO NEAR handler, so a device on that release answers any of these
+  // requests with Failure_UnexpectedMessage. Hosts must not advertise NEAR
+  // support on the basis of these bindings; treat the schema as reserved until
+  // a firmware release documents NEAR as supported.
+  MessageType_NearGetAddress = 1610 [ (wire_in) = true ];
+  MessageType_NearAddress = 1611 [ (wire_out) = true ];
+  MessageType_NearSignTx = 1612 [ (wire_in) = true ];
+  MessageType_NearSignedTx = 1613 [ (wire_out) = true ];
+
+  // Hive (continued)
+  MessageType_HiveSignMessage = 1614 [ (wire_in) = true ];
+  MessageType_HiveSignedMessage = 1615 [ (wire_out) = true ];
+  MessageType_HiveSignOperations = 1616 [ (wire_in) = true ];
+  MessageType_HiveSignedOperations = 1617 [ (wire_out) = true ];
+
+  // Advanced-mode ClearSign studio / schema attestation
+  MessageType_ClearsignAttestorGetPublicKey = 1700 [ (wire_in) = true ];
+  MessageType_ClearsignAttestorPublicKey = 1701 [ (wire_out) = true ];
+  MessageType_ClearsignAttestorSign = 1702 [ (wire_in) = true ];
+  MessageType_ClearsignAttestorSignature = 1703 [ (wire_out) = true ];
 }
 
 ////////////////////
@@ -293,6 +342,11 @@ message Features {
   optional bool wipe_code_protection = 25;
   optional uint32 auto_lock_delay_ms =
       26; // Current auto lock delay (in milliseconds)
+  optional bool supports_taproot =
+      27; // Firmware can derive and spend P2TR (BIP-86 / BIP-340 / BIP-341).
+          // Lets a host detect taproot support directly instead of inferring
+          // it from a firmware version, which breaks whenever the feature is
+          // retargeted to a different release.
 }
 
 /**
@@ -545,6 +599,9 @@ message ResetDevice {
       7; // Initialize without ever showing the recovery sentence.
   optional uint32 auto_lock_delay_ms = 8; // Screensaver Timeout
   optional uint32 u2f_counter = 9;        // U2F Counter
+  optional bool dice_entropy =
+      10; // collect dice rolls on the device and mix them into the internal
+          // entropy before it is displayed or committed
 }
 
 /**
@@ -955,6 +1012,10 @@ message FirmwareUpload {
  */
 message DebugLinkDecision {
   required bool yes_no = 1; // true for "Confirm", false for "Cancel"
+  optional string input =
+      2; // synthetic keyboard input for on-device entry flows (e.g. dice
+         // rolls '1'-'6', 'u' for undo); kept short so the decoded struct
+         // fits the tiny-message buffer
 }
 
 /**
@@ -989,6 +1050,9 @@ message DebugLinkState {
       12;                            // last auto completed recovery word
   optional bytes firmware_hash = 13; // hash of the application and meta header
   optional bytes storage_hash = 14;  // hash of storage
+  optional bytes dice_digest =
+      15; // SHA-256 of the ASCII dice-roll string collected during a
+          // dice_entropy ResetDevice workflow
 }
 
 /**
@@ -1019,4 +1083,48 @@ message DebugLinkFillConfig {}
  */
 message ChangeWipeCode {
   optional bool remove = 1; // is wipe code removal requested?
+}
+
+//////////////////////////
+// Clearsign attestor   //
+//////////////////////////
+
+/**
+ * Request: derive and return the clearsign attestation public key.
+ * The attestation key is derived from the seed at a dedicated hardened path
+ * and is unrelated to any coin key. Available in regular firmware only while
+ * AdvancedMode is enabled.
+ * @next ClearsignAttestorPublicKey
+ * @next Failure
+ */
+message ClearsignAttestorGetPublicKey {}
+
+/**
+ * Response: compressed attestation public key
+ * @prev ClearsignAttestorGetPublicKey
+ */
+message ClearsignAttestorPublicKey {
+  optional bytes public_key = 1;  // 33-byte compressed secp256k1
+}
+
+/**
+ * Request: validate a clearsign descriptor payload and attest it.
+ * The device parses the payload with the SAME validator verifying devices
+ * run (currently KKSOLSC1 reusable Solana instruction schemas) and refuses
+ * anything malformed — this message can never sign arbitrary bytes.
+ * Requires an unlocked session and an on-device confirmation.
+ * @next ClearsignAttestorSignature
+ * @next Failure
+ */
+message ClearsignAttestorSign {
+  optional bytes payload = 1;  // canonical descriptor payload (magic-prefixed)
+}
+
+/**
+ * Response: attestation over the validated payload
+ * @prev ClearsignAttestorSign
+ */
+message ClearsignAttestorSignature {
+  optional bytes signature = 1;   // 64-byte compact secp256k1 ECDSA over SHA256(payload)
+  optional bytes public_key = 2;  // 33-byte compressed attestation pubkey
 }

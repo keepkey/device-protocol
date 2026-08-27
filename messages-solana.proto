@@ -37,6 +37,13 @@ message SolanaTokenInfo {
     optional bytes mint = 1;                // 32-byte mint public key
     optional string symbol = 2;            // Token symbol e.g. "USDC" (max 12)
     optional uint32 decimals = 3;          // Token decimals e.g. 6
+    // Optional attestation: ECDSA(secp256k1) signature over a domain-separated
+    // digest of (mint, decimals, symbol), signed by a clear-sign signer the
+    // user loaded via LoadClearsignSigner. When present and valid, the device
+    // trusts the symbol; when absent it falls back to displaying the raw mint.
+    // (Firmware verifies; the host/SDK signing side is a follow-up.)
+    optional bytes signature = 4;          // 64-byte compact ECDSA signature
+    optional uint32 signer_key_id = 5;     // which loaded clear-sign signer
 }
 
 /**
@@ -49,6 +56,78 @@ message SolanaSignTx {
     optional string coin_name = 2 [default = "Solana"];
     optional bytes raw_tx = 3;              // Serialized Solana transaction bytes
     repeated SolanaTokenInfo token_info = 4; // Token metadata for display (max 4)
+    /*
+     * KKSOLSW1 -- transaction-bound account attestation.
+     *
+     * A Solana v0 transaction may source instruction accounts from an Address
+     * Lookup Table. Those accounts are NOT in the bytes being signed, so the
+     * device cannot derive them and refuses to guess: such a transaction is
+     * forced to SOL_TX_REVIEW_OPAQUE, which is refused outright unless the user
+     * has enabled AdvancedMode and is then an explicit BLIND SIGN. The
+     * instruction's meaning is never shown.
+     *
+     * So this does not rescue a blank screen -- it upgrades a blind sign into a
+     * provider-attested clear sign, which is the whole point of the tier.
+     *
+     * A provider may attest the resolved account list for THIS transaction.
+     * The attestation is bound to the exact message hash, so it cannot be
+     * replayed onto another transaction, and it is domain-tagged so a
+     * signature made for any other purpose cannot be replayed as one.
+     *
+     * Runtime-loaded signers are annotation only: the accounts are displayed
+     * as PROVIDER-ATTESTED and the normal Advanced Mode blind-sign review still
+     * runs. A KeepKey root certificate scoped to Solana may instead authorize
+     * firmware to use the resolved keys while parsing the exact message. That
+     * certified path still requires a signed, structurally-complete KKSOLSC1
+     * schema before the raw/blind review can be omitted. Self-contained
+     * legacy/v0 messages omit fields 5-7 because every account is already in
+     * raw_tx; their certified authority covers the schema only.
+     *
+     * Preimage: "KeepKeySolanaTxAccounts/1" || message_hash(32)
+     *           || count(le32) || account[0..count-1] (32 bytes each)
+     */
+    repeated bytes lut_account = 5;         // resolved 32-byte account keys (max 8)
+    optional bytes lut_signature = 6;       // 64-byte compact secp256k1 over SHA256(preimage)
+    optional uint32 lut_signer_key_id = 7;  // trusted clearsign signer slot (0-3)
+    // Still reserved: one-request opaque-signing consent.
+    reserved 8;
+    /*
+     * KKSOLSC1 instruction schema (see solana.h). A schema describes how to
+     * read ONE program instruction: program id, discriminator, and the
+     * labelled args/accounts to display. It carries no amounts and no
+     * transaction hash, so a signer attests it ONCE per program+instruction
+     * and every later transaction reuses it — the device decodes the values
+     * out of the raw_tx bytes it is about to sign.
+     *
+     * Safety comes from structural completeness rather than binding to one
+     * transaction: firmware requires the schema to account for the
+     * instruction data exactly, and every other instruction in the
+     * transaction to be a program it already recognises. Runtime-loaded
+     * signers are annotation-only, so the normal Advanced-mode unverified
+     * transaction warning remains additive.
+     */
+    optional bytes schema_payload = 9;
+    optional bytes schema_signature = 10;       // 64-byte compact secp256k1 over SHA256(payload)
+    optional uint32 schema_signer_key_id = 11;  // trusted clearsign signer slot (0-3)
+    /*
+     * Candidate owners for SPL associated-token-account destinations. For a
+     * TransferChecked instruction, firmware may display an owner only after
+     * independently deriving ATA(owner, token_program, mint) and matching it
+     * to the signed destination account. An unmatched candidate is never
+     * treated as a recipient. This lets payment protocols such as x402 show
+     * their payTo address without trusting host-side decoding or chain RPC.
+     */
+    repeated bytes token_recipient_owner = 12;  // 32-byte Solana public keys (max 4)
+    /*
+     * KeepKey root certificate for the delegate that signed the instruction
+     * schema and, when the message contains address lookups, the LUT account
+     * binding. The certificate uses the fixed 139-byte ClearSign delegation
+     * format and MUST be scoped to Solana (scope id 501). schema_signer_key_id
+     * and any present lut_signer_key_id MUST use the reserved delegate sentinel
+     * (0x80). Firmware rejects partial, mixed-runtime/certified, wrong-scope,
+     * invalid, missing-required-LUT, or unexpected-LUT requests.
+     */
+    optional bytes clearsign_certificate = 13;
 }
 
 /**
