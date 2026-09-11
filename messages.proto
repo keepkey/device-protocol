@@ -329,6 +329,11 @@ message Features {
           // Lets a host detect taproot support directly instead of inferring
           // it from a firmware version, which breaks whenever the feature is
           // retargeted to a different release.
+  optional bool supports_dice_modes =
+      28; // ResetDevice.dice_only, the on-device consent screen and the tagged
+          // MIXED dice derivation are implemented. Hosts MUST check this before
+          // offering either dice mode: older firmware skips the unknown
+          // dice_only field and derives a different wallet without complaint.
 }
 
 /**
