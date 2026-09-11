@@ -347,6 +347,11 @@ message Features {
           // Lets a host detect taproot support directly instead of inferring
           // it from a firmware version, which breaks whenever the feature is
           // retargeted to a different release.
+  optional bool supports_dice_modes =
+      28; // ResetDevice.dice_only, the on-device consent screen and the tagged
+          // MIXED dice derivation are implemented. Hosts MUST check this before
+          // offering either dice mode: older firmware skips the unknown
+          // dice_only field and derives a different wallet without complaint.
 }
 
 /**
@@ -600,8 +605,19 @@ message ResetDevice {
   optional uint32 auto_lock_delay_ms = 8; // Screensaver Timeout
   optional uint32 u2f_counter = 9;        // U2F Counter
   optional bool dice_entropy =
-      10; // collect dice rolls on the device and mix them into the internal
-          // entropy before it is displayed or committed
+      10; // collect dice rolls on the device. On its own this is the MIXED
+          // mode: the device shows its own 32-byte draw as 24 BIP-39 words
+          // BEFORE the rolls are entered, then seed = SHA256d("KK\x01SM" ||
+          // draw || SHA256("KK\x01D" || rolls)). The host's EntropyAck is
+          // consumed and its bytes dropped. Verifiable offline from the words
+          // and the rolls.
+  optional bool dice_only =
+      11; // with dice_entropy: seed = SHA256(rolls) and nothing else -- the
+          // device draw is discarded, so the wallet rests entirely on the
+          // rolls. Coldcard's Dice-Rolls-Only, byte for byte. The device shows
+          // a consent screen naming the chosen mode before anything happens,
+          // so a host cannot select this silently. Rejected without
+          // dice_entropy.
 }
 
 /**
