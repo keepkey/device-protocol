@@ -391,6 +391,8 @@ message Features {
     CAPABILITY_SOLANA_RUNTIME_REVIEW = 20;
     CAPABILITY_STORAGE_V19_KDF = 21;
     CAPABILITY_TENDERMINT_PROGRESS = 22;
+    CAPABILITY_SAFE_RESET_CEREMONY = 23;
+    CAPABILITY_THOR_DEPOSIT_REVIEW = 24;
   }
   repeated Capability capabilities = 30 [packed = true];
 }
