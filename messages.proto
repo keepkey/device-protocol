@@ -360,6 +360,39 @@ message Features {
       29; // Firmware authenticates and presents host-resolved Solana address
           // lookup-table accounts. False/absent means LUT data remains opaque
           // and must follow the ordinary AdvancedMode blind-signing review.
+
+  // Behaviours this firmware build implements, so a host or a test can tell
+  // apart builds that report the same version (staged release blocks) without
+  // inferring features from version numbers. Firmware before 7.15.0 does not
+  // send the list; a host must treat a missing list as "decide by version".
+  // Values are append-only: never renumber or reuse one; a retired behaviour
+  // just stops being reported.
+  enum Capability {
+    CAPABILITY_UNSPECIFIED = 0;
+    CAPABILITY_ENTROPY_AUDIT_BUDGET = 1;
+    CAPABILITY_ERC20_UNLIMITED_APPROVE_REVIEW = 2;
+    CAPABILITY_ERC20_UNLIMITED_PERMIT_REVIEW = 3;
+    CAPABILITY_ERC7730_RUNTIME_REVIEW = 4;
+    CAPABILITY_EVM_CERTIFIED_INTENT = 5;
+    CAPABILITY_EVM_MAX_AMOUNT_REVIEW = 6;
+    CAPABILITY_EVM_TX_METADATA = 7;
+    CAPABILITY_EVM_UNKNOWN_TOKEN_REVIEW = 8;
+    CAPABILITY_HIVE_RELEASE_REVIEW = 9;
+    CAPABILITY_LEGACY_EVM_ROUTER_SIGNING = 10;
+    CAPABILITY_MAYA_SINGLE_MESSAGE = 11;
+    CAPABILITY_OSMOSIS_WIRE_GUARDS = 12;
+    CAPABILITY_PERMIT2_REVIEW = 13;
+    CAPABILITY_PROMPT_WORKFLOW_UNWIND = 14;
+    CAPABILITY_PROTECTED_PING_PRESENCE = 15;
+    CAPABILITY_RIPPLE_MEMO_POLICY = 16;
+    CAPABILITY_SESSION_TRUST_LIFETIME = 17;
+    CAPABILITY_SOLANA_CERTIFIED_REVIEW = 18;
+    CAPABILITY_SOLANA_LUT_ATTESTATION = 19;
+    CAPABILITY_SOLANA_RUNTIME_REVIEW = 20;
+    CAPABILITY_STORAGE_V19_KDF = 21;
+    CAPABILITY_TENDERMINT_PROGRESS = 22;
+  }
+  repeated Capability capabilities = 30 [packed = true];
 }
 
 /**
