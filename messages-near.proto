@@ -6,7 +6,7 @@
  * Address: lowercase hex of 32-byte Ed25519 public key (implicit account)
  * Signing: Ed25519(SHA256(borsh_serialized_transaction))
  *
- * STATUS: SCHEMA ONLY -- NOT IMPLEMENTED BY FIRMWARE 7.15 / RC18.
+ * STATUS: SCHEMA ONLY -- NOT IMPLEMENTED BY FIRMWARE 7.15.
  * This file exists so MessageType 1610-1613 stay allocated and the intended
  * wire surface is reviewable. That release ships no NEAR handler and answers
  * these requests with Failure_UnexpectedMessage. Hosts must not advertise NEAR

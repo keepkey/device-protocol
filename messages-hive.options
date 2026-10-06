@@ -19,6 +19,8 @@ HiveSignTx.from                         max_size:17
 HiveSignTx.to                           max_size:17
 HiveSignTx.amount                       int_size:IS_64
 HiveSignTx.asset_symbol                 max_size:10
+# Firmware refuses memos over 440 bytes with an explicit error; the wire
+# bound stays larger so that refusal, not a decode failure, is what a host sees.
 HiveSignTx.memo                         max_size:2048
 
 HiveSignedTx.signature                  max_size:65

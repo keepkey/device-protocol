@@ -271,7 +271,7 @@ enum MessageType {
 
   // NEAR -- SCHEMA ONLY, NOT YET IMPLEMENTED BY FIRMWARE.
   // These IDs and messages-near.proto define the intended NEAR wire surface so
-  // that 1610-1613 stay allocated and cannot be reused. Firmware 7.15 / RC18
+  // that 1610-1613 stay allocated and cannot be reused. Firmware 7.15
   // ships NO NEAR handler, so a device on that release answers any of these
   // requests with Failure_UnexpectedMessage. Hosts must not advertise NEAR
   // support on the basis of these bindings; treat the schema as reserved until
@@ -362,37 +362,37 @@ message Features {
           // and must follow the ordinary AdvancedMode blind-signing review.
 
   // Behaviours this firmware build implements, so a host or a test can tell
-  // apart builds that report the same version (staged release blocks) without
-  // inferring features from version numbers. Firmware before 7.15.0 does not
+  // apart builds of the same version without inferring features from version
+  // numbers. Firmware before 7.15.0 does not
   // send the list; a host must treat a missing list as "decide by version".
   // Values are append-only: never renumber or reuse one; a retired behaviour
   // just stops being reported.
   enum Capability {
     CAPABILITY_UNSPECIFIED = 0;
-    CAPABILITY_ENTROPY_AUDIT_BUDGET = 1;
-    CAPABILITY_ERC20_UNLIMITED_APPROVE_REVIEW = 2;
-    CAPABILITY_ERC20_UNLIMITED_PERMIT_REVIEW = 3;
-    CAPABILITY_ERC7730_RUNTIME_REVIEW = 4;
-    CAPABILITY_EVM_CERTIFIED_INTENT = 5;
-    CAPABILITY_EVM_MAX_AMOUNT_REVIEW = 6;
-    CAPABILITY_EVM_TX_METADATA = 7;
-    CAPABILITY_EVM_UNKNOWN_TOKEN_REVIEW = 8;
-    CAPABILITY_HIVE_RELEASE_REVIEW = 9;
-    CAPABILITY_LEGACY_EVM_ROUTER_SIGNING = 10;
-    CAPABILITY_MAYA_SINGLE_MESSAGE = 11;
-    CAPABILITY_OSMOSIS_WIRE_GUARDS = 12;
-    CAPABILITY_PERMIT2_REVIEW = 13;
-    CAPABILITY_PROMPT_WORKFLOW_UNWIND = 14;
-    CAPABILITY_PROTECTED_PING_PRESENCE = 15;
-    CAPABILITY_RIPPLE_MEMO_POLICY = 16;
-    CAPABILITY_SESSION_TRUST_LIFETIME = 17;
-    CAPABILITY_SOLANA_CERTIFIED_REVIEW = 18;
-    CAPABILITY_SOLANA_LUT_ATTESTATION = 19;
-    CAPABILITY_SOLANA_RUNTIME_REVIEW = 20;
-    CAPABILITY_STORAGE_V19_KDF = 21;
-    CAPABILITY_TENDERMINT_PROGRESS = 22;
-    CAPABILITY_SAFE_RESET_CEREMONY = 23;
-    CAPABILITY_THOR_DEPOSIT_REVIEW = 24;
+    CAPABILITY_ENTROPY_AUDIT_BUDGET = 1;  // GetEntropy is confirmed on the device and limited to an audited per-session budget.
+    CAPABILITY_ERC20_UNLIMITED_APPROVE_REVIEW = 2;  // An unlimited ERC-20 approve gets its own warning screen before signing.
+    CAPABILITY_ERC20_UNLIMITED_PERMIT_REVIEW = 3;  // Unlimited EIP-2612/DAI permits sign only after a warning; ambiguous ones are refused.
+    CAPABILITY_ERC7730_RUNTIME_REVIEW = 4;  // Preloaded ERC-7730 definitions are verified and rendered on the device.
+    CAPABILITY_EVM_CERTIFIED_INTENT = 5;  // A certified intent heading and limits are shown before the unchanged review.
+    CAPABILITY_EVM_MAX_AMOUNT_REVIEW = 6;  // An amount too large to display is refused, never shown blank.
+    CAPABILITY_EVM_TX_METADATA = 7;  // EthereumTxMetadata is accepted before signing and refused during it.
+    CAPABILITY_EVM_UNKNOWN_TOKEN_REVIEW = 8;  // Unknown tokens (and the native pseudo-address off mainnet) are reviewed in base units with the contract address.
+    CAPABILITY_HIVE_RELEASE_REVIEW = 9;  // Hive signing with device-derived keys and the SLIP-0048 path enforced.
+    CAPABILITY_LEGACY_EVM_ROUTER_SIGNING = 10;  // THORChain/Maya EVM router calls are decoded and signed with the per-chain router check.
+    CAPABILITY_MAYA_SINGLE_MESSAGE = 11;  // A MayachainMsgAck carrying both send and deposit is refused.
+    CAPABILITY_OSMOSIS_WIRE_GUARDS = 12;  // Osmosis requests with empty or non-canonical amounts are refused before review.
+    CAPABILITY_PERMIT2_REVIEW = 13;  // Permit2 signatures are shown as who, what and until when.
+    CAPABILITY_PROMPT_WORKFLOW_UNWIND = 14;  // A rejected or interrupted prompt ends the workflow it belongs to.
+    CAPABILITY_PROTECTED_PING_PRESENCE = 15;  // A protected Ping keeps its message field after a DebugLink read.
+    CAPABILITY_RIPPLE_MEMO_POLICY = 16;  // Ripple memos are encoded with correct length prefixes and shown in full; unsupported memos are refused.
+    CAPABILITY_SESSION_TRUST_LIFETIME = 17;  // AdvancedMode survives Initialize but not ClearSession or a lock.
+    CAPABILITY_SOLANA_CERTIFIED_REVIEW = 18;  // Certified Solana schemas are reviewed screen by screen, including the priority fee.
+    CAPABILITY_SOLANA_LUT_ATTESTATION = 19;  // Lookup-table accounts attested for this exact message are shown (annotation only).
+    CAPABILITY_SOLANA_RUNTIME_REVIEW = 20;  // Solana transactions and messages are parsed strictly; anything unverifiable needs AdvancedMode.
+    CAPABILITY_STORAGE_V19_KDF = 21;  // Storage uses the v19 PIN key-derivation format.
+    CAPABILITY_TENDERMINT_PROGRESS = 22;  // Each accepted Tendermint-family message counts as workflow progress for the idle lock.
+    CAPABILITY_SAFE_RESET_CEREMONY = 23;  // An abandoned reset never leaves EntropyAck armed, and a second ResetDevice is refused while one is armed.
+    CAPABILITY_THOR_DEPOSIT_REVIEW = 24;  // THORChain router deposits (legacy and with expiry) are decoded and reviewed.
   }
   repeated Capability capabilities = 30 [packed = true];
 }
@@ -1111,7 +1111,8 @@ message DebugLinkState {
   optional bytes storage_hash = 14;  // hash of storage
   optional bytes dice_digest =
       15; // SHA-256 of the ASCII dice-roll string collected during a
-          // dice_entropy ResetDevice workflow
+          // dice_entropy ResetDevice workflow. Not reported while the
+          // ceremony is private (firmware 7.15 and later).
   optional string confirm_title =
       16; // title of the most recent confirmation screen, as formatted
   optional string confirm_body =

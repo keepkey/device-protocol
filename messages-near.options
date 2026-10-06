@@ -1,4 +1,4 @@
-# NEAR -- schema only; firmware 7.15 / RC18 ships no NEAR handler.
+# NEAR -- schema only; firmware 7.15 ships no NEAR handler.
 # Bounds are declared here so nanopb generates fixed-size fields (matching the
 # limits documented in messages-near.proto) rather than callbacks whenever a
 # firmware release does adopt this schema.

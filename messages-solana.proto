@@ -41,7 +41,6 @@ message SolanaTokenInfo {
     // digest of (mint, decimals, symbol), signed by a clear-sign signer the
     // user loaded via LoadClearsignSigner. When present and valid, the device
     // trusts the symbol; when absent it falls back to displaying the raw mint.
-    // (Firmware verifies; the host/SDK signing side is a follow-up.)
     optional bytes signature = 4;          // 64-byte compact ECDSA signature
     optional uint32 signer_key_id = 5;     // which loaded clear-sign signer
 }
@@ -66,22 +65,18 @@ message SolanaSignTx {
      * has enabled AdvancedMode and is then an explicit BLIND SIGN. The
      * instruction's meaning is never shown.
      *
-     * So this does not rescue a blank screen -- it upgrades a blind sign into a
-     * provider-attested clear sign, which is the whole point of the tier.
-     *
      * A provider may attest the resolved account list for THIS transaction.
      * The attestation is bound to the exact message hash, so it cannot be
      * replayed onto another transaction, and it is domain-tagged so a
      * signature made for any other purpose cannot be replayed as one.
      *
-     * Runtime-loaded signers are annotation only: the accounts are displayed
-     * as PROVIDER-ATTESTED and the normal Advanced Mode blind-sign review still
-     * runs. A KeepKey root certificate scoped to Solana may instead authorize
-     * firmware to use the resolved keys while parsing the exact message. That
-     * certified path still requires a signed, structurally-complete KKSOLSC1
-     * schema before the raw/blind review can be omitted. Self-contained
-     * legacy/v0 messages omit fields 5-7 because every account is already in
-     * raw_tx; their certified authority covers the schema only.
+     * With a runtime-loaded signer the attestation is annotation only: the
+     * accounts are shown as PROVIDER-ATTESTED and the AdvancedMode blind-sign
+     * review still runs. A KeepKey root certificate scoped to Solana may
+     * instead let firmware use the resolved keys while parsing the exact
+     * message; that certified path still needs a signed, complete KKSOLSC1
+     * schema before the raw review can be omitted. Self-contained legacy/v0
+     * messages omit fields 5-7 because every account is already in raw_tx.
      *
      * Preimage: "KeepKeySolanaTxAccounts/1" || message_hash(32)
      *           || count(le32) || account[0..count-1] (32 bytes each)
@@ -89,7 +84,7 @@ message SolanaSignTx {
     repeated bytes lut_account = 5;         // resolved 32-byte account keys (max 8)
     optional bytes lut_signature = 6;       // 64-byte compact secp256k1 over SHA256(preimage)
     optional uint32 lut_signer_key_id = 7;  // trusted clearsign signer slot (0-3)
-    // Still reserved: one-request opaque-signing consent.
+    // Reserved (one-request opaque-signing consent); do not reuse.
     reserved 8;
     /*
      * KKSOLSC1 instruction schema (see solana.h). A schema describes how to

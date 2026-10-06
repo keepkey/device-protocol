@@ -5,7 +5,7 @@
  * Zcash Transaction) format. Supports Orchard spend authorization.
  *
  * ---------------------------------------------------------------------------
- * BREAKING CHANGE -- Zcash wire protocol v2 (firmware 7.15 / RC18)
+ * BREAKING CHANGE -- Zcash wire protocol v2 (firmware 7.15)
  * ---------------------------------------------------------------------------
  *
  * Unlike the rest of this release, the Zcash surface is NOT backward
@@ -56,14 +56,14 @@ option java_outer_classname = "KeepKeyMessageZcash";
 /*
  * Orchard-family shielded pool selector.
  *
- * ORCHARD is the only value firmware 7.15 / RC18 accepts. IRONWOOD is SCHEMA
+ * ORCHARD is the only value firmware 7.15 accepts. IRONWOOD is SCHEMA
  * ONLY: that release implements no Ironwood/transaction-v6 support and rejects
  * shielded_pool=IRONWOOD with Failure. The value is allocated here so it cannot
  * be reused and so the intended NU6.3 surface is reviewable.
  */
 enum ZcashShieldedPool {
     ZCASH_SHIELDED_POOL_ORCHARD = 0;
-    ZCASH_SHIELDED_POOL_IRONWOOD = 1;   // SCHEMA ONLY -- rejected by firmware 7.15 / RC18
+    ZCASH_SHIELDED_POOL_IRONWOOD = 1;   // SCHEMA ONLY -- rejected by firmware 7.15
 }
 
 /**
@@ -104,17 +104,17 @@ message ZcashSignPCZT {
     // orchard_* metadata fields describe the selected action bundle for wire
     // compatibility; ironwood_digest is the fifth v6 transaction component.
     //
-    // SCHEMA ONLY -- NOT IMPLEMENTED BY FIRMWARE 7.15 / RC18. The RC18 contract
+    // SCHEMA ONLY -- NOT IMPLEMENTED BY FIRMWARE 7.15. The firmware 7.15 contract
     // is Orchard-only: that release accepts shielded_pool=ORCHARD (the default)
     // and rejects any other pool, and rejects ironwood_digest when present,
     // both with Failure. A host must not select Ironwood or send an Ironwood
-    // digest against RC18 and expect the behavior this schema implies. These
+    // digest against firmware 7.15 and expect the behavior this schema implies. These
     // fields are defined so tags 19-20 stay allocated and the intended NU6.3
     // surface is reviewable; the rejection is pinned by
     // tools/check_zcash_contract.py.
     optional ZcashShieldedPool shielded_pool = 19 [default = ZCASH_SHIELDED_POOL_ORCHARD];
     optional bytes ironwood_digest = 20;        // SCHEMA ONLY -- 32-byte Ironwood component
-                                                // digest (v6); rejected by firmware 7.15 / RC18
+                                                // digest (v6); rejected by firmware 7.15
     // Phase 3: transparent shielding support
     optional uint32 n_transparent_outputs = 29; // 0 for shielded-only (default)
     optional uint32 n_transparent_inputs = 30;  // 0 for shielded-only (default), >0 for hybrid shielding tx
@@ -140,7 +140,7 @@ message ZcashPCZTAction {
     optional bytes sighash = 3;             // 32-byte transaction sighash (ZIP 244) - legacy mode
     optional bytes cv_net = 4;              // 32-byte value commitment
     optional uint64 value = 5;              // Action value in zatoshis (for display)
-    optional bool is_spend = 6;             // REQUIRED by firmware 7.15: true only for a real spend;
+    optional bool is_spend = 6;  // required by firmware: an action without it is refused
                                             // false for dummy spends/output-only actions
     // Phase 2b: action fields for incremental orchard digest verification
     optional bytes nullifier = 7;           // 32-byte nullifier

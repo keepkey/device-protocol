@@ -4,6 +4,7 @@ LoadClearsignSigner.pubkey max_size:33
 LoadClearsignSigner.alias max_size:32
 LoadClearsignSigner.icon max_size:384
 
+EthereumSignTypedData.address_n max_count:8
 EthereumSignTypedData.primary_type max_size:80
 EthereumTypedDataStructRequest.name max_size:80
 EthereumTypedDataStructAck.members max_count:32

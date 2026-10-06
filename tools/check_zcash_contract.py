@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pin the RC18 Zcash wire identifiers and compact-signature contract."""
+"""Pin the firmware 7.15 Zcash wire identifiers and compact-signature contract."""
 
 import re
 from pathlib import Path
@@ -68,7 +68,7 @@ if not re.search(r"one per\s*// is_spend=true action", ZCASH):
     raise AssertionError("ZcashSignedPCZT must document compact real-spend signatures")
 
 
-# RC18 is Orchard-only. The Ironwood/transaction-v6 surface is defined so tags
+# Firmware 7.15 is Orchard-only. The Ironwood/transaction-v6 surface is defined so tags
 # 19-20 and ZcashShieldedPool value 1 stay allocated, but no firmware in this
 # release implements it. Keep the fields marked schema-only so a host cannot
 # read them as supported behavior.
@@ -87,9 +87,14 @@ for pattern, description in [
             "%s must be marked SCHEMA ONLY on its declaration line" % description
         )
 
-if not re.search(r"SCHEMA ONLY -- NOT IMPLEMENTED BY FIRMWARE 7\.15 / RC18", ZCASH):
+if not re.search(r"SCHEMA ONLY -- NOT IMPLEMENTED BY FIRMWARE 7\.15", ZCASH):
     raise AssertionError(
         "ZcashSignPCZT must document that the Ironwood pool selection is schema-only"
     )
 
-print("RC18 Zcash protocol contract: ok")
+# is_spend is optional on the wire for compatibility, but firmware requires it.
+if not re.search(r"optional bool is_spend = 6;\s*//\s*required by firmware",
+                 message_body("ZcashPCZTAction")):
+    raise AssertionError("ZcashPCZTAction.is_spend must be documented as required by firmware")
+
+print("Zcash protocol contract: ok")

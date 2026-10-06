@@ -1,6 +1,6 @@
 {
-  "name": "@bithighlander/device-protocol",
-  "version": "7.19.0",
+  "name": "@keepkey/device-protocol",
+  "version": "7.14.1",
   "publishConfig": {
     "access": "public"
   },
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BitHighlander/device-protocol.git"
+    "url": "git+https://github.com/keepkey/device-protocol.git"
   },
   "author": "",
   "license": "ISC",
