@@ -25,7 +25,7 @@ const path = require('path');
 const LIB = path.join(__dirname, '..', 'lib');
 const NEEDLE = "Function('return this')()";
 const REPLACEMENT = 'globalThis';
-const RESIDUE = /Function\(\s*['"]return this['"]\s*\)/;
+const RESIDUE = /Function\s*\(\s*['"]return this['"]\s*\)/;
 
 if (!fs.existsSync(LIB)) {
   console.error('postprocess: ./lib does not exist -- run build:js first');
