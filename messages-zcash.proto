@@ -106,14 +106,25 @@ message ZcashSignPCZT {
     //    branch_id 0x37A5165B, a 32-byte ironwood_digest, and an
     //    orchard_digest equal to the empty v6 Orchard digest.
     //  - ORCHARD in a v6 transaction requires ironwood_digest absent or equal
-    //    to the empty v6 Ironwood digest.
+    //    to the empty v6 Ironwood digest, unless n_ironwood_actions > 0.
     //  - ironwood_digest in a transaction before v6 is refused.
-    // The device verifies only the selected pool's actions, so the other
-    // pool's digest is never taken on trust. Pinned by
-    // tools/check_zcash_contract.py.
+    //  - n_ironwood_actions > 0 requires ORCHARD, tx_version 6 and the NU6.3
+    //    branch: a pool-crossing transaction (ZIP 318) with both bundles. The
+    //    n_actions Orchard actions are streamed first, then the
+    //    n_ironwood_actions Ironwood actions; ZcashPCZTAction.index counts on
+    //    across both. orchard_* describe the Orchard bundle, ironwood_flags and
+    //    ironwood_value_balance the Ironwood one. Both bundle digests are
+    //    recomputed from the streamed actions. At most 16 actions in all.
+    //  - Orchard flags bits 2..7 and Ironwood flags bits 3..7 must be clear,
+    //    and from NU6.3 the Orchard value balance must not be negative.
+    // The device verifies every bundle the sighash commits to, so no pool's
+    // digest is taken on trust. Pinned by tools/check_zcash_contract.py.
     optional ZcashShieldedPool shielded_pool = 19 [default = ZCASH_SHIELDED_POOL_ORCHARD];
     optional bytes ironwood_digest = 20;        // 32-byte Ironwood component digest
                                                 // (v6 only; see the rules above)
+    optional uint32 n_ironwood_actions = 21;    // Ironwood actions after the Orchard ones
+    optional uint32 ironwood_flags = 22;        // Ironwood bundle flags byte
+    optional int64 ironwood_value_balance = 23; // Ironwood value balance (LE i64)
     // Phase 3: transparent shielding support
     optional uint32 n_transparent_outputs = 29; // 0 for shielded-only (default)
     optional uint32 n_transparent_inputs = 30;  // 0 for shielded-only (default), >0 for hybrid shielding tx
@@ -181,7 +192,8 @@ message ZcashPCZTActionAck {
  */
 message ZcashSignedPCZT {
     repeated bytes signatures = 1;          // Compact 64-byte RedPallas signatures: one per
-                                            // is_spend=true action, in ascending action-index order;
+                                            // is_spend=true action, in ascending action-index order
+                                            // (Orchard then Ironwood in a crossing transaction);
                                             // an all-dummy shield transaction returns zero
     optional bytes txid = 2;               // 32-byte computed transaction ID
 }

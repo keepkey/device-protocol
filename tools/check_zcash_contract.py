@@ -74,6 +74,9 @@ if not re.search(r"one per\s*// is_spend=true action", ZCASH):
 # refuse the old "schema only" wording, which told hosts Ironwood was rejected.
 require_field("ZcashSignPCZT", r"optional ZcashShieldedPool shielded_pool = 19 \[default = ZCASH_SHIELDED_POOL_ORCHARD\];")
 require_field("ZcashSignPCZT", r"optional bytes ironwood_digest = 20;")
+require_field("ZcashSignPCZT", r"optional uint32 n_ironwood_actions = 21;")
+require_field("ZcashSignPCZT", r"optional uint32 ironwood_flags = 22;")
+require_field("ZcashSignPCZT", r"optional int64 ironwood_value_balance = 23;")
 
 if not re.search(r"ZCASH_SHIELDED_POOL_IRONWOOD\s*=\s*1\s*;", ZCASH):
     raise AssertionError("missing declaration for the Ironwood pool value")
@@ -86,7 +89,10 @@ for pattern, description in [
      r"branch_id 0x37A5165B, a 32-byte ironwood_digest", "the Ironwood v6 header rule"),
     (r"orchard_digest equal to the empty v6 Orchard digest", "the empty Orchard digest rule"),
     (r"ORCHARD in a v6 transaction requires ironwood_digest absent or equal\s*//\s*"
-     r"to the empty v6 Ironwood digest", "the empty Ironwood digest rule"),
+     r"to the empty v6 Ironwood digest, unless n_ironwood_actions > 0",
+     "the empty Ironwood digest rule"),
+    (r"n_actions Orchard actions are streamed first, then the\s*//\s*"
+     r"n_ironwood_actions Ironwood actions", "the crossing streaming order"),
     (r"ironwood_digest in a transaction before v6 is refused", "the pre-v6 refusal"),
 ]:
     if not re.search(pattern, message_body("ZcashSignPCZT")):
