@@ -34,6 +34,8 @@ FIELDS = [
     ("ZcashPCZTAction", r"optional string user_address = 17;"),
     ("ZcashSignedPCZT", r"repeated bytes signatures = 1;"),
     ("ZcashTransparentOutput", r"required uint32 index = 1;"),
+    ("ZcashTransparentOutput", r"optional bool is_tex = 4;"),
+    ("ZcashTransparentOutput", r"repeated uint32 address_n = 5;"),
     ("ZcashTransparentInput", r"required uint32 index = 1;"),
 ]
 

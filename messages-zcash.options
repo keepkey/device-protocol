@@ -34,6 +34,7 @@ ZcashOrchardFVK.rivk max_size:32
 ZcashOrchardFVK.seed_fingerprint max_size:32
 
 ZcashTransparentOutput.script_pubkey max_size:128
+ZcashTransparentOutput.address_n max_count:8
 
 ZcashTransparentInput.sighash max_size:32
 ZcashTransparentInput.address_n max_count:8

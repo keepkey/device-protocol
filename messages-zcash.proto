@@ -41,8 +41,8 @@
  *    action. A v1 host that indexes signatures by action index will read the
  *    wrong signature.
  *
- * 5. ZcashSignPCZT.sapling_digest is reserved for future Sapling support and
- *    is currently rejected when set.
+ * 5. ZcashSignPCZT.sapling_digest is reserved for future Sapling support. Only
+ *    the canonical empty Sapling digest is accepted when set.
  *
  * These semantics are pinned by tools/check_zcash_contract.py.
  */
@@ -79,14 +79,15 @@ message ZcashSignPCZT {
     repeated uint32 address_n = 1;              // ZIP-32 derivation path [32', 133', account']
     optional uint32 account = 2;                // Account index (alternative to full path)
     optional bytes pczt_data = 3;               // Serialized PCZT data (may be chunked)
-    optional uint32 n_actions = 4;              // Number of Orchard actions to stream and validate
+    optional uint32 n_actions = 4;              // Number of Orchard actions to stream and validate;
+                                                // 0 for a transparent-only transaction (see below)
     optional uint64 total_amount = 5;           // Total ZEC amount (zatoshis) for user confirmation
     optional uint64 fee = 6;                    // Transaction fee (zatoshis)
     optional uint32 branch_id = 7;              // Consensus branch ID
     // Phase 2a: sub-digests for on-device sighash computation
     optional bytes header_digest = 8;           // 32-byte pre-computed header digest
     optional bytes transparent_digest = 9;      // 32-byte transparent digest (or empty)
-    optional bytes sapling_digest = 10;         // Reserved for future Sapling support; currently rejected
+    optional bytes sapling_digest = 10;         // Sapling unsupported: only the empty digest is accepted
     optional bytes orchard_digest = 11;         // 32-byte orchard digest
     // Phase 2b: bundle metadata for orchard digest verification
     optional uint32 orchard_flags = 12;         // Orchard bundle flags byte
@@ -117,6 +118,11 @@ message ZcashSignPCZT {
     //    recomputed from the streamed actions. At most 16 actions in all.
     //  - Orchard flags bits 2..7 and Ironwood flags bits 3..7 must be clear,
     //    and from NU6.3 the Orchard value balance must not be negative.
+    //  - n_actions 0 (firmware 7.15 with ZIP 320 support) is a transparent-only
+    //    transaction, e.g. the second step of a TEX payment: it needs at least
+    //    one transparent input and no Ironwood actions; orchard_digest (and
+    //    ironwood_digest if sent) must be the empty bundle digest and the value
+    //    balances zero. The session ends after the last transparent input.
     // The device verifies every bundle the sighash commits to, so no pool's
     // digest is taken on trust. Pinned by tools/check_zcash_contract.py.
     optional ZcashShieldedPool shielded_pool = 19 [default = ZCASH_SHIELDED_POOL_ORCHARD];
@@ -246,6 +252,15 @@ message ZcashTransparentOutput {
     required uint32 index = 1;              // Output index within the transaction
     optional uint64 amount = 2;             // Output value in zatoshis
     optional bytes script_pubkey = 3;       // Standard P2PKH/P2SH scriptPubKey
+    // ZIP 320 TEX payments. Older firmware skips both fields and shows the
+    // plain t-address, which is the same destination.
+    optional bool is_tex = 4;               // Host hint: the user entered a TEX
+                                            // address; a P2PKH output is shown
+                                            // as tex1... (bech32m) instead of t1...
+    repeated uint32 address_n = 5;          // The account's own one-time address
+                                            // m/44'/133'/account'/2/index: the
+                                            // device proves the script pays it
+                                            // and shows it as such
 }
 
 /**
@@ -263,7 +278,8 @@ message ZcashTransparentOutput {
 message ZcashTransparentInput {
     required uint32 index = 1;              // Input index within the transaction
     optional bytes sighash = 2;             // Legacy host-computed sighash; rejected when present
-    repeated uint32 address_n = 3;          // BIP44 path [44', 133', 0', 0, 0]
+    repeated uint32 address_n = 3;          // BIP44 path [44', 133', account', change, index];
+                                            // change 0, 1 or 2 (ZIP 320 one-time address)
     optional uint64 amount = 4;             // Input value in zatoshis
     optional bytes prevout_txid = 5;        // Previous transaction ID
     optional uint32 prevout_index = 6;      // Previous output index
