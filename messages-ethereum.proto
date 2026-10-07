@@ -358,10 +358,16 @@ message EthereumTypedDataStructAck {
  * array elements from there. A struct is never requested as a value -- the
  * device walks into it. An array's LENGTH is requested as its own value, big
  * endian uint16, before its elements.
+ *
+ * value_offset is set only while a chunked value (see EthereumTypedDataValueAck)
+ * is being read: the device wants the bytes of the same leaf from this offset.
+ * It may ask for a value twice from offset 0: a string is counted and checked
+ * in full before its first screen, then shown.
  * @next EthereumTypedDataValueAck
  */
 message EthereumTypedDataValueRequest {
     repeated uint32 member_path = 1;
+    optional uint32 value_offset = 2;
 }
 
 /**
@@ -369,12 +375,24 @@ message EthereumTypedDataValueRequest {
  * declared width. Not JSON: the device does no number parsing, so there is no
  * integer width ceiling and no decimal-to-binary step that could disagree with
  * what the host meant.
+ *
+ * Chunked values. A dynamic `bytes` or `string` leaf longer than 1024 bytes is
+ * sent in 1024-byte chunks, and only to firmware that reports
+ * CAPABILITY_EIP712_CHUNKED_VALUES: older firmware skips the unknown fields
+ * and would hash the first chunk alone. The first answer carries the first
+ * 1024 bytes and value_total_length. Each later request names a
+ * value_offset; its answer echoes that value_offset and carries exactly the
+ * bytes from there, 1024 or the rest of the value. A value of 1024 bytes or
+ * fewer is always sent whole, without either field. Domain values and array
+ * lengths are never chunked.
  * @next EthereumTypedDataValueRequest
  * @next EthereumTypedDataSignature
  * @next Failure
  */
 message EthereumTypedDataValueAck {
     required bytes value = 1;
+    optional uint32 value_total_length = 2;     // first chunk: the whole value's length
+    optional uint32 value_offset = 3;           // later chunks: echoes the request
 }
 
 // ── ERC-7730 v2 compiled definitions ─────────────────────────────────

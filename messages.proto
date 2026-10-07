@@ -394,6 +394,7 @@ message Features {
     CAPABILITY_SAFE_RESET_CEREMONY = 23;  // An abandoned reset never leaves EntropyAck armed, and a second ResetDevice is refused while one is armed.
     CAPABILITY_THOR_DEPOSIT_REVIEW = 24;  // THORChain router deposits (legacy and with expiry) are decoded and reviewed.
     CAPABILITY_TRON_TRC20_REVIEW = 25;  // TRC-20 transfers on firmware-trusted contracts clear-sign with symbol and decimals; other contracts need AdvancedMode.
+    CAPABILITY_EIP712_CHUNKED_VALUES = 26;  // EIP-712 bytes and string values over 1024 bytes are sent in chunks, shown in full and hashed whole.
   }
   repeated Capability capabilities = 30 [packed = true];
 }
