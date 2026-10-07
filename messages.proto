@@ -393,6 +393,7 @@ message Features {
     CAPABILITY_TENDERMINT_PROGRESS = 22;  // Each accepted Tendermint-family message counts as workflow progress for the idle lock.
     CAPABILITY_SAFE_RESET_CEREMONY = 23;  // An abandoned reset never leaves EntropyAck armed, and a second ResetDevice is refused while one is armed.
     CAPABILITY_THOR_DEPOSIT_REVIEW = 24;  // THORChain router deposits (legacy and with expiry) are decoded and reviewed.
+    CAPABILITY_TRON_TRC20_REVIEW = 25;  // TRC-20 transfers on firmware-trusted contracts clear-sign with symbol and decimals; other contracts need AdvancedMode.
   }
   repeated Capability capabilities = 30 [packed = true];
 }
