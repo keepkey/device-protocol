@@ -54,16 +54,13 @@ option java_package = "com.keepkey.deviceprotocol";
 option java_outer_classname = "KeepKeyMessageZcash";
 
 /*
- * Orchard-family shielded pool selector.
- *
- * ORCHARD is the only value firmware 7.15 accepts. IRONWOOD is SCHEMA
- * ONLY: that release implements no Ironwood/transaction-v6 support and rejects
- * shielded_pool=IRONWOOD with Failure. The value is allocated here so it cannot
- * be reused and so the intended NU6.3 surface is reviewable.
+ * Orchard-family shielded pool selector. Firmware 7.15 signs either pool;
+ * IRONWOOD is the NU6.3 pool (live on mainnet since height 3,428,143) and is
+ * valid only in a transaction-v6 request (see ZcashSignPCZT).
  */
 enum ZcashShieldedPool {
     ZCASH_SHIELDED_POOL_ORCHARD = 0;
-    ZCASH_SHIELDED_POOL_IRONWOOD = 1;   // SCHEMA ONLY -- rejected by firmware 7.15
+    ZCASH_SHIELDED_POOL_IRONWOOD = 1;   // NU6.3; transaction v6 only
 }
 
 /**
@@ -104,17 +101,19 @@ message ZcashSignPCZT {
     // orchard_* metadata fields describe the selected action bundle for wire
     // compatibility; ironwood_digest is the fifth v6 transaction component.
     //
-    // SCHEMA ONLY -- NOT IMPLEMENTED BY FIRMWARE 7.15. The firmware 7.15 contract
-    // is Orchard-only: that release accepts shielded_pool=ORCHARD (the default)
-    // and rejects any other pool, and rejects ironwood_digest when present,
-    // both with Failure. A host must not select Ironwood or send an Ironwood
-    // digest against firmware 7.15 and expect the behavior this schema implies. These
-    // fields are defined so tags 19-20 stay allocated and the intended NU6.3
-    // surface is reviewable; the rejection is pinned by
+    // Firmware 7.15 rules (each violation is a Failure):
+    //  - IRONWOOD requires tx_version 6, version_group_id 0xD884B698,
+    //    branch_id 0x37A5165B, a 32-byte ironwood_digest, and an
+    //    orchard_digest equal to the empty v6 Orchard digest.
+    //  - ORCHARD in a v6 transaction requires ironwood_digest absent or equal
+    //    to the empty v6 Ironwood digest.
+    //  - ironwood_digest in a transaction before v6 is refused.
+    // The device verifies only the selected pool's actions, so the other
+    // pool's digest is never taken on trust. Pinned by
     // tools/check_zcash_contract.py.
     optional ZcashShieldedPool shielded_pool = 19 [default = ZCASH_SHIELDED_POOL_ORCHARD];
-    optional bytes ironwood_digest = 20;        // SCHEMA ONLY -- 32-byte Ironwood component
-                                                // digest (v6); rejected by firmware 7.15
+    optional bytes ironwood_digest = 20;        // 32-byte Ironwood component digest
+                                                // (v6 only; see the rules above)
     // Phase 3: transparent shielding support
     optional uint32 n_transparent_outputs = 29; // 0 for shielded-only (default)
     optional uint32 n_transparent_inputs = 30;  // 0 for shielded-only (default), >0 for hybrid shielding tx

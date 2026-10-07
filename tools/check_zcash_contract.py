@@ -68,29 +68,28 @@ if not re.search(r"one per\s*// is_spend=true action", ZCASH):
     raise AssertionError("ZcashSignedPCZT must document compact real-spend signatures")
 
 
-# Firmware 7.15 is Orchard-only. The Ironwood/transaction-v6 surface is defined so tags
-# 19-20 and ZcashShieldedPool value 1 stay allocated, but no firmware in this
-# release implements it. Keep the fields marked schema-only so a host cannot
-# read them as supported behavior.
+# Firmware 7.15 signs both Orchard-family pools: Ironwood (NU6.3) went live on
+# mainnet and needs transaction v6. Pin the tags and the documented rules, and
+# refuse the old "schema only" wording, which told hosts Ironwood was rejected.
 require_field("ZcashSignPCZT", r"optional ZcashShieldedPool shielded_pool = 19 \[default = ZCASH_SHIELDED_POOL_ORCHARD\];")
 require_field("ZcashSignPCZT", r"optional bytes ironwood_digest = 20;")
 
-for pattern, description in [
-    (r"^.*ZCASH_SHIELDED_POOL_IRONWOOD\s*=\s*1\s*;.*$", "the Ironwood pool value"),
-    (r"^.*ironwood_digest\s*=\s*20\s*;.*$", "the Ironwood digest field"),
-]:
-    line = re.search(pattern, ZCASH, re.M)
-    if line is None:
-        raise AssertionError("missing declaration for %s" % description)
-    if "SCHEMA ONLY" not in line.group(0):
-        raise AssertionError(
-            "%s must be marked SCHEMA ONLY on its declaration line" % description
-        )
+if not re.search(r"ZCASH_SHIELDED_POOL_IRONWOOD\s*=\s*1\s*;", ZCASH):
+    raise AssertionError("missing declaration for the Ironwood pool value")
 
-if not re.search(r"SCHEMA ONLY -- NOT IMPLEMENTED BY FIRMWARE 7\.15", ZCASH):
-    raise AssertionError(
-        "ZcashSignPCZT must document that the Ironwood pool selection is schema-only"
-    )
+if "SCHEMA ONLY" in ZCASH or "NOT IMPLEMENTED BY FIRMWARE" in ZCASH:
+    raise AssertionError("Ironwood is implemented by firmware 7.15; drop the schema-only wording")
+
+for pattern, description in [
+    (r"IRONWOOD requires tx_version 6, version_group_id 0xD884B698,\s*//\s*"
+     r"branch_id 0x37A5165B, a 32-byte ironwood_digest", "the Ironwood v6 header rule"),
+    (r"orchard_digest equal to the empty v6 Orchard digest", "the empty Orchard digest rule"),
+    (r"ORCHARD in a v6 transaction requires ironwood_digest absent or equal\s*//\s*"
+     r"to the empty v6 Ironwood digest", "the empty Ironwood digest rule"),
+    (r"ironwood_digest in a transaction before v6 is refused", "the pre-v6 refusal"),
+]:
+    if not re.search(pattern, message_body("ZcashSignPCZT")):
+        raise AssertionError("ZcashSignPCZT must document %s" % description)
 
 # is_spend is optional on the wire for compatibility, but firmware requires it.
 if not re.search(r"optional bool is_spend = 6;\s*//\s*required by firmware",
