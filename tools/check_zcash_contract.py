@@ -31,6 +31,7 @@ FIELDS = [
     ("ZcashPCZTAction", r"optional bool is_spend = 6;"),
     ("ZcashPCZTAction", r"optional bytes recipient = 15;"),
     ("ZcashPCZTAction", r"optional bytes rseed = 16;"),
+    ("ZcashPCZTAction", r"optional string user_address = 17;"),
     ("ZcashSignedPCZT", r"repeated bytes signatures = 1;"),
     ("ZcashTransparentOutput", r"required uint32 index = 1;"),
     ("ZcashTransparentInput", r"required uint32 index = 1;"),

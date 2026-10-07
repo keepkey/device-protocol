@@ -155,6 +155,13 @@ message ZcashPCZTAction {
     // displaying the receiver/value and before emitting any signature.
     optional bytes recipient = 15;           // 43-byte Orchard receiver: d || pk_d
     optional bytes rseed = 16;               // 32-byte output note rseed
+    // ZIP 374 Orchard Output.user_address: the address string the user
+    // entered, forwarded verbatim. Firmware 7.15 decodes it as a mainnet
+    // Unified Address, refuses the whole PCZT unless its single Orchard
+    // receiver equals recipient, and then shows this string. Without it the
+    // device shows an Orchard-only UA rebuilt from recipient. Same message
+    // for Orchard and Ironwood actions; omit it for dummy and change outputs.
+    optional string user_address = 17;       // At most 255 bytes
 }
 
 /**

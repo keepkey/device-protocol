@@ -21,6 +21,7 @@ ZcashPCZTAction.rk max_size:32
 ZcashPCZTAction.out_ciphertext max_size:80
 ZcashPCZTAction.recipient max_size:43
 ZcashPCZTAction.rseed max_size:32
+ZcashPCZTAction.user_address max_size:256
 
 ZcashSignedPCZT.signatures max_count:64 max_size:64
 ZcashSignedPCZT.txid max_size:32
