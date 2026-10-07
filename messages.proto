@@ -371,7 +371,7 @@ message Features {
     CAPABILITY_UNSPECIFIED = 0;
     CAPABILITY_ENTROPY_AUDIT_BUDGET = 1;  // GetEntropy is confirmed on the device and limited to an audited per-session budget.
     CAPABILITY_ERC20_UNLIMITED_APPROVE_REVIEW = 2;  // An unlimited ERC-20 approve gets its own warning screen before signing.
-    CAPABILITY_ERC20_UNLIMITED_PERMIT_REVIEW = 3;  // Unlimited EIP-2612/DAI permits sign only after a warning; ambiguous ones are refused.
+    CAPABILITY_ERC20_UNLIMITED_PERMIT_REVIEW = 3;  // Unlimited EIP-2612/DAI/Permit2 permits sign with the value shown as UNLIMITED.
     CAPABILITY_ERC7730_RUNTIME_REVIEW = 4;  // Preloaded ERC-7730 definitions are verified and rendered on the device.
     CAPABILITY_EVM_CERTIFIED_INTENT = 5;  // A certified intent heading and limits are shown before the unchanged review.
     CAPABILITY_EVM_MAX_AMOUNT_REVIEW = 6;  // An amount too large to display is refused, never shown blank.
