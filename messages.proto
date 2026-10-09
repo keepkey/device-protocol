@@ -100,6 +100,21 @@ enum MessageType {
   // Ethereum Clear Signing
   MessageType_EthereumTxMetadata = 115 [ (wire_in) = true ];
   MessageType_EthereumMetadataAck = 116 [ (wire_out) = true ];
+  MessageType_LoadClearsignSigner = 117 [ (wire_in) = true ];
+
+  // Structured EIP-712, device-driven field streaming. Allocated in a fresh
+  // block rather than after the 108-117 Ethereum run: the low range is where
+  // upstream Trezor allocates too, and keeping clear of it means adopting more
+  // of their messages later never collides.
+  MessageType_EthereumSignTypedData = 1704 [ (wire_in) = true ];
+  MessageType_EthereumTypedDataStructRequest = 1705 [ (wire_out) = true ];
+  MessageType_EthereumTypedDataStructAck = 1706 [ (wire_in) = true ];
+  MessageType_EthereumTypedDataValueRequest = 1707 [ (wire_out) = true ];
+  MessageType_EthereumTypedDataValueAck = 1708 [ (wire_in) = true ];
+  MessageType_EthereumClearSignDefinition = 1709 [ (wire_in) = true ];
+  MessageType_EthereumClearSignDefinitionAck = 1710 [ (wire_out) = true ];
+  MessageType_EthereumClearSignDefinitionRequest = 1711 [ (wire_out) = true ];
+  MessageType_EthereumClearSignDefinitionChunk = 1712 [ (wire_in) = true ];
 
   // BIP-85
   MessageType_GetBip85Mnemonic = 120 [ (wire_in) = true ];
@@ -217,9 +232,11 @@ enum MessageType {
   MessageType_ZcashGetOrchardFVK = 1304 [ (wire_in) = true ];
   MessageType_ZcashOrchardFVK = 1305 [ (wire_out) = true ];
   MessageType_ZcashTransparentInput = 1306 [ (wire_in) = true ];
-  MessageType_ZcashTransparentSig = 1307 [ (wire_out) = true ];
+  MessageType_ZcashTransparentSigned = 1307 [ (wire_out) = true ];
   MessageType_ZcashDisplayAddress = 1308 [ (wire_in) = true ];
   MessageType_ZcashAddress = 1309 [ (wire_out) = true ];
+  MessageType_ZcashTransparentOutput = 1310 [ (wire_in) = true ];
+  MessageType_ZcashTransparentAck = 1311 [ (wire_out) = true ];
 
   // TRON
   MessageType_TronGetAddress = 1400 [ (wire_in) = true ];
@@ -239,6 +256,42 @@ enum MessageType {
   MessageType_TonSignedTx = 1503 [ (wire_out) = true ];
   MessageType_TonSignMessage = 1504 [ (wire_in) = true ];
   MessageType_TonMessageSignature = 1505 [ (wire_out) = true ];
+
+  // Hive
+  MessageType_HiveGetPublicKey = 1600 [ (wire_in) = true ];
+  MessageType_HivePublicKey = 1601 [ (wire_out) = true ];
+  MessageType_HiveSignTx = 1602 [ (wire_in) = true ];
+  MessageType_HiveSignedTx = 1603 [ (wire_out) = true ];
+  MessageType_HiveGetPublicKeys = 1604 [ (wire_in) = true ];
+  MessageType_HivePublicKeys = 1605 [ (wire_out) = true ];
+  MessageType_HiveSignAccountCreate = 1606 [ (wire_in) = true ];
+  MessageType_HiveSignedAccountCreate = 1607 [ (wire_out) = true ];
+  MessageType_HiveSignAccountUpdate = 1608 [ (wire_in) = true ];
+  MessageType_HiveSignedAccountUpdate = 1609 [ (wire_out) = true ];
+
+  // NEAR -- SCHEMA ONLY, NOT YET IMPLEMENTED BY FIRMWARE.
+  // These IDs and messages-near.proto define the intended NEAR wire surface so
+  // that 1610-1613 stay allocated and cannot be reused. Firmware 7.15
+  // ships NO NEAR handler, so a device on that release answers any of these
+  // requests with Failure_UnexpectedMessage. Hosts must not advertise NEAR
+  // support on the basis of these bindings; treat the schema as reserved until
+  // a firmware release documents NEAR as supported.
+  MessageType_NearGetAddress = 1610 [ (wire_in) = true ];
+  MessageType_NearAddress = 1611 [ (wire_out) = true ];
+  MessageType_NearSignTx = 1612 [ (wire_in) = true ];
+  MessageType_NearSignedTx = 1613 [ (wire_out) = true ];
+
+  // Hive (continued)
+  MessageType_HiveSignMessage = 1614 [ (wire_in) = true ];
+  MessageType_HiveSignedMessage = 1615 [ (wire_out) = true ];
+  MessageType_HiveSignOperations = 1616 [ (wire_in) = true ];
+  MessageType_HiveSignedOperations = 1617 [ (wire_out) = true ];
+
+  // Advanced-mode ClearSign studio / schema attestation
+  MessageType_ClearsignAttestorGetPublicKey = 1700 [ (wire_in) = true ];
+  MessageType_ClearsignAttestorPublicKey = 1701 [ (wire_out) = true ];
+  MessageType_ClearsignAttestorSign = 1702 [ (wire_in) = true ];
+  MessageType_ClearsignAttestorSignature = 1703 [ (wire_out) = true ];
 }
 
 ////////////////////
@@ -293,6 +346,57 @@ message Features {
   optional bool wipe_code_protection = 25;
   optional uint32 auto_lock_delay_ms =
       26; // Current auto lock delay (in milliseconds)
+  optional bool supports_taproot =
+      27; // Firmware can derive and spend P2TR (BIP-86 / BIP-340 / BIP-341).
+          // Lets a host detect taproot support directly instead of inferring
+          // it from a firmware version, which breaks whenever the feature is
+          // retargeted to a different release.
+  optional bool supports_dice_modes =
+      28; // ResetDevice.dice_only, the on-device consent screen and the tagged
+          // MIXED dice derivation are implemented. Hosts MUST check this before
+          // offering either dice mode: older firmware skips the unknown
+          // dice_only field and derives a different wallet without complaint.
+  optional bool supports_solana_lut_attestation =
+      29; // Firmware authenticates and presents host-resolved Solana address
+          // lookup-table accounts. False/absent means LUT data remains opaque
+          // and must follow the ordinary AdvancedMode blind-signing review.
+
+  // Behaviours this firmware build implements, so a host or a test can tell
+  // apart builds of the same version without inferring features from version
+  // numbers. Firmware before 7.15.0 does not
+  // send the list; a host must treat a missing list as "decide by version".
+  // Values are append-only: never renumber or reuse one; a retired behaviour
+  // just stops being reported.
+  enum Capability {
+    CAPABILITY_UNSPECIFIED = 0;
+    CAPABILITY_ENTROPY_AUDIT_BUDGET = 1;  // GetEntropy is confirmed on the device and limited to an audited per-session budget.
+    CAPABILITY_ERC20_UNLIMITED_APPROVE_REVIEW = 2;  // An unlimited ERC-20 approve gets its own warning screen before signing.
+    CAPABILITY_ERC20_UNLIMITED_PERMIT_REVIEW = 3;  // Unlimited EIP-2612/DAI/Permit2 permits sign with the value shown as UNLIMITED.
+    CAPABILITY_ERC7730_RUNTIME_REVIEW = 4;  // Preloaded ERC-7730 definitions are verified and rendered on the device.
+    CAPABILITY_EVM_CERTIFIED_INTENT = 5;  // A certified intent heading and limits are shown before the unchanged review.
+    CAPABILITY_EVM_MAX_AMOUNT_REVIEW = 6;  // An amount too large to display is refused, never shown blank.
+    CAPABILITY_EVM_TX_METADATA = 7;  // EthereumTxMetadata is accepted before signing and refused during it.
+    CAPABILITY_EVM_UNKNOWN_TOKEN_REVIEW = 8;  // Unknown tokens (and the native pseudo-address off mainnet) are reviewed in base units with the contract address.
+    CAPABILITY_HIVE_RELEASE_REVIEW = 9;  // Hive signing with device-derived keys and the SLIP-0048 path enforced.
+    CAPABILITY_LEGACY_EVM_ROUTER_SIGNING = 10;  // THORChain/Maya EVM router calls are decoded and signed with the per-chain router check.
+    CAPABILITY_MAYA_SINGLE_MESSAGE = 11;  // A MayachainMsgAck carrying both send and deposit is refused.
+    CAPABILITY_OSMOSIS_WIRE_GUARDS = 12;  // Osmosis requests with empty or non-canonical amounts are refused before review.
+    CAPABILITY_PERMIT2_REVIEW = 13;  // Permit2 signatures are shown as who, what and until when.
+    CAPABILITY_PROMPT_WORKFLOW_UNWIND = 14;  // A rejected or interrupted prompt ends the workflow it belongs to.
+    CAPABILITY_PROTECTED_PING_PRESENCE = 15;  // A protected Ping keeps its message field after a DebugLink read.
+    CAPABILITY_RIPPLE_MEMO_POLICY = 16;  // Ripple memos are encoded with correct length prefixes and shown in full; unsupported memos are refused.
+    CAPABILITY_SESSION_TRUST_LIFETIME = 17;  // AdvancedMode survives Initialize but not ClearSession or a lock.
+    CAPABILITY_SOLANA_CERTIFIED_REVIEW = 18;  // Certified Solana schemas are reviewed screen by screen, including the priority fee.
+    CAPABILITY_SOLANA_LUT_ATTESTATION = 19;  // Lookup-table accounts attested for this exact message are shown (annotation only).
+    CAPABILITY_SOLANA_RUNTIME_REVIEW = 20;  // Solana transactions and messages are parsed strictly; anything unverifiable needs AdvancedMode.
+    CAPABILITY_STORAGE_V19_KDF = 21;  // Storage uses the v19 PIN key-derivation format.
+    CAPABILITY_TENDERMINT_PROGRESS = 22;  // Each accepted Tendermint-family message counts as workflow progress for the idle lock.
+    CAPABILITY_SAFE_RESET_CEREMONY = 23;  // An abandoned reset never leaves EntropyAck armed, and a second ResetDevice is refused while one is armed.
+    CAPABILITY_THOR_DEPOSIT_REVIEW = 24;  // THORChain router deposits (legacy and with expiry) are decoded and reviewed.
+    CAPABILITY_TRON_TRC20_REVIEW = 25;  // TRC-20 transfers on firmware-trusted contracts clear-sign with symbol and decimals; other contracts need AdvancedMode.
+    CAPABILITY_EIP712_CHUNKED_VALUES = 26;  // EIP-712 bytes and string values over 1024 bytes are sent in chunks, shown in full and hashed whole.
+  }
+  repeated Capability capabilities = 30 [packed = true];
 }
 
 /**
@@ -545,6 +649,20 @@ message ResetDevice {
       7; // Initialize without ever showing the recovery sentence.
   optional uint32 auto_lock_delay_ms = 8; // Screensaver Timeout
   optional uint32 u2f_counter = 9;        // U2F Counter
+  optional bool dice_entropy =
+      10; // collect dice rolls on the device. On its own this is the MIXED
+          // mode: the device shows its own 32-byte draw as 24 BIP-39 words
+          // BEFORE the rolls are entered, then seed = SHA256d("KK\x01SM" ||
+          // draw || SHA256("KK\x01D" || rolls)). The host's EntropyAck is
+          // consumed and its bytes dropped. Verifiable offline from the words
+          // and the rolls.
+  optional bool dice_only =
+      11; // with dice_entropy: seed = SHA256(rolls) and nothing else -- the
+          // device draw is discarded, so the wallet rests entirely on the
+          // rolls. Coldcard's Dice-Rolls-Only, byte for byte. The device shows
+          // a consent screen naming the chosen mode before anything happens,
+          // so a host cannot select this silently. Rejected without
+          // dice_entropy.
 }
 
 /**
@@ -955,6 +1073,10 @@ message FirmwareUpload {
  */
 message DebugLinkDecision {
   required bool yes_no = 1; // true for "Confirm", false for "Cancel"
+  optional string input =
+      2; // synthetic keyboard input for on-device entry flows (e.g. dice
+         // rolls '1'-'6', 'u' for undo); kept short so the decoded struct
+         // fits the tiny-message buffer
 }
 
 /**
@@ -989,6 +1111,15 @@ message DebugLinkState {
       12;                            // last auto completed recovery word
   optional bytes firmware_hash = 13; // hash of the application and meta header
   optional bytes storage_hash = 14;  // hash of storage
+  optional bytes dice_digest =
+      15; // SHA-256 of the ASCII dice-roll string collected during a
+          // dice_entropy ResetDevice workflow. Not reported while the
+          // ceremony is private (firmware 7.15 and later).
+  optional string confirm_title =
+      16; // title of the most recent confirmation screen, as formatted
+  optional string confirm_body =
+      17; // body of the most recent confirmation screen, as formatted and
+          // before pagination; lets tests assert exact displayed text
 }
 
 /**
@@ -1019,4 +1150,48 @@ message DebugLinkFillConfig {}
  */
 message ChangeWipeCode {
   optional bool remove = 1; // is wipe code removal requested?
+}
+
+//////////////////////////
+// Clearsign attestor   //
+//////////////////////////
+
+/**
+ * Request: derive and return the clearsign attestation public key.
+ * The attestation key is derived from the seed at a dedicated hardened path
+ * and is unrelated to any coin key. Available in regular firmware only while
+ * AdvancedMode is enabled.
+ * @next ClearsignAttestorPublicKey
+ * @next Failure
+ */
+message ClearsignAttestorGetPublicKey {}
+
+/**
+ * Response: compressed attestation public key
+ * @prev ClearsignAttestorGetPublicKey
+ */
+message ClearsignAttestorPublicKey {
+  optional bytes public_key = 1;  // 33-byte compressed secp256k1
+}
+
+/**
+ * Request: validate a clearsign descriptor payload and attest it.
+ * The device parses the payload with the SAME validator verifying devices
+ * run (currently KKSOLSC1 reusable Solana instruction schemas) and refuses
+ * anything malformed — this message can never sign arbitrary bytes.
+ * Requires an unlocked session and an on-device confirmation.
+ * @next ClearsignAttestorSignature
+ * @next Failure
+ */
+message ClearsignAttestorSign {
+  optional bytes payload = 1;  // canonical descriptor payload (magic-prefixed)
+}
+
+/**
+ * Response: attestation over the validated payload
+ * @prev ClearsignAttestorSign
+ */
+message ClearsignAttestorSignature {
+  optional bytes signature = 1;   // 64-byte compact secp256k1 ECDSA over SHA256(payload)
+  optional bytes public_key = 2;  // 33-byte compressed attestation pubkey
 }

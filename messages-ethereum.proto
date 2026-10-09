@@ -113,6 +113,66 @@ message EthereumMetadataAck {
 	optional string display_summary = 2;		// Brief result for host logging
 }
 
+/**
+ * Request: Load a clearsign signer public key + alias into a key slot.
+ * The device shows a mandatory confirmation (alias + key fingerprint) before
+ * accepting; there is no way to load a signer without user consent.
+ * A signer is RAM-only and is cleared on reboot. The persist field is retained
+ * for wire compatibility and future authenticated storage; firmware 7.15
+ * rejects persist=true. Every transaction whose metadata was verified by a loaded
+ * (non built-in) signer is preceded by a warning screen naming the alias
+ * during transaction confirmation.
+ * @next Success
+ * @next Failure
+ */
+message LoadClearsignSigner {
+	optional uint32 key_id = 1;		// target key slot (0-3); must not hold a built-in key
+	optional bytes pubkey = 2;		// 33-byte compressed secp256k1 public key
+	optional string alias = 3;		// short display name shown on load confirm + per-tx warning
+	/*
+	 * Optional identity logo, <= 384 bytes, run-length encoded — NOT a packed
+	 * bitmap. (This is the format because draw_bitmap_mono_rle() is the decoder
+	 * of record and every bundled image already uses it; it is NOT a size
+	 * workaround — a packed 1bpp icon at the legal maximum geometry, 40x64,
+	 * would be 320 bytes and would fit the cap.)
+	 * Pixels are BYTE-VALUED intensity, one byte per pixel after decoding; the
+	 * device renders each as (value * color / 100). Decoder of record:
+	 * keepkey-firmware lib/board/draw.c: draw_bitmap_mono_rle().
+	 *
+	 * Grammar — the stream is a sequence of packets. Read n = (int8)data[i++]:
+	 *   n in [1, 127]    RUN     : one value byte follows; emit it n times.  [n][v]
+	 *   n in [-127, -1]  LITERAL : (-n) value bytes follow; emit each once.  [n][v1]..[v-n]
+	 *   n == 0                   : invalid.
+	 *   n == -128 (0x80)         : INVALID. The decoder's run counter is int8_t,
+	 *                              so it cannot represent -(-128) = 128; a 0x80
+	 *                              packet is undecodable. Encoders MUST split a
+	 *                              128-byte literal into two packets. Firmware
+	 *                              rejects 0x80 rather than rendering.
+	 * The stream must decode EXACTLY, and the device validates this before the
+	 * icon is shown or stored: no run may straddle the end of the image,
+	 * exactly icon_width*icon_height pixels are emitted (row-major,
+	 * left->right, top->bottom), and the ENTIRE input must be consumed —
+	 * trailing packets after the final pixel are rejected. So a RUN emits at
+	 * most 127 pixels and a LITERAL at most 127.
+	 *
+	 * Golden vector (2x2, w=2 h=2): bytes 03 FF FF 00
+	 *   03 -> RUN of 3, value FF   => pixels [FF, FF, FF]
+	 *   FF -> n = -1, LITERAL of 1 => next byte 00 => pixel [00]
+	 *   decoded = FF FF FF 00  (row0 = FF FF, row1 = FF 00)
+	 */
+	optional bytes icon = 4;
+	/*
+	 * Icon pixel width, 1..40. The cap is the confirm screen's left icon column
+	 * (LEFT_MARGIN_WITH_ICON = 40); title/body text begins at x=40 and the icon
+	 * is drawn AFTER the text, so a wider icon would paint over the alias,
+	 * fingerprint and the "NOT verified by KeepKey" warning on the trust screen.
+	 * Icon + both dimensions omitted => text-only identity.
+	 */
+	optional uint32 icon_width = 5;
+	optional uint32 icon_height = 6;	// icon pixel height (1..64; the icon column is 64px tall)
+	optional bool persist = 7;		// reserved compatibility field; firmware rejects true (RAM-only)
+}
+
 ////////////////////////////////////////
 // Ethereum: Message signing messages //
 ////////////////////////////////////////
@@ -186,4 +246,225 @@ message Ethereum712TypesValues {
 		required string eip712primetype = 3;	// primaryType (up to 80 bytes)
 		required string eip712data = 4;				// "domain" or "message" json string (up to 2048)
 		required uint32 eip712typevals = 5;		// device calculates hash for 1 = domain sep, 2 = message
+}
+
+// ── Structured EIP-712, device-driven field streaming ────────────────
+//
+// The device drives. It asks for one type definition, or one leaf VALUE, at a
+// time, and hashes each value in the same pass that displays it. The host owns
+// the document; the device holds only the digest stack for the containers
+// currently open, so a 10,000-element array costs the same RAM as a 2-element
+// one and there is no document-size limit to raise later.
+//
+// This replaces Ethereum712TypesValues, which shipped the whole document in two
+// 2048-byte JSON blobs and was withdrawn in 7.14.2: its parser could not
+// guarantee that the value shown on screen was the value being hashed. Here
+// that property is structural -- a value is displayed and absorbed from the
+// same buffer in the same call, and each member_path is requested exactly once.
+//
+// Shapes follow Trezor's where they can, so a host that can drive a Trezor can
+// drive a KeepKey with the same traversal logic. ONE deliberate divergence is
+// described at EthereumFieldType.
+
+/**
+ * Request: Begin structured EIP-712 signing. The device replies with
+ * EthereumTypedDataStructRequest and drives from there.
+ * @start
+ * @next EthereumTypedDataStructRequest
+ * @next Failure
+ */
+message EthereumSignTypedData {
+    repeated uint32 address_n = 1;              // BIP-32 path to derive the key from master node
+    required string primary_type = 2;           // primaryType of the message being signed
+    optional bool metamask_v4_compat = 3 [default = true];  // array-of-struct hashing follows MetaMask v4
+}
+
+/**
+ * Response: The device needs this struct's member list before it can hash.
+ * @next EthereumTypedDataStructAck
+ */
+message EthereumTypedDataStructRequest {
+    required string name = 1;                   // struct name, "EIP712Domain" for the domain
+}
+
+/**
+ * Request: The member list for the struct the device just asked about, in
+ * declaration order. Order is part of the signature: it determines encodeType
+ * and the order encodeData concatenates members.
+ * @next EthereumTypedDataStructRequest
+ * @next EthereumTypedDataValueRequest
+ * @next Failure
+ */
+message EthereumTypedDataStructAck {
+    repeated EthereumStructMember members = 1;
+
+    message EthereumStructMember {
+        required EthereumFieldType type = 1;
+        required string name = 2;
+    }
+
+    /**
+     * DIVERGENCE FROM TREZOR, and the reason for it.
+     *
+     * Trezor and OneKey describe an array as a field whose `entry_type` is
+     * another EthereumFieldType -- a self-referential message. Trezor can do
+     * that because core is Python. OneKey does it on nanopb by compiling that
+     * one field as a POINTER, which needs PB_ENABLE_MALLOC, and then flattens
+     * the pointer chain into a fixed pool to sever the recursion.
+     *
+     * KeepKey's nanopb is static-allocation only, and a heap inside a signing
+     * device is a liability we are not taking on for one field. So the array
+     * nesting is FLATTENED onto the wire, the way Ledger describes it:
+     * data_type is always the LEAF type, and array_levels carries the
+     * dimensions.
+     *
+     * array_levels lists the bracket groups in the order they are written in
+     * the Solidity type string, left to right -- which is the order encodeType
+     * must reproduce. 0 means a dynamic dimension, N means a fixed one:
+     *
+     *     uint256          -> data_type=UINT,  size=32, array_levels=[]
+     *     address[]        -> data_type=ADDRESS,        array_levels=[0]
+     *     Person[3]        -> data_type=STRUCT, struct_name="Person",
+     *                                                   array_levels=[3]
+     *     int16[2][][4]    -> data_type=INT, size=2,    array_levels=[2,0,4]
+     *
+     * Nothing EIP-712 permits is lost, and the encoding is bounded, flat and
+     * statically sized.
+     */
+    message EthereumFieldType {
+        required EthereumDataType data_type = 1;    // the LEAF type; never ARRAY
+        optional uint32 size = 2;                   // bytesN: N. intN/uintN: N in BYTES, 1..32.
+        optional string struct_name = 3;            // STRUCT: its name, to request in turn
+        repeated uint32 array_levels = 4;           // see above. Empty for a non-array.
+    }
+
+    // Values match Trezor's enum so a shared host implementation keeps its
+    // mapping. ARRAY is reserved and never sent -- see EthereumFieldType.
+    enum EthereumDataType {
+        UINT = 1;
+        INT = 2;
+        BYTES = 3;
+        STRING = 4;
+        BOOL = 5;
+        ADDRESS = 6;
+        ARRAY = 7;     // reserved, unused
+        STRUCT = 8;
+    }
+}
+
+/**
+ * Response: The device needs one leaf value. member_path addresses it: element
+ * 0 is 0 for the domain and 1 for the message, and the rest index members and
+ * array elements from there. A struct is never requested as a value -- the
+ * device walks into it. An array's LENGTH is requested as its own value, big
+ * endian uint16, before its elements.
+ *
+ * value_offset is set only while a chunked value (see EthereumTypedDataValueAck)
+ * is being read: the device wants the bytes of the same leaf from this offset.
+ * It may ask for a value twice from offset 0: a string is counted and checked
+ * in full before its first screen, then shown.
+ * @next EthereumTypedDataValueAck
+ */
+message EthereumTypedDataValueRequest {
+    repeated uint32 member_path = 1;
+    optional uint32 value_offset = 2;
+}
+
+/**
+ * Request: The raw big-endian bytes of the requested leaf, already the exact
+ * declared width. Not JSON: the device does no number parsing, so there is no
+ * integer width ceiling and no decimal-to-binary step that could disagree with
+ * what the host meant.
+ *
+ * Chunked values. A dynamic `bytes` or `string` leaf longer than 1024 bytes is
+ * sent in 1024-byte chunks, and only to firmware that reports
+ * CAPABILITY_EIP712_CHUNKED_VALUES: older firmware skips the unknown fields
+ * and would hash the first chunk alone. The first answer carries the first
+ * 1024 bytes and value_total_length. Each later request names a
+ * value_offset; its answer echoes that value_offset and carries exactly the
+ * bytes from there, 1024 or the rest of the value. A value of 1024 bytes or
+ * fewer is always sent whole, without either field. Domain values and array
+ * lengths are never chunked.
+ * @next EthereumTypedDataValueRequest
+ * @next EthereumTypedDataSignature
+ * @next Failure
+ */
+message EthereumTypedDataValueAck {
+    required bytes value = 1;
+    optional uint32 value_total_length = 2;     // first chunk: the whole value's length
+    optional uint32 value_offset = 3;           // later chunks: echoes the request
+}
+
+// ── ERC-7730 v2 compiled definitions ─────────────────────────────────
+//
+// JSON descriptors never cross the device boundary. The host resolves their
+// includes, names, references, maps, groups and Solidity fragments into the
+// canonical binary program documented in docs/erc7730-compiled-format.md.
+// Firmware verifies the signed program and interprets values from the exact
+// transaction/EIP-712 stream it signs.
+
+enum EthereumClearSignDefinitionKind {
+    ERC7730_CALLDATA = 1;
+    ERC7730_EIP712 = 2;
+    ERC7730_TOKEN = 3;
+    ERC7730_NETWORK = 4;
+}
+
+/**
+ * Preload a signed definition before signing (offline/cache path). Chunks MUST
+ * be contiguous from offset zero. The first chunk supplies total_length;
+ * subsequent chunks bind to the same 32-byte definition_id (SHA-256 of the
+ * complete signed envelope). No definition becomes usable before the final
+ * chunk, signature, catalog proof and compiled program all verify.
+ * @next EthereumClearSignDefinitionAck
+ * @next Failure
+ */
+message EthereumClearSignDefinition {
+    required bytes definition_id = 1;
+    required uint32 offset = 2;
+    required uint32 total_length = 3;
+    required bytes data = 4;
+}
+
+/** Response to a preload chunk. */
+message EthereumClearSignDefinitionAck {
+    required bytes definition_id = 1;
+    required uint32 next_offset = 2;
+    required bool complete = 3;
+}
+
+/**
+ * Device request for a catalog definition during calldata or EIP-712 signing.
+ * The lookup tuple is authenticated again from the returned definition; these
+ * fields select an entry but never grant trust. selector_or_type_hash is four
+ * bytes for calldata, 32 bytes for EIP-712, and omitted for token/network
+ * lookups. Offsets address the complete signed envelope, beginning at K773.
+ * A definition_id commits to the entire envelope, not independently
+ * authenticated ranges, so firmware verifies a contiguous offset-zero replay
+ * before consuming its program bytes for display.
+ * @next EthereumClearSignDefinitionChunk
+ * @next Failure
+ */
+message EthereumClearSignDefinitionRequest {
+    required EthereumClearSignDefinitionKind kind = 1;
+    required uint64 chain_id = 2;
+    optional bytes contract_address = 3;
+    optional bytes selector_or_type_hash = 4;
+    optional bytes definition_id = 5;
+    required uint32 offset = 6;
+    required uint32 length = 7;
+    optional uint32 recursion_depth = 8;
+}
+
+/**
+ * Host response to an on-demand definition request. Chunks are contiguous and
+ * offset is relative to the complete signed envelope. Program bytes remain
+ * untrusted until the complete replay hashes to definition_id and its catalog
+ * authentication verifies.
+ */
+message EthereumClearSignDefinitionChunk {
+    required bytes definition_id = 1;
+    required uint32 offset = 2;
+    required uint32 total_length = 3;
+    required bytes data = 4;
 }
