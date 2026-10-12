@@ -1176,10 +1176,18 @@ message ClearsignAttestorPublicKey {
 }
 
 /**
- * Request: validate a clearsign descriptor payload and attest it.
+ * Request: validate a clearsign payload and attest it.
  * The device parses the payload with the SAME validator verifying devices
- * run (currently KKSOLSC1 reusable Solana instruction schemas) and refuses
- * anything malformed — this message can never sign arbitrary bytes.
+ * run and refuses anything malformed — this message can never sign
+ * arbitrary bytes. Two payload kinds, told apart by their 8-byte magic; a
+ * build answers only the kinds it implements:
+ *   KKSOLSC1  a reusable Solana instruction schema. The signature is over
+ *             SHA256(payload).
+ *   KKABREQ1  the user's address book (CAPABILITY_CERTIFIED_CONTACTS). Every
+ *             contact is reviewed on the device, and the signature is over
+ *             SHA256 of the 46-byte manifest "KKABRT01" || version ||
+ *             revision (4, big-endian) || count || Merkle root, not over the
+ *             payload.
  * Requires an unlocked session and an on-device confirmation.
  * @next ClearsignAttestorSignature
  * @next Failure
@@ -1193,6 +1201,6 @@ message ClearsignAttestorSign {
  * @prev ClearsignAttestorSign
  */
 message ClearsignAttestorSignature {
-  optional bytes signature = 1;   // 64-byte compact secp256k1 ECDSA over SHA256(payload)
+  optional bytes signature = 1;   // 64-byte compact secp256k1 ECDSA; what it covers depends on the payload kind (see ClearsignAttestorSign)
   optional bytes public_key = 2;  // 33-byte compressed attestation pubkey
 }
