@@ -395,6 +395,7 @@ message Features {
     CAPABILITY_THOR_DEPOSIT_REVIEW = 24;  // THORChain router deposits (legacy and with expiry) are decoded and reviewed.
     CAPABILITY_TRON_TRC20_REVIEW = 25;  // TRC-20 transfers on firmware-trusted contracts clear-sign with symbol and decimals; other contracts need AdvancedMode.
     CAPABILITY_EIP712_CHUNKED_VALUES = 26;  // EIP-712 bytes and string values over 1024 bytes are sent in chunks, shown in full and hashed whole.
+    CAPABILITY_CERTIFIED_CONTACTS = 27;  // A contact from an address book the user certified on this device is named on a plain send; the full address is still shown.
   }
   repeated Capability capabilities = 30 [packed = true];
 }
