@@ -166,7 +166,7 @@ message HiveSignedAccountUpdate {
  * and NO Bitcoin/Solana-style message prefix. This is the Hive dApp login
  * primitive (Aioha / Keychain SDK).
  * Signing key: posting/active/memo role (Keychain's requestSignBuffer
- * surface — owner' is rejected); dApp login uses posting
+ * surface — owner is rejected); dApp login uses posting
  * (m/48'/13'/4'/account'/0').
  * @start
  * @next HiveSignedMessage

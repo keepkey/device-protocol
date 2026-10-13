@@ -252,19 +252,41 @@ message Ethereum712TypesValues {
 //
 // The device drives. It asks for one type definition, or one leaf VALUE, at a
 // time, and hashes each value in the same pass that displays it. The host owns
-// the document; the device holds only the digest stack for the containers
-// currently open, so a 10,000-element array costs the same RAM as a 2-element
-// one and there is no document-size limit to raise later.
+// the document. The outermost open array streams without one slot per element,
+// so a 10,000-element outer array costs the same RAM as a 2-element one.
+// Streaming avoids buffering the whole document; supported shapes and values
+// still have wire and firmware limits, listed below.
 //
 // This replaces Ethereum712TypesValues, which shipped the whole document in two
 // 2048-byte JSON blobs and was withdrawn in 7.14.2: its parser could not
 // guarantee that the value shown on screen was the value being hashed. Here
-// that property is structural -- a value is displayed and absorbed from the
-// same buffer in the same call, and each member_path is requested exactly once.
+// each displayed value or chunk is hashed from the same buffer. Chunking and
+// review replays may repeat member_path; replay passes must hash identically.
 //
 // Shapes follow Trezor's where they can, so a host that can drive a Trezor can
 // drive a KeepKey with the same traversal logic. ONE deliberate divergence is
 // described at EthereumFieldType.
+//
+// Representation limits: the nanopb wire fields hold at most 32 members per
+// struct, four array dimensions per field, and 16 member_path components.
+// Each value Ack carries at most 1024 bytes; longer dynamic message values
+// require the chunking capability described at EthereumTypedDataValueAck.
+//
+// Firmware 7.15 supports a narrower subset: at most 24 members per struct,
+// six active container frames (including the root), and 24 shared slots for
+// open containers. An encodeType closure holds at most seven structs,
+// including its primary type; the session names table holds eight types.
+// Struct/member names are limited to 47/31 ASCII characters, and the rendered
+// review path to 159 characters. Array lengths are 16-bit. Nested arrays that
+// cannot use the fixed-leaf streaming path must fit the remaining shared slots;
+// this includes arrays of containers and dynamic bytes/string leaves.
+// Dynamic message bytes/string values may be at most 1 MiB, sent in 1024-byte
+// chunks; domain values cannot be chunked. Renderer and review-counter limits
+// can also refuse a document.
+//
+// Hosts must check known bounds before starting and propagate Failure for an
+// unsupported document. Never truncate a value or treat a partial review as
+// approval of the complete document.
 
 /**
  * Request: Begin structured EIP-712 signing. The device replies with
@@ -328,8 +350,8 @@ message EthereumTypedDataStructAck {
      *                                                   array_levels=[3]
      *     int16[2][][4]    -> data_type=INT, size=2,    array_levels=[2,0,4]
      *
-     * Nothing EIP-712 permits is lost, and the encoding is bounded, flat and
-     * statically sized.
+     * This is a bounded, flat, statically sized representation. EIP-712
+     * documents outside the limits above are unsupported and must be refused.
      */
     message EthereumFieldType {
         required EthereumDataType data_type = 1;    // the LEAF type; never ARRAY
