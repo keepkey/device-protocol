@@ -13,9 +13,13 @@ EIP-712 value stream that the device signs.
 
 The signed envelope is purpose-separated from every older ClearSign format.
 Its signature preimage begins with the 24-byte ASCII domain
-`KEEPKEY:ERC7730:CATALOG\0`. A certified failure aborts signing; it never falls
-back to a less specific certified display. Runtime/self-service metadata stays
-additive and cannot suppress raw review.
+`KEEPKEY:ERC7730:CATALOG\0`. In firmware 7.15, catalog signatures are verified
+against a user-loaded runtime signer. The delegate record supplies the public
+key and chain scope, but its certificate-signature bytes are not verified
+against a KeepKey root. Even a root-certified envelope requires its signer to
+be loaded; successful preload does not establish KeepKey certification.
+Runtime metadata remains additive and cannot suppress raw review. Failed
+catalog validation aborts the requested flow.
 
 ## Envelope
 
@@ -28,19 +32,22 @@ additive and cannot suppress raw review.
 | definition | variable | format below |
 | proof count | 1 | number of 32-byte Merkle siblings |
 | proof | 32 × count | sorted-pair SHA-256 inclusion proof |
-| certificate length | 2 | root-certified delegate certificate length |
-| certificate | variable | KeepKey delegation certificate |
+| certificate length | 2 | delegate record length (139 bytes in 7.15) |
+| certificate | variable | delegate record; KeepKey-root signature not verified in 7.15 |
 | signature | 64 | compact secp256k1 signature over the purpose domain and catalog root |
 | recovery | 1 | recovery identifier |
 
 The leaf is `SHA256(0x00 || definition)`. An internal node is
-`SHA256(0x01 || min(left,right) || max(left,right))`. The certified catalog
+`SHA256(0x01 || min(left,right) || max(left,right))`. The catalog
 root is the leaf after applying every proof sibling. The delegate signature
 digest is `SHA256("KEEPKEY:ERC7730:CATALOG\0" || catalog_root)`, where `\0`
 is one literal NUL byte. Signing the root rather than a bare leaf lets one
 signature authenticate every included definition while the leaf still binds
-the exact canonical program. The delegate certificate binds that signature to
-one chain and the compiled-in KeepKey root; the purpose prefix prevents replay
+the exact canonical program. Firmware checks the record version, public-key
+encoding, alias format and chain scope, then verifies the catalog signature
+with that public key against the loaded runtime-signer set. The displayed
+signer alias comes from the loaded signer. The record's certificate-signature
+bytes confer no additional trust in 7.15. The purpose prefix prevents replay
 as v1-v4 ClearSign metadata.
 
 On-demand offsets address this complete envelope, with offset zero at `K773`.

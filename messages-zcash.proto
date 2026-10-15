@@ -271,8 +271,17 @@ message ZcashTransparentOutput {
  * sighashes commit to all transparent prevouts, values, scripts, sequences,
  * and outputs. Host-provided sighash is legacy and rejected when present.
  *
+ * If shielded actions remain, the last input receives ZcashPCZTActionAck(0);
+ * send those actions before waiting for signatures. Transparent signatures
+ * are withheld until the final shielded action passes validation. Completion
+ * sends ZcashTransparentSigned followed immediately by ZcashSignedPCZT.
+ * Transparent-only transactions also receive both terminal replies; hosts
+ * must consume both before starting another request.
+ *
  * @next ZcashTransparentAck
+ * @next ZcashPCZTActionAck
  * @next ZcashTransparentSigned
+ * @next ZcashSignedPCZT
  * @next Failure
  */
 message ZcashTransparentInput {
@@ -300,9 +309,13 @@ message ZcashTransparentAck {
 }
 
 /**
- * Response: ECDSA signatures for transparent inputs.
+ * Response: ECDSA signatures for transparent inputs, released only after the
+ * final signing gate. Immediately followed by ZcashSignedPCZT, including for
+ * transparent-only transactions.
  *
  * @prev ZcashTransparentInput
+ * @prev ZcashPCZTAction
+ * @next ZcashSignedPCZT
  */
 message ZcashTransparentSigned {
     repeated bytes signatures = 1;          // DER ECDSA signatures, one per transparent input

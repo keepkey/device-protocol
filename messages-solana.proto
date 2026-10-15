@@ -72,10 +72,11 @@ message SolanaSignTx {
      *
      * With a runtime-loaded signer the attestation is annotation only: the
      * accounts are shown as PROVIDER-ATTESTED and the AdvancedMode blind-sign
-     * review still runs. A KeepKey root certificate scoped to Solana may
-     * instead let firmware use the resolved keys while parsing the exact
-     * message; that certified path still needs a signed, complete KKSOLSC1
-     * schema before the raw review can be omitted. Self-contained legacy/v0
+     * review still runs. Firmware 7.15 does not implement KeepKey-root
+     * certified Solana signing: any nonempty clearsign_certificate is
+     * rejected before schema processing. supports_solana_lut_attestation
+     * advertises runtime LUT annotations, not certified signing.
+     * Self-contained legacy/v0
      * messages omit fields 5-7 because every account is already in raw_tx.
      *
      * Preimage: "KeepKeySolanaTxAccounts/1" || message_hash(32)
@@ -114,6 +115,11 @@ message SolanaSignTx {
      */
     repeated bytes token_recipient_owner = 12;  // 32-byte Solana public keys (max 4)
     /*
+     * Schema-only in firmware 7.15: every nonempty value is rejected with
+     * Failure_UnexpectedMessage ("Certified Solana signing is unsupported").
+     * The contract below is reserved for a future implementation; a valid
+     * certificate and 0x80 signer IDs do not enable it in this release.
+     *
      * KeepKey root certificate for the delegate that signed the instruction
      * schema and, when the message contains address lookups, the LUT account
      * binding. The certificate uses the fixed 139-byte ClearSign delegation
