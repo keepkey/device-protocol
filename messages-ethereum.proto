@@ -469,7 +469,7 @@ message EthereumClearSignDefinitionAck {
  */
 message EthereumClearSignDefinitionRequest {
     required EthereumClearSignDefinitionKind kind = 1;
-    required uint64 chain_id = 2;
+    required uint64 chain_id = 2 [jstype = JS_STRING];
     optional bytes contract_address = 3;
     optional bytes selector_or_type_hash = 4;
     optional bytes definition_id = 5;

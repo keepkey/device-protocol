@@ -68,6 +68,32 @@ try {
   failed++
 }
 
+// A uint64 chain ID must survive the generated CommonJS bindings without
+// passing through JavaScript's lossy Number representation.
+for (const chainId of ['1', '9007199254740991', '9007199254740993', '18446744073709551615']) {
+  try {
+    const assert = require('assert')
+    const { EthereumClearSignDefinitionRequest } = require('./lib/messages-ethereum_pb')
+    const request = new EthereumClearSignDefinitionRequest()
+    request.setChainId(chainId)
+    // Build field 2's wire value independently using exact integer arithmetic.
+    let value = BigInt(chainId)
+    const wire = [0x10]
+    do {
+      const byte = Number(value & 0x7fn)
+      value >>= 7n
+      wire.push(byte | (value ? 0x80 : 0))
+    } while (value)
+    assert.deepStrictEqual(Array.from(request.serializeBinary()), wire)
+    const decoded = EthereumClearSignDefinitionRequest.deserializeBinary(Uint8Array.from(wire))
+    assert.strictEqual(decoded.getChainId(), chainId)
+    assert.strictEqual(decoded.toObject().chainId, chainId)
+  } catch (error) {
+    console.error(`FAIL: uint64 chain ID ${chainId}: ${error.message}`)
+    failed++
+  }
+}
+
 if (failed) {
   console.error(`${failed} package validation check(s) failed`)
   process.exit(1)
