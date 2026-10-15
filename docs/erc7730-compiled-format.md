@@ -239,8 +239,9 @@ formatters require scheme, plaintext type and plaintext formatter roles.
 Unknown kinds, roles, flags or invalid kind/role/source combinations are
 rejected. Live name, token, NFT, time or decryption results can annotate the
 device-decoded operand but have no representation capable of replacing it.
-The token role of a token-amount formatter is optional. When absent, firmware
-must display the device-decoded integer as an unknown-token value; token
+Firmware 7.15 requires both value and token roles for token-amount formatter
+kind 3. A descriptor without a token must compile to raw formatter kind 1,
+which displays the device-decoded integer without token attribution; token
 threshold, chain and native-alias roles are then forbidden.
 
 ### 7. Display instruction table
@@ -301,9 +302,9 @@ program path would not reach them.
 
 ## Fixed firmware limits (format 1)
 
-- 64 ABI nodes and 12 levels of ABI nesting
+- 64 ABI nodes and 8 levels of ABI nesting, including the root
 - 64 aggregate decoded array elements
-- 16 path components
+- At most 7 executable path steps (the step count must be less than 8)
 - 64 paths, 64 fields and 32 conditions
 - 96 interned strings, each at most 128 bytes
 - 16 KiB canonical program and 1 KiB transport chunks
@@ -311,3 +312,7 @@ program path would not reach them.
 
 The resource section repeats the compiler's exact counts. Firmware recomputes
 them while parsing and rejects disagreement or exhaustion.
+
+The wire representation can encode larger depth and path-count values; that
+capacity does not make them executable. Compilers targeting 7.15 must enforce
+the limits above rather than emitting 12-level ABI trees or 16-step paths.
