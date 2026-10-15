@@ -32,8 +32,11 @@
  * 3. ZcashDisplayAddress fields 3-6 (address, ak, nk, rivk) were removed and
  *    reserved. FVK-match attestation against a host-built unified address is
  *    strictly weaker than device-derived display, so the device now derives
- *    and shows its own Orchard UA. A v1 host that sends those fields gets a
- *    Failure. Either account or a full address_n path is now REQUIRED.
+ *    and shows its own Orchard UA. Protobuf ignores the removed fields as
+ *    unknown tags: an otherwise valid v1 request can succeed without checking
+ *    its supplied address or FVK. Hosts must compare the returned ZcashAddress
+ *    with their intended address. Either account or a full address_n path is
+ *    now REQUIRED; reserving the old tags prevents reuse, not receipt.
  *
  * 4. ZcashPCZTAction.is_spend is REQUIRED by firmware 7.15, and
  *    ZcashSignedPCZT.signatures is compact: one 64-byte RedPallas signature

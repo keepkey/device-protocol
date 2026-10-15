@@ -3,6 +3,8 @@
 Status: alpha format 1. All multi-byte integers are unsigned big endian unless
 the field says otherwise. Decoders reject unknown required flags, non-minimal
 integers, duplicate sections, out-of-order sections and trailing bytes.
+The grammar includes operations beyond firmware 7.15's executable subset;
+compilers must also enforce the capability restrictions below.
 
 ## Trust boundary
 
@@ -299,6 +301,27 @@ Exactly 22 bytes:
 All counts and maxima are recomputed while streaming and must match exactly.
 Declared values above a firmware limit are rejected even when the unused
 program path would not reach them.
+
+## Firmware 7.15 executable subset
+
+The wire grammar above does not imply runtime support. Firmware 7.15's
+`erc7730_capabilities.h` permits the following operations:
+
+| Operation | Executable values |
+|---|---|
+| Condition opcode | 3 (optional; the field is always shown) |
+| Path-step opcode | 1 (index), 2 (every element); slices are refused |
+| Formatter kind | 1–8, 10, 13 |
+| Display opcode | 1–8, 10; opcode 9 is refused |
+| Path source | 1 (value), 2 (container), 3 (literal) |
+| Container | 1 (`@.from`), 2 (`@.to`), 3 (`@.value`), for calldata only |
+
+Embedded calldata uses formatter 13 in a field instruction, not display
+opcode 9. The firmware also checks the formatter's required roles and argument
+sources/types. Compilers targeting 7.15 must reject descriptors requiring
+unsupported operations before preload, using the same checks as
+python-keepkey's `device_refusal()` and `DEVICE_CAPABILITIES`; satisfying the
+numeric limits alone is insufficient.
 
 ## Fixed firmware limits (format 1)
 
