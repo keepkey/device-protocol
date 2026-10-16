@@ -34,6 +34,7 @@ message RippleSignTx {
 	optional uint32 sequence = 4;				// transaction sequence number
 	optional uint32 last_ledger_sequence = 5;	// see https://developers.ripple.com/reliable-transaction-submission.html#lastledgersequence
 	optional RipplePayment payment = 6;			// Payment transaction type
+	optional string memo = 7;					// transaction memo (e.g. THORChain swap routing memo)
 }
 
 /**

@@ -3,7 +3,7 @@ version: 2
 defaults: &defaults
     working_directory: ~/device-protocol
     docker:
-        - image: circleci/node
+        - image: cimg/node:20.11
 
 jobs:
     build:
