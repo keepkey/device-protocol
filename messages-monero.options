@@ -1,0 +1,78 @@
+MoneroGetAddress.address_n                      max_count:5
+MoneroGetAddress.payment_id                     max_size:8
+
+MoneroAddress.address                           max_size:106
+
+MoneroGetWatchKey.address_n                     max_count:5
+
+MoneroWatchKey.watch_key                        max_size:32
+MoneroWatchKey.address                          max_size:95
+
+MoneroSubAddressIndicesList.minor_indices       max_count:8
+
+MoneroKeyImageExportInitRequest.hash            max_size:32
+MoneroKeyImageExportInitRequest.address_n       max_count:5
+MoneroKeyImageExportInitRequest.subs            max_count:4
+
+MoneroTransferDetails.out_key                   max_size:32
+MoneroTransferDetails.tx_pub_key                max_size:32
+MoneroTransferDetails.additional_tx_pub_keys    max_count:16 max_size:32
+
+MoneroKeyImageSyncStepRequest.tdis              max_count:4
+
+MoneroExportedKeyImage.iv                       max_size:12
+MoneroExportedKeyImage.blob                     max_size:112
+
+MoneroKeyImageSyncStepAck.kis                   max_count:4
+
+MoneroKeyImageSyncFinalAck.enc_key              max_size:32
+
+MoneroTxDestination.spend_public_key            max_size:32
+MoneroTxDestination.view_public_key             max_size:32
+
+MoneroTxChange.spend_public_key                 max_size:32
+MoneroTxChange.view_public_key                  max_size:32
+
+MoneroTxData.outputs                            max_count:16
+MoneroTxData.payment_id                         max_size:8
+
+MoneroTxInitRequest.address_n                   max_count:5
+
+MoneroTxInitAck.dst_hmacs                       max_count:16 max_size:32
+
+MoneroTxRingMember.dest                         max_size:32
+MoneroTxRingMember.commitment                   max_size:32
+
+MoneroTxSourceEntry.ring                        max_count:16
+MoneroTxSourceEntry.real_out_tx_key             max_size:32
+MoneroTxSourceEntry.real_out_additional_key     max_size:32
+MoneroTxSourceEntry.mask                        max_size:32
+
+MoneroTxSetInputAck.vini                        max_size:200
+MoneroTxSetInputAck.vini_hmac                   max_size:32
+MoneroTxSetInputAck.pseudo_out                  max_size:32
+MoneroTxSetInputAck.pseudo_out_hmac             max_size:32
+
+MoneroTxInputViniRequest.vini                   max_size:200
+MoneroTxInputViniRequest.vini_hmac              max_size:32
+
+MoneroTxSetOutputRequest.dst_hmac               max_size:32
+
+MoneroTxSetOutputAck.tx_out                     max_size:35
+MoneroTxSetOutputAck.out_pk                     max_size:64
+MoneroTxSetOutputAck.ecdh_info                  max_size:8
+MoneroTxSetOutputAck.bp_plus                    max_size:642
+
+MoneroTxAllOutSetAck.extra                      max_size:558
+MoneroTxAllOutSetAck.tx_prefix_hash             max_size:32
+MoneroTxAllOutSetAck.full_message_hash          max_size:32
+
+MoneroTxSignInputRequest.vini                   max_size:200
+MoneroTxSignInputRequest.vini_hmac              max_size:32
+MoneroTxSignInputRequest.pseudo_out             max_size:32
+MoneroTxSignInputRequest.pseudo_out_hmac        max_size:32
+
+MoneroTxSignInputAck.clsag_enc                  max_size:592
+MoneroTxSignInputAck.pseudo_out                 max_size:32
+
+MoneroTxFinalAck.opening_key                    max_size:32

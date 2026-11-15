@@ -21,6 +21,7 @@ const requiredFiles = [
   'messages-ton_pb.js',
   'messages-hive_pb.js',
   'messages-near_pb.js',
+  'messages-monero_pb.js',
 ]
 
 let failed = 0
@@ -47,6 +48,7 @@ const requiredMessages = [
   'ZcashSignPCZT',
   'HiveSignOperations',
   'NearSignTx',
+  'MoneroTxInitRequest',
   'TronGetAddress',
   'TonGetAddress',
 ]

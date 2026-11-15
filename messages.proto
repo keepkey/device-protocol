@@ -292,6 +292,37 @@ enum MessageType {
   MessageType_ClearsignAttestorPublicKey = 1701 [ (wire_out) = true ];
   MessageType_ClearsignAttestorSign = 1702 [ (wire_in) = true ];
   MessageType_ClearsignAttestorSignature = 1703 [ (wire_out) = true ];
+
+  // Monero (messages-monero.proto). Full on-device signer only; firmware
+  // that implements it reports CAPABILITY_MONERO_SIGNING.
+  MessageType_MoneroGetAddress = 1800 [ (wire_in) = true ];
+  MessageType_MoneroAddress = 1801 [ (wire_out) = true ];
+  MessageType_MoneroGetWatchKey = 1802 [ (wire_in) = true ];
+  MessageType_MoneroWatchKey = 1803 [ (wire_out) = true ];
+  MessageType_MoneroKeyImageExportInitRequest = 1804 [ (wire_in) = true ];
+  MessageType_MoneroKeyImageExportInitAck = 1805 [ (wire_out) = true ];
+  MessageType_MoneroKeyImageSyncStepRequest = 1806 [ (wire_in) = true ];
+  MessageType_MoneroKeyImageSyncStepAck = 1807 [ (wire_out) = true ];
+  MessageType_MoneroKeyImageSyncFinalRequest = 1808 [ (wire_in) = true ];
+  MessageType_MoneroKeyImageSyncFinalAck = 1809 [ (wire_out) = true ];
+  MessageType_MoneroTxInitRequest = 1810 [ (wire_in) = true ];
+  MessageType_MoneroTxInitAck = 1811 [ (wire_out) = true ];
+  MessageType_MoneroTxSetInputRequest = 1812 [ (wire_in) = true ];
+  MessageType_MoneroTxSetInputAck = 1813 [ (wire_out) = true ];
+  MessageType_MoneroTxInputViniRequest = 1814 [ (wire_in) = true ];
+  MessageType_MoneroTxInputViniAck = 1815 [ (wire_out) = true ];
+  MessageType_MoneroTxAllInputsSetRequest = 1816 [ (wire_in) = true ];
+  MessageType_MoneroTxAllInputsSetAck = 1817 [ (wire_out) = true ];
+  MessageType_MoneroTxSetOutputRequest = 1818 [ (wire_in) = true ];
+  MessageType_MoneroTxSetOutputAck = 1819 [ (wire_out) = true ];
+  MessageType_MoneroTxAllOutSetRequest = 1820 [ (wire_in) = true ];
+  MessageType_MoneroTxAllOutSetAck = 1821 [ (wire_out) = true ];
+  MessageType_MoneroTxSignInputRequest = 1822 [ (wire_in) = true ];
+  MessageType_MoneroTxSignInputAck = 1823 [ (wire_out) = true ];
+  MessageType_MoneroTxFinalRequest = 1824 [ (wire_in) = true ];
+  MessageType_MoneroTxFinalAck = 1825 [ (wire_out) = true ];
+  // 1826-1849 reserved for Monero (GetTxKey, LiveRefresh). Not defined yet;
+  // do not allocate them to anything else.
 }
 
 ////////////////////
@@ -399,6 +430,12 @@ message Features {
     CAPABILITY_SAFE_TYPED_CALLS = 28;  // Signed definitions review canonical SafeTx.data, including CALL-only MultiSend batches, bound to the full EIP-712 digest.
     CAPABILITY_ERC7730_TYPED_ITERATION = 29;  // A typed-data ERC-7730 definition may iterate one array (Seaport offer and consideration), each element's fields shown once, numbered i of n.
     CAPABILITY_ERC7730_TYPED_SETTLEMENT = 30;  // A typed-data ERC-7730 order definition may mark what the order gives and pays out; the device then shows what this wallet gives and what it receives net, and warns on what it can tell from the order alone (nothing, or only unknown tokens, NFTs or dust, for what it gives).
+    // Monero: addresses, view-key export, key-image sync and transactions
+    // signed entirely on the device (Bulletproofs+ and CLSAG). 31 is the next
+    // free value after this branch's pending 28-30 (upstream master ends at
+    // 27). It is claimed only when it lands on upstream master, and once
+    // claimed it is never remapped.
+    CAPABILITY_MONERO_SIGNING = 31;  // Monero is signed entirely on the device; the host builds no proof and holds no secret.
   }
   repeated Capability capabilities = 30 [packed = true];
 }
