@@ -5,6 +5,10 @@
  * builds the transaction, proves Bulletproofs+ and signs CLSAG itself. There
  * is no watch-only or host-proved mode.
  *
+ * Streamed signing never releases wallet keys. Only at TxFinal, after all
+ * inputs are signed, it releases the per-transaction secret key r and any
+ * additional transaction secret keys for standard payment proofs.
+ *
  * Wire IDs 1800-1825 (see MessageType in messages.proto):
  *   1800/1801  address
  *   1802/1803  watch key (view key, with fresh consent each time)
@@ -248,7 +252,7 @@ message MoneroTxData {
     optional uint64 fee = 5;                        // Atomic units
     optional uint32 account = 6;                    // Subaddress major index the inputs belong to
     optional bytes payment_id = 7;                  // 8 bytes, for the one integrated destination
-    optional uint64 unlock_time = 8;                // 0 normally; anything else is shown as a warning
+    optional uint64 unlock_time = 8;                // Must be zero; nonzero unlock times are refused
     optional uint32 hard_fork = 9;                  // At least 16
     optional uint32 bp_version = 10;                // Range proof version: 4 (Bulletproofs+)
 }
@@ -431,9 +435,12 @@ message MoneroTxFinalRequest {
 
 /**
  * Response: The key that opens every clsag_enc. Released only after every
- * input was signed in order; the session then ends.
+ * input was signed in order; the session then ends. The per-transaction
+ * keys are released here for payment proofs, never wallet keys.
  * @end
  */
 message MoneroTxFinalAck {
     optional bytes opening_key = 1;                 // 32 bytes
+    optional bytes tx_key = 2;                      // r, canonical scalar, 32 bytes
+    repeated bytes additional_tx_keys = 3;           // One per output, in output order, when used
 }

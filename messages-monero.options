@@ -76,3 +76,5 @@ MoneroTxSignInputAck.clsag_enc                  max_size:592
 MoneroTxSignInputAck.pseudo_out                 max_size:32
 
 MoneroTxFinalAck.opening_key                    max_size:32
+MoneroTxFinalAck.tx_key                         max_size:32
+MoneroTxFinalAck.additional_tx_keys             max_count:2 max_size:32
