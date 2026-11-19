@@ -1,0 +1,459 @@
+/*
+ * Messages (Monero specific) for KeepKey Communication
+ *
+ * Monero ships only as a full on-device signer: the device derives every key,
+ * builds the transaction, proves Bulletproofs+ and signs CLSAG itself. There
+ * is no watch-only or host-proved mode.
+ *
+ * Streamed signing never releases wallet keys. Only at TxFinal, after all
+ * inputs are signed, it releases the per-transaction secret key r and any
+ * additional transaction secret keys for standard payment proofs.
+ *
+ * Wire IDs 1800-1825 (see MessageType in messages.proto):
+ *   1800/1801  address
+ *   1802/1803  watch key (view key, with fresh consent each time)
+ *   1804-1809  key-image sync
+ *   1810-1825  streamed transaction signing
+ *   1826-1849  reserved (GetTxKey, LiveRefresh); not defined yet
+ *
+ * Firmware that implements this schema reports CAPABILITY_MONERO_SIGNING in
+ * Features.capabilities. A host must gate on that capability, never on the
+ * firmware version or a firmware hash. Firmware without it answers any of
+ * these requests with Failure_UnexpectedMessage.
+ *
+ * Keys: m/44'/128'/account' (SLIP-10 ed25519). Within that wallet, "account"
+ * and "minor" below are Monero subaddress indices (major, minor).
+ *
+ * Streamed signing, in order:
+ *
+ *   TxInit -> TxSetInput x n -> TxInputVini x n (sorted by key image,
+ *   strictly decreasing) -> TxAllInputsSet -> TxSetOutput x m (the last one
+ *   carries the range proof) -> TxAllOutSet -> TxSignInput x n (same order
+ *   as the vini) -> TxFinal
+ *
+ * Session rules (each violation is a Failure and ends the session):
+ *  - Every continuation is accepted only in its exact step. GetFeatures and
+ *    GetCoinTable are allowed between steps. Other unrelated requests end
+ *    signing. During proof computation any incoming request interrupts the
+ *    operation. Restart interrupted signing from TxInit.
+ *  - The host holds only public data plus device MACs (16 or 32 bytes). The
+ *    MACs bind the device's own canonical encoding of each item, its role
+ *    and its slot index, under a key that is fresh for every TxInit; they
+ *    never cover host protobuf bytes, and they never verify in another
+ *    session.
+ *  - Firmware 7.17 proves on the device for exactly 2 outputs. Any other
+ *    output count is refused with a Failure.
+ *  - With change, change_dts must identify the wallet's own (account, 0)
+ *    address as the device derives it. A sweep omits change_dts. Every amount, address,
+ *    the fee and the total shown on the device come from the device's own
+ *    classification of the outputs, never from host labels.
+ *  - Ring size is 16. num_inputs is at most 64.
+ *
+ * nanopb bounds live in messages-monero.options. Every request must fit the
+ * firmware's decode buffer and every response its response buffer; firmware
+ * static-asserts both.
+ */
+
+syntax = "proto2";
+
+// Sugar for easier handling in Java
+option java_package = "com.keepkey.deviceprotocol";
+option java_outer_classname = "KeepKeyMessageMonero";
+
+/*
+ * Monero network. Every address the device derives or accepts is checked
+ * against this network's prefixes, and a non-mainnet network is named on
+ * every signing screen.
+ */
+enum MoneroNetworkType {
+    MONERO_NETWORK_MAINNET = 0;
+    MONERO_NETWORK_TESTNET = 1;
+    MONERO_NETWORK_STAGENET = 2;
+}
+
+///////////////
+//  Address  //
+///////////////
+
+/**
+ * Request: Derive a Monero address, optionally showing it on the device
+ * @start
+ * @next MoneroAddress
+ * @next Failure
+ */
+message MoneroGetAddress {
+    repeated uint32 address_n = 1;                  // m/44'/128'/account'
+    optional bool show_display = 2;                 // Show the full address (paged) before returning it
+    optional MoneroNetworkType network_type = 3 [default = MONERO_NETWORK_MAINNET];
+    optional uint32 account = 4;                    // Subaddress major index
+    optional uint32 minor = 5;                      // Subaddress minor index
+    optional bytes payment_id = 6;                  // Reserved for integrated-address derivation; 7.17 refuses this field when present
+}
+
+/**
+ * Response: A standard Monero address or subaddress (95 Base58 characters)
+ * @end
+ */
+message MoneroAddress {
+    optional bytes address = 1;
+}
+
+/////////////////
+//  Watch key  //
+/////////////////
+
+/**
+ * Request: Export the private view key. The device asks for consent on every
+ * request: the view key shows all incoming payments of the wallet.
+ * @start
+ * @next MoneroWatchKey
+ * @next Failure
+ */
+message MoneroGetWatchKey {
+    repeated uint32 address_n = 1;                  // m/44'/128'/account'
+    optional MoneroNetworkType network_type = 2 [default = MONERO_NETWORK_MAINNET];
+    optional uint32 account = 3;                    // Subaddress major index of the address shown and returned
+}
+
+/**
+ * Response: The private view key and the (account, 0) address it belongs to
+ * @end
+ */
+message MoneroWatchKey {
+    optional bytes watch_key = 1;                   // 32-byte private view key
+    optional bytes address = 2;                     // base58 address, 95 characters
+}
+
+//////////////////////
+//  Key-image sync  //
+//////////////////////
+
+/*
+ * Subaddress indices the device should consider when it recognises owned
+ * outputs during key-image sync.
+ */
+message MoneroSubAddressIndicesList {
+    optional uint32 account = 1;                    // Subaddress major index
+    repeated uint32 minor_indices = 2;
+}
+
+/**
+ * Request: Start a key-image sync of num outputs
+ * @start
+ * @next MoneroKeyImageExportInitAck
+ * @next Failure
+ */
+message MoneroKeyImageExportInitRequest {
+    // For each output in transfer order, hash the concatenation of its raw
+    // out_key, tx_pub_key, additional_tx_pub_keys (in order, no count), and
+    // internal_output_index encoded as a Monero unsigned varint. The session
+    // hash is Keccak-256 of those 32-byte Keccak-256 digests concatenated
+    // across every step, with no batch separators or protobuf framing.
+    optional uint64 num = 1;                        // Outputs to sync, 1..64
+    optional bytes hash = 2;                        // 32-byte Keccak transcript of the outputs, checked at the end
+    repeated uint32 address_n = 3;                  // m/44'/128'/account'
+    optional MoneroNetworkType network_type = 4 [default = MONERO_NETWORK_MAINNET];
+    repeated MoneroSubAddressIndicesList subs = 5;
+}
+
+/**
+ * Response: The sync session is open
+ * @next MoneroKeyImageSyncStepRequest
+ */
+message MoneroKeyImageExportInitAck {
+}
+
+/*
+ * One owned output, as the wallet recorded it on receipt
+ */
+message MoneroTransferDetails {
+    optional bytes out_key = 1;                     // 32-byte one-time output key
+    optional bytes tx_pub_key = 2;                  // 32-byte transaction public key R
+    repeated bytes additional_tx_pub_keys = 3;      // 32-byte additional keys, if the transaction has them
+    optional uint64 internal_output_index = 4;      // Index of the output within its transaction
+    optional uint32 sub_addr_major = 5;
+    optional uint32 sub_addr_minor = 6;
+}
+
+/**
+ * Request: A batch of outputs
+ * @next MoneroKeyImageSyncStepAck
+ */
+message MoneroKeyImageSyncStepRequest {
+    repeated MoneroTransferDetails tdis = 1;
+}
+
+/*
+ * One key image and its one-member ring signature. Open blob with RFC 8439
+ * ChaCha20-Poly1305 using MoneroKeyImageSyncFinalAck.enc_key, this item's
+ * iv and empty associated data. The first 96 bytes are ciphertext and the
+ * final 16 bytes are the authentication tag. The authenticated plaintext is
+ * the compressed key image I, followed by the challenge c and response r.
+ * Each is 32 bytes; the two signature scalars are little-endian.
+ */
+message MoneroExportedKeyImage {
+    optional bytes iv = 1;                          // 12-byte nonce
+    optional bytes blob = 3;                        // 112 bytes: ciphertext || tag
+}
+
+/**
+ * Response: One encrypted key image per output of the batch
+ * @next MoneroKeyImageSyncStepRequest
+ * @next MoneroKeyImageSyncFinalRequest
+ */
+message MoneroKeyImageSyncStepAck {
+    repeated MoneroExportedKeyImage kis = 1;
+}
+
+/**
+ * Request: End the sync
+ * @next MoneroKeyImageSyncFinalAck
+ */
+message MoneroKeyImageSyncFinalRequest {
+}
+
+/**
+ * Response: The decryption key, released only if the count and the
+ * transcript hash match the init request
+ * @end
+ */
+message MoneroKeyImageSyncFinalAck {
+    optional bytes enc_key = 1;                     // 32 bytes
+}
+
+///////////////////////////
+//  Transaction signing  //
+///////////////////////////
+
+/*
+ * A destination: amount and public keys. The device re-encodes the address
+ * it shows from these keys and the network; it never shows a host string.
+ */
+message MoneroTxDestination {
+    optional uint64 amount = 1 [jstype = JS_STRING]; // Atomic units (1 XMR = 10^12)
+    optional bytes spend_public_key = 2;            // 32 bytes
+    optional bytes view_public_key = 3;             // 32 bytes
+    optional bool is_subaddress = 4;
+    optional bool is_integrated = 5;                // Carries TxData.payment_id
+}
+
+/*
+ * The change destination. It must be the wallet's own (account, 0) address
+ * as the device derives it, and it must match exactly one entry of
+ * TxData.outputs.
+ */
+message MoneroTxChange {
+    optional uint64 amount = 1 [jstype = JS_STRING]; // Atomic units
+    optional bytes spend_public_key = 2;            // 32 bytes
+    optional bytes view_public_key = 3;             // 32 bytes
+    optional uint32 major = 4;                      // Must equal TxData.account
+    optional uint32 minor = 5;                      // Must be 0
+}
+
+/*
+ * The unsigned plan, reviewed in full on the device at TxInit
+ */
+message MoneroTxData {
+    repeated MoneroTxDestination outputs = 1;       // All outputs, change included, in transaction order
+    optional MoneroTxChange change_dts = 2;
+    optional uint32 num_inputs = 3;                 // 1..64
+    optional uint32 ring_size = 4;                  // Must be 16
+    optional uint64 fee = 5 [jstype = JS_STRING]; // Atomic units
+    optional uint32 account = 6;                    // Subaddress major index the inputs belong to
+    optional bytes payment_id = 7;                  // 8 bytes, for the one integrated destination
+    optional uint64 unlock_time = 8;                // Must be zero; nonzero unlock times are refused
+    optional uint32 hard_fork = 9;                  // At least 16
+    optional uint32 bp_version = 10;                // Range proof version: 4 (Bulletproofs+)
+}
+
+/**
+ * Request: Start signing. The device shows every recipient, the change, the
+ * fee and the total, and asks for confirmation before it replies.
+ * @start
+ * @next MoneroTxInitAck
+ * @next Failure
+ */
+message MoneroTxInitRequest {
+    repeated uint32 address_n = 1;                  // m/44'/128'/account'
+    optional MoneroNetworkType network_type = 2 [default = MONERO_NETWORK_MAINNET];
+    optional MoneroTxData tsx_data = 3;
+}
+
+/**
+ * Response: One MAC per output, to be returned with that output in
+ * TxSetOutput
+ * @next MoneroTxSetInputRequest
+ */
+message MoneroTxInitAck {
+    repeated bytes dst_hmacs = 1;                   // 32 bytes each, in TxData.outputs order
+    optional uint32 rsig_mode = 2;                  // 0: the range proof is computed on the device
+}
+
+/*
+ * A ring member: decoy or the real output
+ */
+message MoneroTxRingMember {
+    optional uint64 global_index = 1 [jstype = JS_STRING]; // Global output index
+    optional bytes dest = 2;                        // 32-byte one-time public key
+    optional bytes commitment = 3;                  // 32-byte amount commitment
+}
+
+/*
+ * One input with its ring
+ */
+message MoneroTxSourceEntry {
+    repeated MoneroTxRingMember ring = 1;           // Exactly ring_size members, sorted by global_index
+    optional uint32 real_index = 2;                 // Position of the real output in ring
+    optional bytes real_out_tx_key = 3;             // 32-byte public key R of the transaction that paid us
+    optional bytes real_out_additional_key = 4;     // 32 bytes: only the additional key at the real output's index
+    optional uint32 real_output_in_tx_index = 5;    // Index of the real output within that transaction
+    optional uint64 amount = 6 [jstype = JS_STRING]; // Atomic units; checked against the commitment
+    optional bytes mask = 7;                        // 32-byte commitment mask of the real output
+    optional uint32 sub_major = 8;                  // Subaddress that received the real output
+    optional uint32 sub_minor = 9;
+}
+
+/**
+ * Request: One input, in plan order
+ * @next MoneroTxSetInputAck
+ */
+message MoneroTxSetInputRequest {
+    optional MoneroTxSourceEntry src = 1;
+}
+
+/**
+ * Response: The device-built input (with its key image) and its pseudo-output
+ * commitment, each with a MAC
+ * @next MoneroTxSetInputRequest
+ * @next MoneroTxInputViniRequest
+ */
+message MoneroTxSetInputAck {
+    optional bytes vini = 1;                        // Serialized txin_to_key: tag, amount 0, offsets, key image
+    optional bytes vini_hmac = 2;                   // 32 bytes
+    optional bytes pseudo_out = 3;                  // 32-byte commitment
+    optional bytes pseudo_out_hmac = 4;             // 32 bytes
+}
+
+/**
+ * Request: Return each input's vini, sorted by key image (strictly
+ * decreasing), so the device can hash the transaction prefix
+ * @next MoneroTxInputViniAck
+ */
+message MoneroTxInputViniRequest {
+    optional bytes vini = 1;
+    optional bytes vini_hmac = 2;                   // 32 bytes
+    optional uint32 orig_idx = 3;                   // Plan index of this input, before sorting
+}
+
+/**
+ * Response: vini accepted
+ * @next MoneroTxInputViniRequest
+ * @next MoneroTxAllInputsSetRequest
+ */
+message MoneroTxInputViniAck {
+}
+
+/**
+ * Request: All vini are in
+ * @next MoneroTxAllInputsSetAck
+ */
+message MoneroTxAllInputsSetRequest {
+}
+
+/**
+ * Response: Ready for outputs
+ * @next MoneroTxSetOutputRequest
+ */
+message MoneroTxAllInputsSetAck {
+}
+
+/**
+ * Request: One output, in TxData.outputs order, with its MAC from
+ * TxInitAck. The last one makes the device compute the range proof (about
+ * 10-20 s; keep the host timeout at 120 s or more).
+ * @next MoneroTxSetOutputAck
+ */
+message MoneroTxSetOutputRequest {
+    optional MoneroTxDestination dst = 1;
+    optional bytes dst_hmac = 2;                    // 32 bytes
+}
+
+/**
+ * Response: The device-built output
+ * @next MoneroTxSetOutputRequest
+ * @next MoneroTxAllOutSetRequest
+ */
+message MoneroTxSetOutputAck {
+    optional bytes tx_out = 1;                      // Serialized tx_out: amount 0, tagged key, view tag
+    optional bytes out_pk = 2;                      // 64 bytes: one-time key || amount commitment
+    optional bytes ecdh_info = 3;                   // 8-byte encrypted amount
+    optional bytes bp_plus = 4;                     // Last output only: the aggregate BP+ proof as Monero
+                                                    // serializes one (A, A1, B, r1, s1, d1, then L and R
+                                                    // each as a varint count and the keys; V omitted)
+}
+
+/**
+ * Request: All outputs are in
+ * @next MoneroTxAllOutSetAck
+ */
+message MoneroTxAllOutSetRequest {
+}
+
+/**
+ * Response: The device-built tx extra, the prefix hash and the RingCT base
+ * fields that every CLSAG signs
+ * @next MoneroTxSignInputRequest
+ */
+message MoneroTxAllOutSetAck {
+    optional bytes extra = 1;                       // tx extra: R, additional keys, encrypted payment ID
+    optional bytes tx_prefix_hash = 2;              // 32 bytes
+    optional uint64 fee = 3 [jstype = JS_STRING]; // Atomic units, as signed
+    optional uint32 rct_type = 4;                   // 6 (CLSAG + BP+)
+    optional bytes full_message_hash = 5;           // 32-byte message every CLSAG signs
+}
+
+/**
+ * Request: Sign one input, in the same key-image order as the vini
+ * @next MoneroTxSignInputAck
+ */
+message MoneroTxSignInputRequest {
+    optional MoneroTxSourceEntry src = 1;
+    optional bytes vini = 2;
+    optional bytes vini_hmac = 3;                   // 32 bytes
+    optional bytes pseudo_out = 4;                  // 32 bytes
+    optional bytes pseudo_out_hmac = 5;             // 32 bytes
+    optional uint32 orig_idx = 6;                   // Plan index of this input
+}
+
+/**
+ * Response: The CLSAG, encrypted until TxFinalAck releases the key
+ * @next MoneroTxSignInputRequest
+ * @next MoneroTxFinalRequest
+ */
+message MoneroTxSignInputAck {
+    // RFC 8439 AEAD under TxFinalAck.opening_key with empty associated data.
+    // The 12-byte nonce is LE32(zero-based signing position) followed by eight
+    // zero bytes. The wire field is the 576-byte ciphertext followed by its
+    // 16-byte authentication tag. The nonce is reconstructed by the host.
+    optional bytes clsag_enc = 1;                   // ChaCha20-Poly1305 of s[16] || c1 || D/8, with the 16-byte tag
+    optional bytes pseudo_out = 2;                  // 32 bytes; differs from TxSetInputAck only on the last input
+}
+
+/**
+ * Request: Every input is signed
+ * @next MoneroTxFinalAck
+ */
+message MoneroTxFinalRequest {
+}
+
+/**
+ * Response: The key that opens every clsag_enc. Released only after every
+ * input was signed in order; the session then ends. The per-transaction
+ * keys are released here for payment proofs, never wallet keys.
+ * @end
+ */
+message MoneroTxFinalAck {
+    optional bytes opening_key = 1;                 // 32 bytes
+    optional bytes tx_key = 2;                      // r, canonical scalar, 32 bytes
+    repeated bytes additional_tx_keys = 3;           // One per output, in output order, when used
+}
