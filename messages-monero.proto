@@ -43,8 +43,8 @@
  *    session.
  *  - Firmware 7.17 proves on the device for exactly 2 outputs. Any other
  *    output count is refused with a Failure.
- *  - Exactly one output is change. It must equal the wallet's own
- *    (account, 0) address as the device derives it. Every amount, address,
+ *  - With change, change_dts must identify the wallet's own (account, 0)
+ *    address as the device derives it. A sweep omits change_dts. Every amount, address,
  *    the fee and the total shown on the device come from the device's own
  *    classification of the outputs, never from host labels.
  *  - Ring size is 16. num_inputs is at most 64.
@@ -221,7 +221,7 @@ message MoneroKeyImageSyncFinalAck {
  * it shows from these keys and the network; it never shows a host string.
  */
 message MoneroTxDestination {
-    optional uint64 amount = 1;                     // Atomic units (1 XMR = 10^12)
+    optional uint64 amount = 1 [jstype = JS_STRING]; // Atomic units (1 XMR = 10^12)
     optional bytes spend_public_key = 2;            // 32 bytes
     optional bytes view_public_key = 3;             // 32 bytes
     optional bool is_subaddress = 4;
@@ -234,7 +234,7 @@ message MoneroTxDestination {
  * TxData.outputs.
  */
 message MoneroTxChange {
-    optional uint64 amount = 1;                     // Atomic units
+    optional uint64 amount = 1 [jstype = JS_STRING]; // Atomic units
     optional bytes spend_public_key = 2;            // 32 bytes
     optional bytes view_public_key = 3;             // 32 bytes
     optional uint32 major = 4;                      // Must equal TxData.account
@@ -249,7 +249,7 @@ message MoneroTxData {
     optional MoneroTxChange change_dts = 2;
     optional uint32 num_inputs = 3;                 // 1..64
     optional uint32 ring_size = 4;                  // Must be 16
-    optional uint64 fee = 5;                        // Atomic units
+    optional uint64 fee = 5 [jstype = JS_STRING]; // Atomic units
     optional uint32 account = 6;                    // Subaddress major index the inputs belong to
     optional bytes payment_id = 7;                  // 8 bytes, for the one integrated destination
     optional uint64 unlock_time = 8;                // Must be zero; nonzero unlock times are refused
@@ -284,7 +284,7 @@ message MoneroTxInitAck {
  * A ring member: decoy or the real output
  */
 message MoneroTxRingMember {
-    optional uint64 global_index = 1;               // Global output index
+    optional uint64 global_index = 1 [jstype = JS_STRING]; // Global output index
     optional bytes dest = 2;                        // 32-byte one-time public key
     optional bytes commitment = 3;                  // 32-byte amount commitment
 }
@@ -298,7 +298,7 @@ message MoneroTxSourceEntry {
     optional bytes real_out_tx_key = 3;             // 32-byte public key R of the transaction that paid us
     optional bytes real_out_additional_key = 4;     // 32 bytes: only the additional key at the real output's index
     optional uint32 real_output_in_tx_index = 5;    // Index of the real output within that transaction
-    optional uint64 amount = 6;                     // Atomic units; checked against the commitment
+    optional uint64 amount = 6 [jstype = JS_STRING]; // Atomic units; checked against the commitment
     optional bytes mask = 7;                        // 32-byte commitment mask of the real output
     optional uint32 sub_major = 8;                  // Subaddress that received the real output
     optional uint32 sub_minor = 9;
@@ -398,7 +398,7 @@ message MoneroTxAllOutSetRequest {
 message MoneroTxAllOutSetAck {
     optional bytes extra = 1;                       // tx extra: R, additional keys, encrypted payment ID
     optional bytes tx_prefix_hash = 2;              // 32 bytes
-    optional uint64 fee = 3;                        // Atomic units, as signed
+    optional uint64 fee = 3 [jstype = JS_STRING]; // Atomic units, as signed
     optional uint32 rct_type = 4;                   // 6 (CLSAG + BP+)
     optional bytes full_message_hash = 5;           // 32-byte message every CLSAG signs
 }
