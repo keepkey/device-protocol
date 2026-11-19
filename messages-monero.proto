@@ -32,10 +32,10 @@
  *   as the vini) -> TxFinal
  *
  * Session rules (each violation is a Failure and ends the session):
- *  - Every continuation is accepted only in its exact step. Any other
- *    request, including one that arrives while the device is proving, ends
- *    the session and wipes all of its state. Nothing half-done survives: the
- *    host restarts from TxInit.
+ *  - Every continuation is accepted only in its exact step. GetFeatures and
+ *    GetCoinTable are allowed between steps. Other unrelated requests end
+ *    signing. During proof computation any incoming request interrupts the
+ *    operation. Restart interrupted signing from TxInit.
  *  - The host holds only public data plus device MACs (16 or 32 bytes). The
  *    MACs bind the device's own canonical encoding of each item, its role
  *    and its slot index, under a key that is fresh for every TxInit; they
@@ -87,11 +87,11 @@ message MoneroGetAddress {
     optional MoneroNetworkType network_type = 3 [default = MONERO_NETWORK_MAINNET];
     optional uint32 account = 4;                    // Subaddress major index
     optional uint32 minor = 5;                      // Subaddress minor index
-    optional bytes payment_id = 6;                  // 8 bytes: return the integrated address
+    optional bytes payment_id = 6;                  // Reserved for integrated-address derivation; 7.17 refuses this field when present
 }
 
 /**
- * Response: The address, base58 (95 characters, 106 for an integrated address)
+ * Response: A standard Monero address or subaddress (95 Base58 characters)
  * @end
  */
 message MoneroAddress {
