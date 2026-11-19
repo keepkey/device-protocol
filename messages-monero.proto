@@ -144,6 +144,11 @@ message MoneroSubAddressIndicesList {
  * @next Failure
  */
 message MoneroKeyImageExportInitRequest {
+    // For each output in transfer order, hash the concatenation of its raw
+    // out_key, tx_pub_key, additional_tx_pub_keys (in order, no count), and
+    // internal_output_index encoded as a Monero unsigned varint. The session
+    // hash is Keccak-256 of those 32-byte Keccak-256 digests concatenated
+    // across every step, with no batch separators or protobuf framing.
     optional uint64 num = 1;                        // Outputs to sync, 1..64
     optional bytes hash = 2;                        // 32-byte Keccak transcript of the outputs, checked at the end
     repeated uint32 address_n = 3;                  // m/44'/128'/account'
@@ -422,6 +427,10 @@ message MoneroTxSignInputRequest {
  * @next MoneroTxFinalRequest
  */
 message MoneroTxSignInputAck {
+    // RFC 8439 AEAD under TxFinalAck.opening_key with empty associated data.
+    // The 12-byte nonce is LE32(zero-based signing position) followed by eight
+    // zero bytes. The wire field is the 576-byte ciphertext followed by its
+    // 16-byte authentication tag. The nonce is reconstructed by the host.
     optional bytes clsag_enc = 1;                   // ChaCha20-Poly1305 of s[16] || c1 || D/8, with the 16-byte tag
     optional bytes pseudo_out = 2;                  // 32 bytes; differs from TxSetInputAck only on the last input
 }
