@@ -111,6 +111,32 @@ for (const [Message, field, tag] of exactUint64Fields) {
   }
 }
 
+// Fixed protobuf acknowledgements, encoded independently with Python
+// ChaCha20Poly1305. The synthetic signature scalars exercise the wire layout.
+{
+  const assert = require('assert')
+  const { createDecipheriv } = require('crypto')
+  const stepWire = Buffer.from(
+    '0a80010a0ca0a1a2a3a4a5a6a7a8a9aaab1a70' +
+    '0b8b3376ab7741cc48fda05462b4329830565e8f3c5900a820efbade23532bf5' +
+    '6d80168aaec9ff8ac6ccf5bd1d5178464ac44a38090c6b8127540b404c2aa5c8b3' +
+    'fb674e38e992f022f0d2890db0a97e00990fe31cbc96a07b284a808ecca0bbb63' +
+    'fa39a8db231cbf824ea10dc477584', 'hex')
+  const finalWire = Buffer.from(
+    '0a20000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f', 'hex')
+  const [item] = xmr.MoneroKeyImageSyncStepAck.deserializeBinary(stepWire).getKisList()
+  const key = xmr.MoneroKeyImageSyncFinalAck.deserializeBinary(finalWire).getEncKey_asU8()
+  const blob = item.getBlob_asU8()
+  assert.strictEqual(blob.length, 112)
+  const cipher = createDecipheriv('chacha20-poly1305', key, item.getIv_asU8(), { authTagLength: 16 })
+  cipher.setAuthTag(blob.subarray(96))
+  const plain = Buffer.concat([cipher.update(blob.subarray(0, 96)), cipher.final()])
+  assert.strictEqual(plain.subarray(0, 32).toString('hex'),
+    '07204b29e6918361e8f253409e4ecf63ad088d307f33600b9437616f5231e8f9')
+  assert.strictEqual(plain.subarray(32, 64).toString('hex'), '01' + '00'.repeat(31))
+  assert.strictEqual(plain.subarray(64).toString('hex'), '02' + '00'.repeat(31))
+}
+
 if (failed) {
   console.error(`${failed} package validation check(s) failed`)
   process.exit(1)

@@ -184,12 +184,16 @@ message MoneroKeyImageSyncStepRequest {
 }
 
 /*
- * One key image and its ownership signature, encrypted under the key that
- * MoneroKeyImageSyncFinalAck releases
+ * One key image and its one-member ring signature. Open blob with RFC 8439
+ * ChaCha20-Poly1305 using MoneroKeyImageSyncFinalAck.enc_key, this item's
+ * iv and empty associated data. The first 96 bytes are ciphertext and the
+ * final 16 bytes are the authentication tag. The authenticated plaintext is
+ * the compressed key image I, followed by the challenge c and response r.
+ * Each is 32 bytes; the two signature scalars are little-endian.
  */
 message MoneroExportedKeyImage {
     optional bytes iv = 1;                          // 12-byte nonce
-    optional bytes blob = 3;                        // Ciphertext and tag
+    optional bytes blob = 3;                        // 112 bytes: ciphertext || tag
 }
 
 /**
