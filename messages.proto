@@ -91,6 +91,7 @@ enum MessageType {
   MessageType_EthereumVerifyMessage = 109 [ (wire_in) = true ];
   MessageType_EthereumMessageSignature = 110 [ (wire_out) = true ];
   MessageType_ChangeWipeCode = 111 [ (wire_in) = true ];
+  MessageType_SetPinFailureLimit = 118 [ (wire_in) = true ];
 
   // eip-712 messages
   MessageType_EthereumSignTypedHash = 112 [ (wire_in) = true ];
@@ -1191,6 +1192,16 @@ message DebugLinkFillConfig {}
  */
 message ChangeWipeCode {
   optional bool remove = 1; // is wipe code removal requested?
+}
+
+/** Write-only policy for consecutive incorrect device PIN submissions.
+ * Zero clears the limit. Positive values require fresh device authorization.
+ * There is intentionally no enrollment, threshold or remaining-attempt query.
+ * @next Success
+ * @next Failure
+ */
+message SetPinFailureLimit {
+  required uint32 attempts = 1;
 }
 
 //////////////////////////
